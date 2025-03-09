@@ -6,32 +6,43 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
-public class Usuario {
+public abstract class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String nome;
+    private Integer id;
+    private String senha;
+    private String email;
 
     public Usuario() {
     }
 
-    public Usuario(String nome) {
-        this.nome = nome;
+    public Usuario(Integer id, String senha, String email) {
+        this.id = id;
+        this.senha = senha;
+        this.email = email;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Long getId() {
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public String getNome() {
-        return nome;
+    public String getSenha() {
+        return senha;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getEmail() {
+        return email;
     }
 }

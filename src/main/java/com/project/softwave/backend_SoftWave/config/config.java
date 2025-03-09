@@ -13,27 +13,27 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootApplication
-public class config implements CommandLineRunner {
-// Classe para realizar Mocks Etc
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Override
-    public void run(String... args) throws Exception {
-        List<Usuario>  lista = new ArrayList<>();
-
-        Usuario usuario = new Usuario("Bryan");
-        Usuario usuario1 = new Usuario("Bea");
-        Usuario usuario2 = new Usuario("Sofia");
-        Usuario usuario3 = new Usuario("Teste");
-        lista.add(usuario);
-        lista.add(usuario1);
-        lista.add(usuario2);
-        lista.add(usuario3);
-// Não funcionou esqueci como faz KKKKKKKK
-
-
-
-    }
-}
+//@SpringBootApplication
+//public class config implements CommandLineRunner {
+//// Classe para realizar Mocks Etc
+//    @Autowired
+//    private UsuarioRepository usuarioRepository;
+//
+////    @Override
+////    public void run(String... args) throws Exception {
+////        List<Usuario>  lista = new ArrayList<>();
+////
+////        Usuario usuario = new Usuario("Bryan");
+////        Usuario usuario1 = new Usuario("Bea");
+////        Usuario usuario2 = new Usuario("Sofia");
+////        Usuario usuario3 = new Usuario("Teste");
+////        lista.add(usuario);
+////        lista.add(usuario1);
+////        lista.add(usuario2);
+////        lista.add(usuario3);
+////// Não funcionou esqueci como faz KKKKKKKK
+////
+////
+////
+////    }
+//}
