@@ -15,6 +15,10 @@ public class UsuarioJuridico extends Usuario{
         this.razaoSocial = razaoSocial;
     }
 
+    public UsuarioJuridico() {
+
+    }
+
     public String getCnpj() {
         return cnpj;
     }

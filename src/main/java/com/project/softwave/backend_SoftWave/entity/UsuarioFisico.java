@@ -15,6 +15,10 @@ public class UsuarioFisico extends Usuario{
         this.rg = rg;
     }
 
+    public UsuarioFisico() {
+
+    }
+
     public String getNome() {
         return nome;
     }
