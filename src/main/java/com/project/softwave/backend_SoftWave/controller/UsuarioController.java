@@ -18,48 +18,6 @@ public class UsuarioController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    public Boolean validarSenha(String senha){
-        if(senha.length() >= 8 &&
-                senha.matches(".*[*$#@&/%].*") &&
-                senha.matches(".*[A-Z].*") &&
-                senha.matches(".*[a-z].*") &&
-                senha.matches(".*[0-9].*") &&
-                senha != null &&
-                senha != ""
-        ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    public Boolean validarEmail(String email){
-        if(email.contains("@") &&
-                email.contains(".com") &&
-                email != null &&
-                email != ""
-        ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-    //validar se existe cnpj igual na base
-    public Boolean validarCamposVaziosJuridico(String nomeFantasia, String razaoSocial, String cnpj){
-
-        return true;
-    }
-    // validar se existe rg igual na base
-    public Boolean validarCamposVaziosFisico(String nome, String rg){
-        return true;
-    }
-
-    //Validar este campo melhor depois e validar se já existe cpf na base
-    public Boolean validarCpf(String cpf){
-        return true;
-    }
-
-
 // validar emails iguais e cpf iguais,
     @PostMapping
     public ResponseEntity<Usuario> cadastrar(@RequestBody Usuario usuario){
@@ -112,6 +70,7 @@ public class UsuarioController {
         return ResponseEntity.status(404).build();
     }
 
+//    Com RequestParam ao invés de PathVariable
 //    @DeleteMapping("/id")
 //    public ResponseEntity<Usuario> deletar(@RequestParam Integer id){
 //        if(usuarioRepository.existsById(id)){

@@ -1,9 +1,19 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class UsuarioFisico extends Usuario{
     private String nome;
     private String cpf;
     private String rg;
+
+    public UsuarioFisico(Integer id, String senha, String email, String nome, String cpf, String rg) {
+        super(id, senha, email);
+        this.nome = nome;
+        this.cpf = cpf;
+        this.rg = rg;
+    }
 
     public String getNome() {
         return nome;
