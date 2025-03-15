@@ -3,25 +3,22 @@ package com.project.softwave.backend_SoftWave.config;
 import com.project.softwave.backend_SoftWave.entity.*;
 import com.project.softwave.backend_SoftWave.repository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.SetorRepository;
-import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class config implements CommandLineRunner {
 // Classe para realizar Mocks Etc
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioFisicoRepository usuarioFisicoRepository;
+
+    @Autowired
+    private UsuarioJuridicoRepository usuarioJuridicoRepository;
 
     @Autowired
     private SetorRepository setorRepository;
@@ -31,11 +28,12 @@ public class config implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Usuario usuario1 = new UsuarioFisico(null,"Senha123","email1", "nome1" ,"cpf1", "rg1");
-        Usuario usuario2 = new UsuarioFisico(null,"Senha123","email2", "nome2" ,"cpf2", "rg2");
-        Usuario usuario3 = new UsuarioJuridico(null,"Senha123","email3", "cnpj1" ,"nomeFantasia1", "razaoSocial1");
-        Usuario usuario4 = new UsuarioJuridico(null,"Senha123","email4", "cnpj2" ,"nomeFantasia2", "razaoSocial2");
-        usuarioRepository.saveAll(Arrays.asList(usuario1,usuario2,usuario3,usuario4));
+        UsuarioFisico usuario1 = new UsuarioFisico(null,"Senha123","email1", "nome1" ,"cpf1", "rg1");
+        UsuarioFisico usuario2 = new UsuarioFisico(null,"Senha123","email2", "nome2" ,"cpf2", "rg2");
+        UsuarioJuridico usuario3 = new UsuarioJuridico(null,"Senha123","email3", "cnpj1" ,"nomeFantasia1", "razaoSocial1");
+        UsuarioJuridico usuario4 = new UsuarioJuridico(null,"Senha123","email4", "cnpj2" ,"nomeFantasia2", "razaoSocial2");
+        usuarioFisicoRepository.saveAll(Arrays.asList(usuario1,usuario2));
+        usuarioJuridicoRepository.saveAll(Arrays.asList(usuario3,usuario4));
 
         Setor setor1 = new Setor("Setor1", "Descricao1");
         Setor setor2 = new Setor("Setor1", "Descricao1");
