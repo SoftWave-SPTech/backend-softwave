@@ -1,0 +1,34 @@
+// Processos Requisições
+
+###Post criar Processos
+POST http://localhost:8080/processos
+Content-Type: application/json
+
+{
+  "numero": "numero_466988a26f44",
+  "nome": "nome_e21c5c97f113",
+  "descricao": "descricao_a9f56f4fabec",
+  "setorId": 3
+}
+###Get listar todos Processos
+GET http://localhost:8080/processos
+
+###Get Processos Por ID
+GET http://localhost:8080/processos/1
+
+###Get Processo Por Numero
+GET http://localhost:8080/processos/numero/Processo01
+
+###Put Atualizar Processos
+PUT http://localhost:8080/processos/1
+Content-Type: application/json
+
+{
+  "numero": "numero_466988a26f44",
+  "nome": "nome_e21c5c97f113",
+  "descricao": "descricao_a9f56f4fabec",
+  "setorId": 2
+}
+
+###Delete Processos Por ID
+DELETE http://localhost:8080/processos/1

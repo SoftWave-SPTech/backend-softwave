@@ -26,6 +26,13 @@ public class UsuarioJuridico extends Usuario{
     public UsuarioJuridico() {
     }
 
+    public UsuarioJuridico(String senha, String email,String cnpj, String nomeFantasia, String razaoSocial) {
+        super(senha , email);
+        this.cnpj = cnpj;
+        this.nomeFantasia = nomeFantasia;
+        this.razaoSocial = razaoSocial;
+    }
+
     public String getCnpj() {
         return cnpj;
     }

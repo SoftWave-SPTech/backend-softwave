@@ -9,6 +9,9 @@ public class UsuarioFisico extends Usuario{
     private String cpf;
     private String rg;
 
+    public UsuarioFisico() {
+    }
+
     public UsuarioFisico(Integer id, String senha, String email, String nome, String cpf, String rg) {
         super(id, senha, email);
         this.nome = nome;
@@ -23,7 +26,11 @@ public class UsuarioFisico extends Usuario{
         this.rg = usuarioFisicoDTO.getRg();
     }
 
-    public UsuarioFisico() {
+    public UsuarioFisico(String senha, String email,String nome, String cpf, String rg) {
+        super(senha , email);
+        this.nome = nome;
+        this.cpf = cpf;
+        this.rg = rg;
     }
 
     public String getNome() {
