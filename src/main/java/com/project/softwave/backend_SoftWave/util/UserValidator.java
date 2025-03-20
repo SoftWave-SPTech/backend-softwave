@@ -1,6 +1,11 @@
 package com.project.softwave.backend_SoftWave.util;
 
+
+import org.springframework.stereotype.Component;
+
+@Component
 public class UserValidator {
+
 
     public static Boolean validarSenha(String senha){
         if(senha.length() >= 8 &&
@@ -28,17 +33,37 @@ public class UserValidator {
             return false;
         }
     }
-    //validar se existe cnpj igual na base
+
     public static Boolean validarCamposVaziosJuridico(String nomeFantasia, String razaoSocial, String cnpj){
-        return true;
-    }
-    // validar se existe rg igual na base
-    public static Boolean validarCamposVaziosFisico(String nome, String rg){
-        return true;
+        if(
+                nomeFantasia != null &&
+                        nomeFantasia != "" &&
+                        razaoSocial != null &&
+                        razaoSocial != "" &&
+                        cnpj != null &&
+                        cnpj != ""
+        ){
+            return true;
+        }
+        return false;
     }
 
-    //Validar este campo melhor depois e validar se já existe cpf na base
+    public static Boolean validarCamposVaziosFisico(String nome, String rg){
+
+        if(
+                nome != null &&
+                        nome != "" &&
+                        rg != null &&
+                        rg != ""
+        ){
+            return true;
+        }
+        return false;
+    }
+
+    //Validar este campo melhor depois
     public static Boolean validarCpf(String cpf){
+
         return true;
     }
 

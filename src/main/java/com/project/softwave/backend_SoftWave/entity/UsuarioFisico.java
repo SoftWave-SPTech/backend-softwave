@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -10,6 +11,9 @@ public class UsuarioFisico extends Usuario{
     private String cpf;
     private String rg;
 
+    public UsuarioFisico() {
+    }
+
     public UsuarioFisico(Integer id, String senha, String email, String nome, String cpf, String rg) {
         super(id, senha, email);
         this.nome = nome;
@@ -17,10 +21,19 @@ public class UsuarioFisico extends Usuario{
         this.rg = rg;
     }
 
-    public UsuarioFisico() {
-
+    public UsuarioFisico(String senha, String email,String nome, String cpf, String rg) {
+        super(senha , email);
+        this.nome = nome;
+        this.cpf = cpf;
+        this.rg = rg;
     }
 
+    public UsuarioFisico(UsuarioFisicoDTO  usuarioFisicoDTO) {
+        super(null, usuarioFisicoDTO.getSenha(), usuarioFisicoDTO.getEmail());
+        this.nome = usuarioFisicoDTO.getNome();
+        this.cpf = usuarioFisicoDTO.getCpf();
+        this.rg = usuarioFisicoDTO.getRg();
+    }
     public String getNome() {
         return nome;
     }

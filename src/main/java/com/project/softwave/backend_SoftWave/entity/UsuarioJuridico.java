@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -17,8 +18,21 @@ public class UsuarioJuridico extends Usuario{
         this.razaoSocial = razaoSocial;
     }
 
-    public UsuarioJuridico() {
+    public UsuarioJuridico(UsuarioJuridicoDTO usuarioJuridicoDTO) {
+        super(null, usuarioJuridicoDTO.getSenha(), usuarioJuridicoDTO.getEmail());
+        this.cnpj = usuarioJuridicoDTO.getCnpj();
+        this.nomeFantasia = usuarioJuridicoDTO.getNomeFantasia();
+        this.razaoSocial = usuarioJuridicoDTO.getRazaoSocial();
+    }
 
+    public UsuarioJuridico() {
+    }
+
+    public UsuarioJuridico(String senha, String email,String cnpj, String nomeFantasia, String razaoSocial) {
+        super(senha , email);
+        this.cnpj = cnpj;
+        this.nomeFantasia = nomeFantasia;
+        this.razaoSocial = razaoSocial;
     }
 
     public String getCnpj() {
