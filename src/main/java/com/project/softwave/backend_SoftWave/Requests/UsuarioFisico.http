@@ -1,0 +1,32 @@
+// Usuario Fisico Requisições
+
+###Post Cadastrar UsuariosFisicos
+POST http://localhost:8080/usuariosFisicos
+Content-Type: application/json
+
+{
+  "id": null,
+  "nome": "nome_cb68aa0aa3fb",
+  "email": "email@b2abecac31aa.com",
+  "senha": "senha_@0b5948e1D143",
+  "cpf": "cpf_7e1ab85f2585",
+  "rg": "rg_fc3031b20929"
+}
+
+###Get Todos UsuariosFisicos
+GET http://localhost:8080/usuariosFisicos
+
+###PUT Atualizar UsuariosFisicos
+PUT http://localhost:8080/usuariosFisicos/1
+Content-Type: application/json
+
+{
+  "nome": "nome_d7447354a6cb",
+  "email": "email@c3b110045e82.com",
+  "senha": "senha@a06e79c1c6Cd",
+  "cpf": "cpf_552574bce1b7",
+  "rg": "rg_20b3d4765fc6"
+}
+
+###Delete UsuariosFisicos Por ID
+DELETE http://localhost:8080/usuariosFisicos/1

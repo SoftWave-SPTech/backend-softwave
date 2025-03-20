@@ -1,0 +1,31 @@
+// Usuario Juridico Requisições
+
+###Post Cadastrar UsuarioJuridico
+POST http://localhost:8080/usuariosJuridicos
+Content-Type: application/json
+
+{
+  "nomeFantasia": "nomeFantasia_ab4bb96f02d0",
+  "email": "email@76d429f0809e.com",
+  "senha": "Senha@5f7694ec372f",
+  "razaoSocial": "razaoSocial_8cfbc865581f",
+  "cnpj": "cnpj_7e24694efddb"
+}
+
+###Get Todos UsuarioJuridico
+GET http://localhost:8080/usuariosJuridicos
+
+###PUT Atualizar UsuarioJuridico
+PUT http://localhost:8080/usuariosJuridicos/4
+Content-Type: application/json
+
+{
+  "nomeFantasia": "nomeFantasia_0d8c377caff7",
+  "email": "email@a59ac45cef1f.com",
+  "senha": "Senha@f2d87b4c0b37",
+  "razaoSocial": "razaoSocial_6be19e6b2605",
+  "cnpj": "cnpj_d29ac48397bd"
+}
+
+###Delete UsuarioJuridico Por ID
+DELETE http://localhost:8080/usuariosJuridicos/3
