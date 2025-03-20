@@ -1,11 +1,9 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
-@Entity
+
+@MappedSuperclass
 public abstract class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +16,11 @@ public abstract class Usuario {
 
     public Usuario(Integer id, String senha, String email) {
         this.id = id;
+        this.senha = senha;
+        this.email = email;
+    }
+
+    public Usuario(String senha, String email) {
         this.senha = senha;
         this.email = email;
     }

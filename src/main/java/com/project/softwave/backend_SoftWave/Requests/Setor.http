@@ -1,0 +1,28 @@
+//Setor Requisições
+
+###Post Cadastrar Setor
+POST http://localhost:8080/setores
+Content-Type: application/json
+
+{
+  "nome": "nome123",
+  "descricao": "descricao_88f80a6f060b"
+}
+
+###Get todos setores
+GET http://localhost:8080/setores
+
+###Get setores Por ID
+GET http://localhost:8080/setores/1
+
+###Put Atualizar Setores
+PUT http://localhost:8080/setores/1
+Content-Type: application/json
+
+{
+  "nome": "nome_6994f8617e75",
+  "descricao": "descricao_88f80a6f060b"
+}
+
+###Delete Setor Por ID
+DELETE http://localhost:8080/setores/2
