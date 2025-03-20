@@ -1,8 +1,10 @@
 package com.project.softwave.backend_SoftWave.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name="pessoa_fisica")
 public class UsuarioFisico extends Usuario{
     private String nome;
     private String cpf;
