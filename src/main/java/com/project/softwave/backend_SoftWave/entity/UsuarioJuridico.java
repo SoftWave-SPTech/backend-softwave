@@ -1,8 +1,10 @@
 package com.project.softwave.backend_SoftWave.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "pessoa_juridica")
 public class UsuarioJuridico extends Usuario{
     private String cnpj;
     private String nomeFantasia;
@@ -13,6 +15,10 @@ public class UsuarioJuridico extends Usuario{
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+    }
+
+    public UsuarioJuridico() {
+
     }
 
     public String getCnpj() {

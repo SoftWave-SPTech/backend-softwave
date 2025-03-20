@@ -3,7 +3,8 @@ package com.project.softwave.backend_SoftWave.config;
 import com.project.softwave.backend_SoftWave.entity.*;
 import com.project.softwave.backend_SoftWave.repository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.SetorRepository;
-import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +22,10 @@ import java.util.List;
 public class config implements CommandLineRunner {
 // Classe para realizar Mocks Etc
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioJuridicoRepository usuarioJuridicoRepository;
+
+    @Autowired
+    private UsuarioFisicoRepository usuarioFisicoRepository;
 
     @Autowired
     private SetorRepository setorRepository;
@@ -35,7 +39,8 @@ public class config implements CommandLineRunner {
         Usuario usuario2 = new UsuarioFisico(null,"Senha123","email2", "nome2" ,"cpf2", "rg2");
         Usuario usuario3 = new UsuarioJuridico(null,"Senha123","email3", "cnpj1" ,"nomeFantasia1", "razaoSocial1");
         Usuario usuario4 = new UsuarioJuridico(null,"Senha123","email4", "cnpj2" ,"nomeFantasia2", "razaoSocial2");
-        usuarioRepository.saveAll(Arrays.asList(usuario1,usuario2,usuario3,usuario4));
+        usuarioJuridicoRepository.saveAll(Arrays.asList(usuario3,usuario4));
+        usuarioFisicoRepository.saveAll(Arrays.asList(usuario1,usuario2));
 
         Setor setor1 = new Setor("Setor1", "Descricao1");
         Setor setor2 = new Setor("Setor1", "Descricao1");

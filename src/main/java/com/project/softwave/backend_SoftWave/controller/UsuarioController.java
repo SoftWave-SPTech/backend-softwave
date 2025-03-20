@@ -2,7 +2,8 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
-import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,10 @@ import java.util.Optional;
 public class UsuarioController {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioJuridicoRepository usuarioJuridicoRepository;
+
+    @Autowired
+    private UsuarioFisicoRepository usuarioFisicoRepository;
 
 // validar emails iguais e cpf iguais,
     @PostMapping
@@ -37,7 +41,7 @@ public class UsuarioController {
                     usuario.getEmail().contains(".com")
                ){
 
-                   Usuario usuarioCadastrado = this.usuarioRepository.save(usuario);
+                   Usuario usuarioCadastrado = this.usuarioJuridicoRepository.save(usuario);
                    return ResponseEntity.status(201).body(usuarioCadastrado);
 
                }else{
@@ -53,7 +57,8 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public ResponseEntity<Usuario> login(@RequestBody Usuario usuario){
-        Optional<Usuario> possivelUsuario = usuarioRepository.findByEmailEqualsAndSenhaEquals(usuario.getEmail(), usuario.getSenha());
+//        Optional<Usuario> possivelUsuario = usuarioJuridicoRepository.findByEmailEqualsAndSenhaEquals(usuario.getEmail(), usuario.getSenha());
+        Optional<Usuario> possivelUsuario = usuarioJuridicoRepository.findById(usuario.getId());
         if(possivelUsuario.isPresent()){
             Usuario usuarioVerificado = possivelUsuario.get();
             return ResponseEntity.status(200).body(usuarioVerificado);
@@ -63,8 +68,8 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Usuario> deletar(@PathVariable Integer id){
-        if(usuarioRepository.existsById(id)){
-            usuarioRepository.deleteById(id);
+        if(usuarioJuridicoRepository.existsById(id)){
+            usuarioJuridicoRepository.deleteById(id);
             return  ResponseEntity.status(200).build();
         }
         return ResponseEntity.status(404).build();
@@ -82,9 +87,9 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> atualizar(@PathVariable Integer id, @RequestBody Usuario usuario){
-        if(usuarioRepository.existsById(id)){
+        if(usuarioJuridicoRepository.existsById(id)){
 
-            Usuario usuarioAtualizado = usuarioRepository.getReferenceById(id);
+            Usuario usuarioAtualizado = usuarioJuridicoRepository.getReferenceById(id);
             usuarioAtualizado.setId(id);
 
             if(usuario.getEmail() != null && usuario.getEmail() != ""){
@@ -103,7 +108,7 @@ public class UsuarioController {
                 usuarioAtualizado.setSenha(usuario.getSenha());
             }
 
-            usuarioRepository.save(usuarioAtualizado);
+            usuarioJuridicoRepository.save(usuarioAtualizado);
 
             return ResponseEntity.status(200).body(usuarioAtualizado);
         }
@@ -113,7 +118,7 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listar(){
-        List<Usuario> usuarios = usuarioRepository.findAll();
+        List<Usuario> usuarios = usuarioJuridicoRepository.findAll();
 
         if(usuarios.isEmpty()){
             return ResponseEntity.status(204).build();
