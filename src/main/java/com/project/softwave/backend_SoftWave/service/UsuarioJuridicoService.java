@@ -3,6 +3,7 @@ package com.project.softwave.backend_SoftWave.service;
 import com.project.softwave.backend_SoftWave.dto.SetorDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,23 +21,23 @@ public class UsuarioJuridicoService {
     @Autowired
     private UserValidator validacoesUsuarios;
 
-    public UsuarioJuridicoDTO cadastrar(UsuarioJuridicoDTO usuarioJuridicoDTO){
-        if(
+    public UsuarioJuridicoDTO cadastrar(UsuarioJuridicoDTO usuarioJuridicoDTO) {
+        if (
                 validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
-                validacoesUsuarios.validarCamposVaziosJuridico(
-                        usuarioJuridicoDTO.getNomeFantasia(),
-                        usuarioJuridicoDTO.getRazaoSocial(),
-                        usuarioJuridicoDTO.getCnpj()
-                ) &&
-                validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())
-        ){
-            if(
+                        validacoesUsuarios.validarCamposVaziosJuridico(
+                                usuarioJuridicoDTO.getNomeFantasia(),
+                                usuarioJuridicoDTO.getRazaoSocial(),
+                                usuarioJuridicoDTO.getCnpj()
+                        ) &&
+                        validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())
+        ) {
+            if (
                     usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
-                        usuarioJuridicoDTO.getEmail(),
-                        usuarioJuridicoDTO.getCnpj()
+                            usuarioJuridicoDTO.getEmail(),
+                            usuarioJuridicoDTO.getCnpj()
                     ).isPresent()
-            ){
-                return null;
+            ) {
+                throw new BasicException("Email ou CNPJ já cadastrado.");
             }
 
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(
@@ -46,22 +47,22 @@ public class UsuarioJuridicoService {
             return new UsuarioJuridicoDTO(usuarioJuridicoCadastrado);
 
         }
-        return null;
+        throw new BasicException("Dados inválidos para cadastro.");
     }
 
     public List<UsuarioJuridicoDTO> listar(){
 
         if (usuariosJuridicosRepository.findAll().isEmpty()){
-            return null;
+            throw new BasicException("Nenhum usuário jurídico encontrado.");
         }
 
         List<UsuarioJuridicoDTO> todosUsuariosJuridicos =
                 usuariosJuridicosRepository.findAll()
-                .stream()
-                .map(usuarioJuridico -> new UsuarioJuridicoDTO(usuarioJuridico))
-                .collect(Collectors.toList());
+                        .stream()
+                        .map(usuarioJuridico -> new UsuarioJuridicoDTO(usuarioJuridico))
+                        .collect(Collectors.toList());
 
-                return todosUsuariosJuridicos;
+        return todosUsuariosJuridicos;
     }
 
     public UsuarioJuridicoDTO atualizar(Integer id, UsuarioJuridicoDTO usuarioJuridicoDTO){
@@ -69,20 +70,20 @@ public class UsuarioJuridicoService {
         if (usuariosJuridicosRepository.findById(id).isPresent()){
             if(
                     usuariosJuridicosRepository.existsByEmailEqualsOrCnpjEqualsAndIdNot(
-                        usuarioJuridicoDTO.getEmail(),
-                        usuarioJuridicoDTO.getCnpj(),
-                        id
+                            usuarioJuridicoDTO.getEmail(),
+                            usuarioJuridicoDTO.getCnpj(),
+                            id
                     )
             ){
-                return null;
+                throw new BasicException("Email ou CNPJ já cadastrado.");
             }else if(
                     validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
-                    validacoesUsuarios.validarCamposVaziosJuridico(
-                            usuarioJuridicoDTO.getNomeFantasia(),
-                            usuarioJuridicoDTO.getRazaoSocial(),
-                            usuarioJuridicoDTO.getCnpj()
-                    ) &&
-                    validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())){
+                            validacoesUsuarios.validarCamposVaziosJuridico(
+                                    usuarioJuridicoDTO.getNomeFantasia(),
+                                    usuarioJuridicoDTO.getRazaoSocial(),
+                                    usuarioJuridicoDTO.getCnpj()
+                            ) &&
+                            validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())){
 
                 UsuarioJuridico usuarioJuridicoAtualizado = new UsuarioJuridico(usuarioJuridicoDTO);
                 usuarioJuridicoAtualizado.setId(id);
@@ -90,7 +91,7 @@ public class UsuarioJuridicoService {
                 return new UsuarioJuridicoDTO(usuarioJuridicoAtualizado);
             }
         }
-        return null;
+        throw new BasicException("Usuário jurídico não encontrado.");
     }
 
     public Boolean deletar(Integer id){
@@ -98,18 +99,18 @@ public class UsuarioJuridicoService {
             usuariosJuridicosRepository.deleteById(id);
             return true;
         }
-        return false;
+        throw new BasicException("Usuário jurídico não encontrado.");
     }
 
     public UsuarioJuridicoDTO login(UsuarioJuridicoDTO usuarioJuridicoDTO){
         Optional<UsuarioJuridico> possivelUsuario =
                 usuariosJuridicosRepository.findByEmailEqualsAndSenhaEquals(
-                    usuarioJuridicoDTO.getEmail(),
-                    usuarioJuridicoDTO.getSenha()
+                        usuarioJuridicoDTO.getEmail(),
+                        usuarioJuridicoDTO.getSenha()
                 );
 
         if (possivelUsuario.isEmpty()){
-            return null;
+            throw new BasicException("Email ou senha incorretos.");
         }
 
         UsuarioJuridico usuarioJuridicoAutendicado = possivelUsuario.get();
