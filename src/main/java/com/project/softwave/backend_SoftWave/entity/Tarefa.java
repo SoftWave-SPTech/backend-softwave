@@ -1,16 +1,14 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+
 
 import java.time.LocalDateTime;
-import java.util.Date;
+
 
 @Entity
+@Table(name = "tarefa")
 public class Tarefa {
 
     @Id
@@ -25,6 +23,7 @@ public class Tarefa {
 
     @NotBlank
     private LocalDateTime prazo;
+
 
     private String prioridade;
 
@@ -43,9 +42,7 @@ public class Tarefa {
 
 
 
-    public Integer getId() {
-        return id;
-    }
+    public Integer getId() {return id;}
 
     public void setId(Integer id) {
         this.id = id;
@@ -83,5 +80,12 @@ public class Tarefa {
         isFinalizada = finalizada;
     }
 
+    public String getPrioridade() {
+        return prioridade;
+    }
+
+    public void setPrioridade(String prioridade) {
+        this.prioridade = prioridade;
+    }
 
 }
