@@ -1,9 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
-import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
