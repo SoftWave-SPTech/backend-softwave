@@ -1,7 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.entity.Reuniao;
-import com.project.softwave.backend_SoftWave.enums.StatusReuniao;
+import com.project.softwave.backend_SoftWave.entity.StatusReuniao;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.ReuniaoRepository;

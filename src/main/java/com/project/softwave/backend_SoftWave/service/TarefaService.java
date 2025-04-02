@@ -1,8 +1,10 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.dto.TarefaDTO;
 import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.PrazoInvalidoException;
 import com.project.softwave.backend_SoftWave.repository.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,18 +18,18 @@ public class TarefaService {
 
 
     @Autowired
-    private TarefaRepository tarefaRepository;
+    private TarefaRepository repository;
 
 
     public List<Tarefa> listarTarefa() {
-        return tarefaRepository.findAll();
+        return repository.findAll();
 
     }
 
     public Tarefa buscarPorId(Integer id) {
 
 
-        return tarefaRepository.findById(id).orElseThrow(
+        return repository.findById(id).orElseThrow(
                 () -> new EntidadeNaoEncontradaException("Tarefa %d não encontrado".formatted(id))
         );
 
@@ -35,34 +37,36 @@ public class TarefaService {
 
     public Tarefa cadastrarTarefa(Tarefa tarefa) {
         if (tarefa.getPrazo().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("O prazo da tarefa não pode ser anterior à data atual.");
+            throw new PrazoInvalidoException("O prazo da tarefa não pode ser anterior à data atual.");
         }
 
-        List<Tarefa> tarefasExistentes = tarefaRepository.findByTituloContainingIgnoreCase(tarefa.getTitulo());
+
+
+        List<Tarefa> tarefasExistentes = repository.findByTituloContainingIgnoreCase(tarefa.getTitulo());
 
         if (!tarefasExistentes.isEmpty()) {
             throw new EntidadeConflitoException("Já existe uma tarefa com esse título.");
         }
 
-        return tarefaRepository.save(tarefa);
+        return repository.save(tarefa);
     }
 
     public Tarefa atualizarTarefa(Tarefa tarefaParaAtualizar, Integer id) {
-        boolean existeTarefa = tarefaRepository.existsById(id);
+        boolean existeTarefa = repository.existsById(id);
         if (!existeTarefa) {
             throw new EntidadeNaoEncontradaException("Tarefa %d não encontrada".formatted(id));
         }
         tarefaParaAtualizar.setId(id);
-        return tarefaRepository.save(tarefaParaAtualizar);
+        return repository.save(tarefaParaAtualizar);
     }
 
-    public void removerPorId(Integer id) {
-
-        if (!tarefaRepository.existsById(id)) {
+    public void deletarTarefa(Integer id) {
+        boolean existeTarefa = repository.existsById(id);
+        if (!existeTarefa) {
             throw new EntidadeNaoEncontradaException("Tarefa %d não encontrada".formatted(id));
         }
 
-        tarefaRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
 

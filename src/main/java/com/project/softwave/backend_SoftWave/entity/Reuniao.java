@@ -1,14 +1,11 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import com.project.softwave.backend_SoftWave.enums.StatusReuniao;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "reuniao")
@@ -23,13 +20,13 @@ public class Reuniao {
 
     private Integer idCliente;
 
-    @NotBlank
+
     private LocalDateTime dataHoraInicio;
 
-    @NotBlank
+
     private LocalDateTime dataHoraFim;
 
-    @NotBlank
+
     private Double duracao;
 
 
@@ -41,11 +38,8 @@ public class Reuniao {
 
     private StatusReuniao statusReuniao;
 
-
-    @NotNull
     private Boolean confirmacaoCliente;
 
-    @NotNull
     private Boolean confirmacaoAdvogado;
 
 
