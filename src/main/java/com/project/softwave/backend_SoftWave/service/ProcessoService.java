@@ -3,6 +3,8 @@ package com.project.softwave.backend_SoftWave.service;
 import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.Processo;
 import com.project.softwave.backend_SoftWave.entity.Setor;
+import com.project.softwave.backend_SoftWave.exception.ProcessoNotFoundException;
+import com.project.softwave.backend_SoftWave.exception.SetorNotFoundException;
 import com.project.softwave.backend_SoftWave.repository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.SetorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ public class ProcessoService {
         Optional<Setor> setorOptional = setorRepository.findById(dto.getSetorId());
 
         if (setorOptional.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Setor com ID " + dto.getSetorId() + " não encontrado.");
+            throw new SetorNotFoundException("Setor com ID " + dto.getSetorId() + " não encontrado.");
         }
 
         Setor setor = setorOptional.get();
@@ -49,8 +51,7 @@ public class ProcessoService {
     public ProcessoDTO buscarProcessoPorId(Long id) {
         return processoRepository.findById(id)
                 .map(processo -> new ProcessoDTO(processo.getId(), processo.getNumero(), processo.getNome(), processo.getDescricao(), processo.getSetor().getId()))
-                .orElse(null);
-    }
+                .orElseThrow(() -> new ProcessoNotFoundException("Processo com ID " + id + " não encontrado."));    }
 
     public ProcessoDTO buscarProcessoPorNumero(String numero) {
         Optional<Processo> processoOptional = processoRepository.findByNumero(numero);
