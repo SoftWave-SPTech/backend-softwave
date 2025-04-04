@@ -30,13 +30,13 @@ public class Reuniao {
     private Double duracao;
 
 
-
+private StatusReuniao statusReuniao;
 
 
     private String plataforma;
 
 
-    private StatusReuniao statusReuniao;
+
 
     private Boolean confirmacaoCliente;
 
@@ -65,26 +65,6 @@ public class Reuniao {
         return dataHoraFim;
     }
 
-    public void setDataHoraFim(LocalDateTime dataHoraFim) {
-        this.dataHoraFim = dataHoraFim;
-    }
-
-    public Double getDuracao() {
-        return duracao;
-    }
-
-    public void setDuracao(Double duracao) {
-        this.duracao = duracao;
-    }
-
-
-    public String getPlataforma() {
-        return plataforma;
-    }
-
-    public void setPlataforma(String plataforma) {
-        this.plataforma = plataforma;
-    }
 
     public StatusReuniao getStatusReuniao() {
         return statusReuniao;

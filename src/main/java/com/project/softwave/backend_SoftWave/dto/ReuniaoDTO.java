@@ -1,8 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto;
 
-import com.project.softwave.backend_SoftWave.entity.Reuniao;
 import com.project.softwave.backend_SoftWave.entity.StatusReuniao;
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

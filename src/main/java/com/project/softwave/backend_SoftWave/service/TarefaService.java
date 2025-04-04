@@ -21,7 +21,7 @@ public class TarefaService {
     private TarefaRepository repository;
 
 
-    public List<Tarefa> listarTarefa() {
+    public List<Tarefa> listarTarefas() {
         return repository.findAll();
 
     }

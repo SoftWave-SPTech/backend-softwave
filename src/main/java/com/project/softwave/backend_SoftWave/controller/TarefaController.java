@@ -21,38 +21,51 @@ public class TarefaController {
 
 
     @PostMapping
-    public ResponseEntity<Tarefa> cadastrarTarefa(@Valid @RequestBody Tarefa tarefa) {
-
-            Tarefa tarefaCadastrada = service.cadastrarTarefa(tarefa);
-            return ResponseEntity.status(201).body(tarefaCadastrada);
+    public ResponseEntity<TarefaDTO> cadastrarTarefa(@Valid @RequestBody TarefaDTO request) {
+        Tarefa tarefa = TarefaDTO.toEntity(request);
+            Tarefa tarefaResponse = service.cadastrarTarefa(tarefa);
+        return ResponseEntity.status(201).body(TarefaDTO.toResponseDto(tarefaResponse));
 
     }
 
-    @GetMapping
-    public ResponseEntity<List<Tarefa>> listarTarefas() {
-        List<Tarefa> tarefas = service.listarTarefa();
 
-        return ResponseEntity.status(200).body(tarefas);
+
+        @GetMapping
+    public ResponseEntity<List<TarefaDTO>> listarTarefas() {
+        List<Tarefa> tarefas = service.listarTarefas();
+
+
+            if (tarefas.isEmpty()) {
+              return ResponseEntity.status(204).build();
+            }
+
+            List<TarefaDTO> tarefaDtos = tarefas.stream()
+                    .map(TarefaDTO::toResponseDto)
+                    .toList();
+
+            return ResponseEntity.status(200).body(tarefaDtos);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tarefa> buscarPorId(@PathVariable Integer id) {
-
-        return ResponseEntity.status(200).body(service.buscarPorId(id));
+    public ResponseEntity<TarefaDTO> buscarPorId(@Valid @PathVariable Integer id) {
+        Tarefa tarefaResponse = service.buscarPorId(id);
+        return ResponseEntity.status(200).body(TarefaDTO.toResponseDto(tarefaResponse));
 
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Tarefa> atualizarTarefa(@Valid @RequestBody Tarefa tarefaParaAtualizar, @PathVariable Integer id ) {
+    public ResponseEntity<TarefaDTO> atualizarTarefa(@Valid @RequestBody Tarefa tarefa, @Valid @PathVariable Integer id ) {
 
-            return ResponseEntity.status(200).body(service.atualizarTarefa(tarefaParaAtualizar, id));
+        Tarefa tarefaResponse = service.atualizarTarefa(tarefa, id);
+        return ResponseEntity.status(200).body(TarefaDTO.toResponseDto(tarefaResponse));
 
     }
-        @DeleteMapping("/{id}")
-        public ResponseEntity<Void> deletarTarefa (@Valid Integer id){
-            service.deletarTarefa(id);
-            return ResponseEntity.status(204).build();
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarTarefa (@Valid @PathVariable Integer id){
+        service.deletarTarefa(id);
+        return ResponseEntity.status(204).build();
 
         }
     }

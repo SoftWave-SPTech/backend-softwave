@@ -1,8 +1,10 @@
 package com.project.softwave.backend_SoftWave.dto;
 
 
+import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 
 import java.time.LocalDateTime;
@@ -20,35 +22,58 @@ public class TarefaDTO {
     @NotBlank
     private String descricao;
 
-    @NotBlank
+    @NotNull
     private LocalDateTime prazo;
 
 
     private String prioridade;
 
+
     private boolean isFinalizada;
+
+    public TarefaDTO() {
+
+    }
 
 
     public String getStatus() {
         if (this.isFinalizada) {
             return "FINALIZADA";
-       } else if (prazo.isBefore(LocalDateTime.now())) {
+        } else if (this.prazo == null) {
+            return "SEM_PRAZO";
+        } else if (prazo.isBefore(LocalDateTime.now())) {
             return "ATRASADA";
-       }
-       return "EM_DIA";
-
-   }
-
-    public TarefaDTO() {}
-
-    public TarefaDTO(Integer id, String titulo, String descricao, LocalDateTime prazo, String prioridade, boolean isFinalizada) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descricao = descricao;
-        this.prazo = prazo;
-        this.prioridade = prioridade;
-        this.isFinalizada = isFinalizada;
+        }
+        return "EM_DIA";
     }
+
+
+    public static Tarefa toEntity(TarefaDTO dto) {
+        if(dto == null) {
+            return null;
+        }
+        Tarefa tarefa = new Tarefa();
+        tarefa.setTitulo(dto.getTitulo());
+        tarefa.setDescricao((dto.getDescricao()));
+        tarefa.setPrazo(dto.getPrazo());
+        tarefa.setPrioridade(dto.getPrioridade());
+        tarefa.setFinalizada(dto.isFinalizada());
+
+        return tarefa;
+    }
+
+    public static TarefaDTO toResponseDto(Tarefa tarefa) {
+        TarefaDTO responseDto = new TarefaDTO();
+        responseDto.setId(tarefa.getId());
+        responseDto.setTitulo(tarefa.getTitulo());
+        responseDto.setDescricao(tarefa.getDescricao());
+        responseDto.setPrazo(tarefa.getPrazo());
+        responseDto.setPrioridade(tarefa.getPrioridade());
+        responseDto.setFinalizada(tarefa.isFinalizada());
+        return responseDto;
+    }
+
+
 
 
     public Integer getId() {
