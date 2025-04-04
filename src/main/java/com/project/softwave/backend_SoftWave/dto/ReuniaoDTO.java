@@ -1,8 +1,8 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import com.project.softwave.backend_SoftWave.entity.Reuniao;
 import com.project.softwave.backend_SoftWave.entity.StatusReuniao;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
@@ -19,18 +19,14 @@ public class ReuniaoDTO {
 
         private Integer idCliente;
 
-        @NotBlank
+        @NotNull
         private LocalDateTime dataHoraInicio;
 
-        @NotBlank
+        @NotNull
         private LocalDateTime dataHoraFim;
 
-        @NotBlank
+        @NotNull
         private Double duracao;
-
-
-
-
 
         private String plataforma;
 
@@ -48,6 +44,46 @@ public class ReuniaoDTO {
         private String notasAdvogado;
 
     public ReuniaoDTO() {}
+
+    public static Reuniao toEntity(ReuniaoDTO dto) {
+        if (dto == null) return null;
+
+        Reuniao reuniao = new Reuniao();
+
+        reuniao.setIdAdvogado(dto.getIdAdvogado());
+        reuniao.setIdCliente(dto.getIdCliente());
+        reuniao.setDataHoraInicio(dto.getDataHoraInicio());
+        reuniao.setDataHoraFim(dto.getDataHoraFim());
+        reuniao.setDuracao(dto.getDuracao());
+        reuniao.setPlataforma(dto.getPlataforma());
+        reuniao.setStatusReuniao(dto.getStatusReuniao());
+        reuniao.setConfirmacaoCliente(dto.getConfirmacaoCliente());
+        reuniao.setConfirmacaoAdvogado(dto.getConfirmacaoAdvogado());
+        reuniao.setNotasAdvogado(dto.getNotasAdvogado());
+
+        return reuniao;
+    }
+
+    public static ReuniaoDTO toResponseDto(Reuniao reuniao) {
+        if (reuniao == null) return null;
+
+        ReuniaoDTO responseDto = new ReuniaoDTO();
+        responseDto.setId(reuniao.getId());
+        responseDto.setIdAdvogado(reuniao.getIdAdvogado());
+        responseDto.setIdCliente(reuniao.getIdCliente());
+        responseDto.setDataHoraInicio(reuniao.getDataHoraInicio());
+        responseDto.setDataHoraFim(reuniao.getDataHoraFim());
+        responseDto.setDuracao(reuniao.getDuracao());
+        responseDto.setPlataforma(reuniao.getPlataforma());
+        responseDto.setStatusReuniao(reuniao.getStatusReuniao());
+        responseDto.setConfirmacaoCliente(reuniao.getConfirmacaoCliente());
+        responseDto.setConfirmacaoAdvogado(reuniao.getConfirmacaoAdvogado());
+        responseDto.setNotasAdvogado(reuniao.getNotasAdvogado());
+
+        return responseDto;
+    }
+
+    
     public ReuniaoDTO(Integer id, Integer idAdvogado, Integer idCliente, LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim, Double duracao, String plataforma, StatusReuniao statusReuniao, Boolean confirmacaoCliente, Boolean confirmacaoAdvogado, String notasAdvogado) {
         this.id = id;
         this.idAdvogado = idAdvogado;

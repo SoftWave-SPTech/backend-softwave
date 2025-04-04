@@ -34,11 +34,6 @@ public class TarefaController {
     public ResponseEntity<List<TarefaDTO>> listarTarefas() {
         List<Tarefa> tarefas = service.listarTarefas();
 
-
-            if (tarefas.isEmpty()) {
-              return ResponseEntity.status(204).build();
-            }
-
             List<TarefaDTO> tarefaDtos = tarefas.stream()
                     .map(TarefaDTO::toResponseDto)
                     .toList();

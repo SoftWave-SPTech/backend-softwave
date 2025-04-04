@@ -65,6 +65,25 @@ private StatusReuniao statusReuniao;
         return dataHoraFim;
     }
 
+    public void setDataHoraFim(LocalDateTime dataHoraFim) {
+        this.dataHoraFim = dataHoraFim;
+    }
+
+    public Double getDuracao() {
+        return duracao;
+    }
+
+    public void setDuracao(Double duracao) {
+        this.duracao = duracao;
+    }
+
+    public String getPlataforma() {
+        return plataforma;
+    }
+
+    public void setPlataforma(String plataforma) {
+        this.plataforma = plataforma;
+    }
 
     public StatusReuniao getStatusReuniao() {
         return statusReuniao;
@@ -117,4 +136,5 @@ private StatusReuniao statusReuniao;
     public void setIdCliente(Integer idCliente) {
         this.idCliente = idCliente;
     }
+
 }
