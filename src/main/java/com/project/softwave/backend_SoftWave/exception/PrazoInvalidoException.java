@@ -1,14 +1,11 @@
 package com.project.softwave.backend_SoftWave.exception;
 
 import org.springframework.http.HttpStatus;
-
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class EntidadeNaoEncontradaException extends RuntimeException {
-
-    public EntidadeNaoEncontradaException(String message) {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class PrazoInvalidoException extends RuntimeException {
+    public PrazoInvalidoException(String message) {
         super(message);
     }
-
 }

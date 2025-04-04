@@ -1,4 +1,4 @@
-package com.project.softwave.backend_SoftWave.enums;
+package com.project.softwave.backend_SoftWave.entity;
 
 public enum StatusReuniao {
     AGENDADA,

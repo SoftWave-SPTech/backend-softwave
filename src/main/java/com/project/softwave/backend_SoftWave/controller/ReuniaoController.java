@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 
+import com.project.softwave.backend_SoftWave.dto.ReuniaoDTO;
 import com.project.softwave.backend_SoftWave.entity.Reuniao;
 import com.project.softwave.backend_SoftWave.service.ReuniaoService;
 import jakarta.validation.Valid;
@@ -20,39 +21,43 @@ public class ReuniaoController {
 
 
     @PostMapping
-    public ResponseEntity<Reuniao> cadastrarReuniao(@Valid @RequestBody Reuniao reuniao) {
-
-        Reuniao reuniaoCadastrada = reuniaoService.cadastrarReuniao(reuniao);
-        return ResponseEntity.status(201).body(reuniaoCadastrada);
+    public ResponseEntity<ReuniaoDTO> cadastrarReuniao(@Valid @RequestBody ReuniaoDTO request) {
+        Reuniao reuniao = ReuniaoDTO.toEntity(request);
+        Reuniao reuniaoResponse = reuniaoService.cadastrarReuniao(reuniao);
+        return ResponseEntity.status(201).body(ReuniaoDTO.toResponseDto(reuniaoResponse));
 
     }
+
 
     @GetMapping
-    public ResponseEntity<List<Reuniao>> listarReuniao() {
+    public ResponseEntity<List<ReuniaoDTO>> listarReuniao() {
         List<Reuniao> reunioes = reuniaoService.listarReuniao();
 
+        List<ReuniaoDTO> reuniaoDtos = reunioes.stream()
+                .map(ReuniaoDTO::toResponseDto)
+                .toList();
 
-        return ResponseEntity.status(200).body(reunioes);
+        return ResponseEntity.status(200).body(reuniaoDtos);
+
     }
+
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Reuniao> buscarPorId(@PathVariable Integer id) {
-
-        return ResponseEntity.status(200).body(reuniaoService.buscarPorId(id));
-
+    public ResponseEntity<ReuniaoDTO> buscarPorId(@PathVariable Integer id) {
+        Reuniao reuniaoResponse = reuniaoService.buscarPorId(id);
+        return ResponseEntity.status(200).body(ReuniaoDTO.toResponseDto(reuniaoResponse));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reuniao> atualizarReuniao(@Valid @RequestBody Reuniao reuniaoParaAtualizar, @PathVariable Integer id ) {
+    public ResponseEntity<ReuniaoDTO> atualizarReuniao(@Valid @RequestBody Reuniao reuniao, @PathVariable Integer id ) {
 
-
-        return ResponseEntity.status(200).body(reuniaoService.atualizarReuniao(reuniaoParaAtualizar, id));
-
+        Reuniao reuniaoResponse = reuniaoService.atualizarReuniao(reuniao, id);
+        return ResponseEntity.status(200).body(ReuniaoDTO.toResponseDto(reuniaoResponse));
 
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarReuniao (@Valid Integer id){
+    public ResponseEntity<Void> deletarReuniao (@Valid @PathVariable Integer id){
         reuniaoService.removerPorId(id);
         return ResponseEntity.status(204).build();
 
