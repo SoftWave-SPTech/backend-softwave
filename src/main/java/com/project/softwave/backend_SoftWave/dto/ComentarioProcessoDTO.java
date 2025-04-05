@@ -1,12 +1,24 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 public class ComentarioProcessoDTO {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long processoId;
+
+    @NotBlank
     private String comentario;
+
+    @NotNull
     private LocalDateTime dataCriacao;
 
     public ComentarioProcessoDTO() {

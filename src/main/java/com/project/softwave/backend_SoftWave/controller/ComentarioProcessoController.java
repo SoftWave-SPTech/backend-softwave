@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.service.ComentarioProcessoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class ComentarioProcessoController {
     private ComentarioProcessoService comentarioProcessoService;
 
     @PostMapping
-    public ResponseEntity<ComentarioProcessoDTO> criarComentario(@RequestBody ComentarioProcessoDTO dto) {
+    public ResponseEntity<ComentarioProcessoDTO> criarComentario(@Valid @RequestBody ComentarioProcessoDTO dto) {
         ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentario(dto);
         return ResponseEntity.status(201).body(novoComentario);
     }
@@ -28,7 +29,7 @@ public class ComentarioProcessoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ComentarioProcessoDTO> buscarComentarioPorId(@PathVariable Long id) {
+    public ResponseEntity<ComentarioProcessoDTO> buscarComentarioPorId(@Valid @PathVariable Long id) {
         try {
             ComentarioProcessoDTO comentario = comentarioProcessoService.buscarComentarioPorId(id);
             return ResponseEntity.ok(comentario);
@@ -38,7 +39,7 @@ public class ComentarioProcessoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ComentarioProcessoDTO> atualizarComentario(@PathVariable Long id, @RequestBody ComentarioProcessoDTO dto) {
+    public ResponseEntity<ComentarioProcessoDTO> atualizarComentario(@Valid @PathVariable Long id, @RequestBody ComentarioProcessoDTO dto) {
         try {
             ComentarioProcessoDTO comentarioAtualizado = comentarioProcessoService.atualizarComentario(id, dto);
             return ResponseEntity.ok(comentarioAtualizado);
@@ -48,7 +49,7 @@ public class ComentarioProcessoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarComentario(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarComentario(@Valid @PathVariable Long id) {
         try {
             comentarioProcessoService.deletarComentario(id);
             return ResponseEntity.status(204).build();

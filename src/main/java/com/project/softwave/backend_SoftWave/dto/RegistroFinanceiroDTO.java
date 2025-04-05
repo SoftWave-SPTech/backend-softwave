@@ -1,13 +1,27 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class RegistroFinanceiroDTO {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank
     private String descricao;
+
+    @NotNull
     private BigDecimal valor;
+
+    @NotNull
     private LocalDate data;
 
     // Construtor padrão

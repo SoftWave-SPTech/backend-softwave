@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.SetorDTO;
 import com.project.softwave.backend_SoftWave.service.SetorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class SetorController {
     private SetorService setorService;
 
     @PostMapping
-    public ResponseEntity<SetorDTO> criarSetor(@RequestBody SetorDTO setorDTO) {
+    public ResponseEntity<SetorDTO> criarSetor(@Valid @RequestBody SetorDTO setorDTO) {
         SetorDTO setorNovo = setorService.criarSetor(setorDTO);
         return ResponseEntity.status(201).body(setorNovo);
     }
@@ -29,17 +30,17 @@ public class SetorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SetorDTO> buscarSetorPorId(@PathVariable Long id) {
+    public ResponseEntity<SetorDTO> buscarSetorPorId(@Valid @PathVariable Long id) {
         return ResponseEntity.ok(setorService.buscarSetorPorId(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SetorDTO> atualizarSetor(@PathVariable Long id, @RequestBody SetorDTO setorDTO) {
+    public ResponseEntity<SetorDTO> atualizarSetor(@Valid @PathVariable Long id, @Valid @RequestBody SetorDTO setorDTO) {
         return ResponseEntity.ok(setorService.atualizarSetor(id, setorDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletarSetor(@PathVariable Long id) {
+    public ResponseEntity<Void> deletarSetor(@Valid @PathVariable Long id) {
         setorService.deletarSetor(id);
         return ResponseEntity.noContent().build();
     }

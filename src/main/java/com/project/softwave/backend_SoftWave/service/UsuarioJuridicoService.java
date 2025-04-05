@@ -4,6 +4,9 @@ import com.project.softwave.backend_SoftWave.dto.SetorDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,7 @@ public class UsuarioJuridicoService {
                             usuarioJuridicoDTO.getCnpj()
                     ).isPresent()
             ) {
-                throw new BasicException("Email ou CNPJ já cadastrado.");
+                throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
 
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(
@@ -75,7 +78,7 @@ public class UsuarioJuridicoService {
                             id
                     )
             ){
-                throw new BasicException("Email ou CNPJ já cadastrado.");
+                throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }else if(
                     validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
                             validacoesUsuarios.validarCamposVaziosJuridico(
@@ -91,7 +94,7 @@ public class UsuarioJuridicoService {
                 return new UsuarioJuridicoDTO(usuarioJuridicoAtualizado);
             }
         }
-        throw new BasicException("Usuário jurídico não encontrado.");
+        throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
     }
 
     public Boolean deletar(Integer id){
@@ -99,7 +102,7 @@ public class UsuarioJuridicoService {
             usuariosJuridicosRepository.deleteById(id);
             return true;
         }
-        throw new BasicException("Usuário jurídico não encontrado.");
+        throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
     }
 
     public UsuarioJuridicoDTO login(UsuarioJuridicoDTO usuarioJuridicoDTO){
@@ -110,7 +113,7 @@ public class UsuarioJuridicoService {
                 );
 
         if (possivelUsuario.isEmpty()){
-            throw new BasicException("Email ou senha incorretos.");
+            throw new LoginIncorretoException("Email ou senha incorretos.");
         }
 
         UsuarioJuridico usuarioJuridicoAutendicado = possivelUsuario.get();

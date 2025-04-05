@@ -1,13 +1,33 @@
 package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+import org.hibernate.validator.constraints.br.CNPJ;
 
 public class UsuarioJuridicoDTO {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @NotBlank
     private String nomeFantasia;
+
+    @Email
     private String email;
+
+    @NotBlank
     private String senha;
+
+    @NotBlank
     private String razaoSocial;
+
+    @CNPJ
     private String cnpj;
 
     public UsuarioJuridicoDTO() {

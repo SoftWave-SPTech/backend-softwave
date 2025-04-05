@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ public class UsuarioJuridicoController {
 
 
     @PostMapping
-    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
+    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
 
         UsuarioJuridicoDTO usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridicoDTO);
 
@@ -29,7 +30,7 @@ public class UsuarioJuridicoController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioJuridicoDTO> login(@RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
+    public ResponseEntity<UsuarioJuridicoDTO> login(@Valid @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
         UsuarioJuridicoDTO usuarioAutenticado = usuarioJuridicoService.login(usuarioJuridicoDTO);
         if(usuarioAutenticado != null){
             return ResponseEntity.status(200).body(usuarioAutenticado);
@@ -38,7 +39,7 @@ public class UsuarioJuridicoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletar(@PathVariable Integer id){
+    public ResponseEntity deletar(@Valid @PathVariable Integer id){
 
         if(usuarioJuridicoService.deletar(id)){
             return  ResponseEntity.status(200).build();
@@ -57,8 +58,8 @@ public class UsuarioJuridicoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioJuridicoDTO> atualizar(
-            @PathVariable Integer id,
-            @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO
+           @Valid @PathVariable Integer id,
+           @Valid @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO
     ){
         UsuarioJuridicoDTO usuarioAtualizado = usuarioJuridicoService.atualizar(id,usuarioJuridicoDTO);
 

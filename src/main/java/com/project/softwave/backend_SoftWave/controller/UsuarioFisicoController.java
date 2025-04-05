@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,7 +18,7 @@ public class UsuarioFisicoController {
     private UsuarioFisicoService usuarioFisicoService;
 
     @PostMapping
-    public ResponseEntity<UsuarioFisicoDTO> cadastrar(@RequestBody UsuarioFisicoDTO usuarioFisicoDTO){
+    public ResponseEntity<UsuarioFisicoDTO> cadastrar(@Valid @RequestBody UsuarioFisicoDTO usuarioFisicoDTO){
 
         UsuarioFisicoDTO usuarioNovo = usuarioFisicoService.cadastrar(usuarioFisicoDTO);
 
@@ -28,7 +29,7 @@ public class UsuarioFisicoController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioFisicoDTO> login(@RequestBody UsuarioFisicoDTO usuarioFisicoDTO){
+    public ResponseEntity<UsuarioFisicoDTO> login(@Valid @RequestBody UsuarioFisicoDTO usuarioFisicoDTO){
         UsuarioFisicoDTO usuarioAutenticado = usuarioFisicoService.login(usuarioFisicoDTO);
         if(usuarioAutenticado != null){
             return ResponseEntity.status(200).body(usuarioAutenticado);
@@ -37,7 +38,7 @@ public class UsuarioFisicoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deletar(@PathVariable Integer id){
+    public ResponseEntity deletar(@Valid @PathVariable Integer id){
 
         if(usuarioFisicoService.deletar(id)){
             return  ResponseEntity.status(200).build();
@@ -57,7 +58,7 @@ public class UsuarioFisicoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioFisicoDTO> atualizar(
-            @PathVariable Integer id,
+          @Valid  @PathVariable Integer id,
             @RequestBody UsuarioFisicoDTO usuarioFisicoDTO
     ){
         UsuarioFisicoDTO usuarioAtualizado = usuarioFisicoService.atualizar(id,usuarioFisicoDTO);
