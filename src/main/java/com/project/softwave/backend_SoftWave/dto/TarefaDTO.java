@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.dto;
 
 
 import com.project.softwave.backend_SoftWave.entity.Tarefa;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +27,13 @@ public class TarefaDTO {
     private LocalDateTime prazo;
 
 
+    @Schema(description = "Representa a prioridade da tarefa",
+            allowableValues = {
+                    "URGENTE", "IMPORTANTE"
+            }
+    )
     private String prioridade;
+
 
 
     private boolean isFinalizada;
@@ -36,15 +43,20 @@ public class TarefaDTO {
     }
 
 
+    @Schema(description = "Representa o status da tarefa",
+            allowableValues = {
+                    "EM DIA", "FINALIZADA","ATRASADA", "SEM PRAZO"
+            }
+    )
     public String getStatus() {
         if (this.isFinalizada) {
             return "FINALIZADA";
         } else if (this.prazo == null) {
-            return "SEM_PRAZO";
+            return "SEM PRAZO";
         } else if (prazo.isBefore(LocalDateTime.now())) {
             return "ATRASADA";
         }
-        return "EM_DIA";
+        return "EM DIA";
     }
 
 
