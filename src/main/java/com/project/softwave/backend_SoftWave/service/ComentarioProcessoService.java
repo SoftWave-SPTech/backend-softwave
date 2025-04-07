@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,13 +47,13 @@ public class ComentarioProcessoService {
                         comentario.getProcessoId(),
                         comentario.getComentario(),
                         comentario.getDataCriacao()))
-                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Comentário não encontrado"));
     }
 
     public ComentarioProcessoDTO atualizarComentario(Long id, ComentarioProcessoDTO dto) {
         Optional<ComentarioProcesso> comentarioOptional = comentarioProcessoRepository.findById(id);
         if (comentarioOptional.isEmpty()) {
-            throw new RuntimeException("Comentário não encontrado");
+            throw new EntidadeNaoEncontradaException("Comentário não encontrado");
         }
 
         ComentarioProcesso comentario = comentarioOptional.get();
@@ -66,7 +67,7 @@ public class ComentarioProcessoService {
 
     public void deletarComentario(Long id) {
         if (!comentarioProcessoRepository.existsById(id)) {
-            throw new RuntimeException("Comentário não encontrado");
+            throw new EntidadeNaoEncontradaException("Comentário não encontrado");
         }
 
         comentarioProcessoRepository.deleteById(id);

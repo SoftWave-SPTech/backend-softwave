@@ -1,13 +1,32 @@
 package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.br.CPF;
 
 public class UsuarioFisicoDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @NotBlank
     private String nome;
+
+    @Email
     private String email;
+
+    @NotBlank
     private String senha;
+
+    @CPF
     private String cpf;
+
+    @NotNull
     private String rg;
 
     public UsuarioFisicoDTO(Integer id, String nome, String email, String senha, String cpf, String rg) {

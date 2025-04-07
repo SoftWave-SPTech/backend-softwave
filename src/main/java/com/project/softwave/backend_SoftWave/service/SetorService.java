@@ -2,10 +2,9 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.SetorDTO;
 import com.project.softwave.backend_SoftWave.entity.Setor;
-import com.project.softwave.backend_SoftWave.exception.SetorAlreadyExistsException;
-import com.project.softwave.backend_SoftWave.exception.SetorNotFoundException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.SetorRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +21,7 @@ public class SetorService {
 
     public SetorDTO criarSetor(SetorDTO setorDTO) {
         if (setorRepository.existsByNome(setorDTO.getNome())) {
-            throw new SetorAlreadyExistsException("Setor com o nome " + setorDTO.getNome() + " já existe.");
+            throw new EntidadeConflitoException("Setor com o nome " + setorDTO.getNome() + " já existe.");
         }
 
         Setor setor = setorRepository.save(setorDTO.toEntity());
@@ -40,12 +39,12 @@ public class SetorService {
     public SetorDTO buscarSetorPorId(Long id) {
         return setorRepository.findById(id)
                 .map(setor -> new SetorDTO(setor.getId(), setor.getNome(), setor.getDescricao()))
-                .orElseThrow(() -> new SetorNotFoundException("Setor com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Setor com ID " + id + " não encontrado."));
     }
 
     public SetorDTO atualizarSetor(Long id, SetorDTO setorDTO) {
         Setor setor = setorRepository.findById(id)
-                .orElseThrow(() -> new SetorNotFoundException("Setor com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Setor com ID " + id + " não encontrado."));
 
         setor.setNome(setorDTO.getNome());
         setor.setDescricao(setorDTO.getDescricao());
@@ -56,7 +55,7 @@ public class SetorService {
 
     public void deletarSetor(Long id) {
         if (!setorRepository.existsById(id)) {
-            throw new SetorNotFoundException("Setor com ID " + id + " não encontrado.");
+            throw new EntidadeNaoEncontradaException("Setor com ID " + id + " não encontrado.");
         }
         setorRepository.deleteById(id);
     }
