@@ -4,6 +4,9 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.PeticoesDiversas
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface PeticoesDiversasRepository extends JpaRepository<PeticoesDiversas,Integer> {
+    Optional<Integer> findByDataAndTipo(String data, String tipo);
 }

@@ -207,4 +207,29 @@ public class Processo {
     public void setIndiciado(String indiciado) {
         this.indiciado = indiciado;
     }
+
+    @Override
+    public String toString() {
+        return "Processo{" +
+                "id=" + id +
+                ", numeroProcesso='" + numeroProcesso + '\'' +
+                ", classe='" + classe + '\'' +
+                ", assunto='" + assunto + '\'' +
+                ", foro='" + foro + '\'' +
+                ", vara='" + vara + '\'' +
+                ", juiz='" + juiz + '\'' +
+                ", apensado='" + apensado + '\'' +
+                ", distribuicao='" + distribuicao + '\'' +
+                ", controle='" + controle + '\'' +
+                ", area='" + area + '\'' +
+                ", valorAcao='" + valorAcao + '\'' +
+                ", normalizadoValorAcao=" + normalizadoValorAcao +
+                ", autor='" + autor + '\'' +
+                ", advogado='" + advogado + '\'' +
+                ", executado='" + executado + '\'' +
+                ", requerente='" + requerente + '\'' +
+                ", requerido='" + requerido + '\'' +
+                ", indiciado='" + indiciado + '\'' +
+                '}';
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface HistoricoClassesRepository extends JpaRepository<HistoricoClasses,Integer> {
@@ -12,4 +13,6 @@ public interface HistoricoClassesRepository extends JpaRepository<HistoricoClass
     // Aqui você pode adicionar métodos personalizados, se necessário
     // Exemplo: List<HistoricoClasses> findByTipo(String tipo);
     List<HistoricoClasses> findByTipo(String tipo);
+
+    Optional<Integer> findByDataAndClasse(String data, String classe);
 }

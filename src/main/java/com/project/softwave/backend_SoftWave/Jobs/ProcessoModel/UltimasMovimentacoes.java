@@ -14,6 +14,8 @@ public class UltimasMovimentacoes {
     private Integer id;
     // @Many to one (fk_processo)
     private String data;
+
+    @Column(columnDefinition = "MEDIUMTEXT")
     private String movimento;
 
     @ManyToOne
@@ -50,5 +52,15 @@ public class UltimasMovimentacoes {
 
     public void setMovimento(String movimento) {
         this.movimento = movimento;
+    }
+
+    @Override
+    public String toString() {
+        return "UltimasMovimentacoes{" +
+                "id=" + id +
+                ", data='" + data + '\'' +
+                ", movimento='" + movimento + '\'' +
+                ", processo=" + processo +
+                '}';
     }
 }

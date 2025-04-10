@@ -2,8 +2,6 @@ package com.project.softwave.backend_SoftWave.Jobs;
 
 public class ParametrosAPI {
 
-    private static String TOKEN = "hdVPC0gzW8u6f9cb6cvCC75d-G6Q1brCLjy_NWJG";
-    private static String TIMEOUT = "600";
     private static String PARAMETRO_PROCESSO = "";
     private static String PARAMETRO_PARTE = "";
     private static String PARAMETRO_CPF = "";
@@ -13,7 +11,7 @@ public class ParametrosAPI {
     private static String PARAMETRO_CARTA_PRECATORIA = "";
     private static String PARAMETRO_DOCUMENTO_DELEGACIA = "";
     private static String PARAMETRO_CDA = "";
-    private static String PARAMETRO_PAGINA = "";
+    private static String PARAMETRO_PAGINA = "1";
     private static String PARAMETRO_OAB = "";
 
     public static void resetParametros() {
@@ -26,16 +24,15 @@ public class ParametrosAPI {
         PARAMETRO_CARTA_PRECATORIA = "";
         PARAMETRO_DOCUMENTO_DELEGACIA = "";
         PARAMETRO_CDA = "";
-        PARAMETRO_PAGINA = "";
         PARAMETRO_OAB = "";
     }
 
     public static String getTOKEN() {
-        return TOKEN;
+        return "hdVPC0gzW8u6f9cb6cvCC75d-G6Q1brCLjy_NWJG";
     }
 
     public static String getTIMEOUT() {
-        return TIMEOUT;
+        return "600";
     }
 
     public static String getParametroProcesso() {

@@ -1,9 +1,7 @@
 package com.project.softwave.backend_SoftWave.Jobs;
-//
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.*;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.*;
-import io.swagger.v3.core.util.Json;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -15,14 +13,10 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-////mvnrepository.com/artifact/org.json/json
 
 @Service
 public class ProcessoGrau1API {
@@ -92,6 +86,7 @@ public class ProcessoGrau1API {
                 for (int i = 0; i < processosObject.length(); i++) {
                     JSONObject processo = processosObject.getJSONObject(i);
                     Processo novoProcesso = getProcesso(processo);
+//                    System.out.println(novoProcesso);
                     processoRepository.save(novoProcesso);
 
                     JSONArray ultimasMovimentacoes = processo.getJSONArray("ultimas_movimentacoes");
@@ -101,6 +96,7 @@ public class ProcessoGrau1API {
                         for (Object obj : ultimasMovimentacoes) {
                             UltimasMovimentacoes novaMovimentacao = getUltimasMovimentacoes((JSONObject) obj, novoProcesso);
                             ultimasMovimentacoesRepository.save(novaMovimentacao);
+//                            System.out.println(novaMovimentacao);
                         }
                     }
                    JSONArray peticoesDiversas = processo.getJSONArray("peticoes_diversas");
@@ -110,6 +106,7 @@ public class ProcessoGrau1API {
                        for (Object obj : peticoesDiversas) {
                            PeticoesDiversas novaPeticao = getPeticoesDiversas((JSONObject) obj, novoProcesso);
                            peticoesDiversasRepository.save(novaPeticao);
+//                           System.out.println(novaPeticao);
                        }
                    }
 
@@ -120,7 +117,9 @@ public class ProcessoGrau1API {
                        for (Object object : apensos) {
                            Apensos novoApenso = getApensos((JSONObject) object, novoProcesso);
                            apensosRepository.save(novoApenso);
+//                           System.out.println(novoApenso);
                        }
+
                    }
 
                    JSONArray audiencias = processo.getJSONArray("audiencias");
@@ -130,16 +129,18 @@ public class ProcessoGrau1API {
                        for (Object obj : audiencias) {
                            Audiencias audiencia = getAudiencias((JSONObject) obj, novoProcesso);
                            audienciasRepository.save(audiencia);
+//                           System.out.println(audiencia);
                        }
                    }
 
-                   JSONArray dadosDelegacia = processo.getJSONArray("dados_delegacia");
+                   JSONArray dadosDelegacia = processo.getJSONArray("dados_da_delegacia");
                    if (dadosDelegacia.isEmpty()){
                           System.out.println("Dados de delegacia não informados");
                    }else {
                        for(Object obj : dadosDelegacia){
                            DadosDelegacia dadosDelegacao = getDadosDelegacia((JSONObject) obj, novoProcesso);
                            dadosDelegaciaRepository.save(dadosDelegacao);
+//                           System.out.println(dadosDelegacao);
                        }
                    }
 
@@ -150,6 +151,7 @@ public class ProcessoGrau1API {
                        for (Object object : historicoClasses) {
                            HistoricoClasses historico = getHistoricoClasses((JSONObject) object, novoProcesso);
                            historicoClassesRepository.save(historico);
+//                           System.out.println(historico);
                        }
                    }
 
@@ -168,19 +170,18 @@ public class ProcessoGrau1API {
         }
     }
 
-    private static Audiencias getAudiencias(JSONObject obj, Processo novoProcesso) {
-        JSONObject audienciaObject = obj;
+    private Audiencias getAudiencias(JSONObject audienciaObject, Processo novoProcesso) {
         Audiencias audiencia = new Audiencias();
         audiencia.setData(audienciaObject.getString("data"));
         audiencia.setAudiencia(audienciaObject.getString("audiencia"));
         audiencia.setSituacao(audienciaObject.getString("situacao"));
         audiencia.setQuantidadePessoas(audienciaObject.getString("quantidade_pessoas"));
         audiencia.setProcesso(novoProcesso);
+        audienciasRepository.findByDataAndProcessoId(audiencia.getData(), audiencia.getProcesso().getId()).ifPresent(audiencia::setId);
         return audiencia;
     }
 
-    private static Apensos getApensos(JSONObject object, Processo novoProcesso) {
-        JSONObject apenso = object;
+    private Apensos getApensos(JSONObject apenso, Processo novoProcesso) {
         Apensos novoApenso = new Apensos();
         String numeroProcessoApenso = apenso.getString("numero");
         novoApenso.setNumeroProcesso(numeroProcessoApenso);
@@ -191,37 +192,38 @@ public class ProcessoGrau1API {
         String motivo = apenso.getString("motivo");
         novoApenso.setMotivo(motivo);
         novoApenso.setProcesso(novoProcesso);
+        apensosRepository.findByNumeroProcesso(numeroProcessoApenso).ifPresent(novoApenso::setId);
         return novoApenso;
     }
 
-    private static PeticoesDiversas getPeticoesDiversas(JSONObject obj, Processo novoProcesso) {
-        JSONObject peticoesDiversasObject = obj;
+    private PeticoesDiversas getPeticoesDiversas(JSONObject peticoesDiversasObject, Processo novoProcesso) {
         PeticoesDiversas novaPeticao = new PeticoesDiversas();
         String dataPeticao = peticoesDiversasObject.getString("data");
         novaPeticao.setData(dataPeticao);
         String tipoPeticao = peticoesDiversasObject.optString("tipo", "Não Informado");
         novaPeticao.setTipo(tipoPeticao);
         novaPeticao.setProcesso(novoProcesso);
+        peticoesDiversasRepository.findByDataAndTipo(dataPeticao, tipoPeticao).ifPresent(novaPeticao::setId);
         return novaPeticao;
     }
 
-    private static UltimasMovimentacoes getUltimasMovimentacoes(JSONObject obj, Processo novoProcesso) {
+    private UltimasMovimentacoes getUltimasMovimentacoes(JSONObject ultimasMovimentacoesObject, Processo novoProcesso) {
         UltimasMovimentacoes novaMovimentacao = new UltimasMovimentacoes();
-        JSONObject ultimasMovimentacoesObject = obj;
         String dataMovimentacao = ultimasMovimentacoesObject.getString("data");
         novaMovimentacao.setData(dataMovimentacao);
         String movimento = ultimasMovimentacoesObject.getString("movimento");
         novaMovimentacao.setMovimento(movimento);
         novaMovimentacao.setProcesso(novoProcesso);
+        ultimasMovimentacoesRepository.findByMovimentoAndData(movimento,dataMovimentacao).ifPresent(novaMovimentacao::setId);
         return novaMovimentacao;
     }
 
-    private static DadosDelegacia getDadosDelegacia(JSONObject obj, Processo novoProcesso) {
+    private DadosDelegacia getDadosDelegacia(JSONObject dadosDelegaciaObject, Processo novoProcesso) {
         DadosDelegacia novosDados = new DadosDelegacia();
-        JSONObject dadosDelegaciaObject = obj;
         String documento = dadosDelegaciaObject.getString("documento");
         novosDados.setDocumento(documento);
         String numero = dadosDelegaciaObject.optString("numero");
+        dadosDelegaciaRepository.findByNumero(numero).ifPresent(novosDados::setId);
         novosDados.setNumero(numero);
         String distrito = dadosDelegaciaObject.getString("distrito_policial");
         novosDados.setDistritoPolicial(distrito);
@@ -231,12 +233,12 @@ public class ProcessoGrau1API {
         return novosDados;
     }
 
-    private static HistoricoClasses getHistoricoClasses(JSONObject obj, Processo novoProcesso) {
+    private HistoricoClasses getHistoricoClasses(JSONObject historicoClassesObject, Processo novoProcesso) {
         HistoricoClasses novaHistorico = new HistoricoClasses();
-        JSONObject historicoClassesObject = obj;
         String data = historicoClassesObject.getString("data");
-        novaHistorico.setData(data);
         String classe = historicoClassesObject.getString("classe");
+        historicoClassesRepository.findByDataAndClasse(data, classe).ifPresent(novaHistorico::setId);
+        novaHistorico.setData(data);
         novaHistorico.setClasse(classe);
         String tipo = historicoClassesObject.getString("tipo");
         novaHistorico.setTipo(tipo);
@@ -248,21 +250,34 @@ public class ProcessoGrau1API {
         return novaHistorico;
     }
 
-    private static Processo getProcesso(JSONObject processo){
+    private Processo getProcesso(JSONObject processo){
         Processo novoProcesso = new Processo();
         String numeroProcesso = processo.getString("processo");
+        processoRepository.findProcessoByNumeroProcesso(numeroProcesso).ifPresent(novoProcesso::setId);
         novoProcesso.setNumeroProcesso(numeroProcesso);
-        String classe = processo.getString("classe");
+        String classe = processo.optString("classe","Não informado");
+        if (classe.isBlank()){
+            classe = "Não informado";
+        }
         novoProcesso.setClasse(classe);
-        String assunto = processo.getString("assunto");
+        String assunto = processo.optString("assunto", "Não informado");
+        if (assunto.isBlank()){
+            assunto = "Não informado";
+        }
         novoProcesso.setAssunto(assunto);
         String foro = processo.getString("foro");
         novoProcesso.setForo(foro);
         String vara = processo.getString("vara");
         novoProcesso.setVara(vara);
-        String juiz = processo.getString("juiz");
+        String juiz = processo.optString("juiz", "Não informado");
+        if (juiz.isBlank()){
+            juiz = "Não informado";
+        }
         novoProcesso.setJuiz(juiz);
         String apensado = processo.optString("apensado", "Não informado");
+        if(apensado.isBlank()){
+            apensado = "Não informado";
+        }
         novoProcesso.setApensado(apensado);
         String distribuicao = processo.getString("distribuicao");
         novoProcesso.setDistribuicao(distribuicao);
@@ -270,20 +285,32 @@ public class ProcessoGrau1API {
         novoProcesso.setControle(controle);
         String area = processo.getString("area");
         novoProcesso.setArea(area);
-        String valorAcao = processo.getString("valor_acao");
+        String valorAcao = processo.optString("valor_acao", "Não informado");
+        if (valorAcao.isBlank()){
+            valorAcao = "Não informado";
+        }
         novoProcesso.setValorAcao(valorAcao);
-        Double valorAcaoNormalizado = processo.getDouble("normalizado_valor_acao");
+        Double valorAcaoNormalizado = processo.optDouble("normalizado_valor_acao", 0.0);
         novoProcesso.setNormalizadoValorAcao(valorAcaoNormalizado);
         String autor = processo.optString("autor", "Não informado");
         novoProcesso.setAutor(autor);
-        String advogado = processo.optString("advogado", "Não informado");
-        novoProcesso.setAdvogado(advogado);
-        String executado = processo.optString("executado", "Não informado");
-        novoProcesso.setExecutado(executado);
         String requerido = processo.optString("reqdo", "Não informado");
         novoProcesso.setRequerido(requerido);
         String requerente = processo.optString("reqte", "Não informado");
         novoProcesso.setRequerente(requerente);
+        String advogado = processo.optString("advogado", "Não informado");
+        if (advogado.equals("Não informado")){
+            if (requerente.contains("Advogado:")) {
+                advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
+            }else if (requerido.contains("Advogado:")) {
+                advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
+            }else {
+                advogado = "Não informado";
+            }
+        }
+        novoProcesso.setAdvogado(advogado);
+        String executado = processo.optString("executado", "Não informado");
+        novoProcesso.setExecutado(executado);
         String indiciado = processo.optString("indiciado", "Não indiciado");
         novoProcesso.setIndiciado(indiciado);
         return novoProcesso;

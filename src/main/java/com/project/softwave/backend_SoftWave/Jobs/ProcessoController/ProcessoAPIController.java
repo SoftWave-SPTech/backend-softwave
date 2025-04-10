@@ -20,7 +20,8 @@ public class ProcessoAPIController {
     }
 
     // Aqui você pode adicionar métodos para manipular os dados do processo
-    @GetMapping("/numero/{numeroProcesso}")
+//    0000005-27.2025.8.26.0008
+    @GetMapping("/numero/{numeroProcesso:[0-9.-]+}")
     public ResponseEntity<HttpStatus> getProcessoByNumero(@PathVariable String numeroProcesso) {
         ParametrosAPI.resetParametros();
         ParametrosAPI.setParametroProcesso(numeroProcesso);
@@ -31,15 +32,16 @@ public class ProcessoAPIController {
             return ResponseEntity.status(500).body(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/oab/{oab}")
     public ResponseEntity<HttpStatus> getProcessoByOab(@PathVariable String oab) {
         ParametrosAPI.resetParametros();
-        ParametrosAPI.setParametroProcesso(oab);
+        ParametrosAPI.setParametroOab(oab);
         try {
             processoGrau1API.getApiParams();
             return ResponseEntity.status(200).body(HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(420).body(HttpStatus.METHOD_FAILURE);
         }
     }
 
