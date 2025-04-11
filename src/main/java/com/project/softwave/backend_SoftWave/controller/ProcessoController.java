@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
+import com.project.softwave.backend_SoftWave.service.GeminiService;
 import com.project.softwave.backend_SoftWave.service.ProcessoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,9 +17,12 @@ import java.util.List;
 public class ProcessoController {
 
     private final ProcessoService processoService;
+    private final GeminiService geminiService;
 
-    public ProcessoController(ProcessoService processoService) {
+
+    public ProcessoController(ProcessoService processoService, GeminiService geminiService) {
         this.processoService = processoService;
+        this.geminiService = geminiService;
     }
 
     @Operation(summary = "Cadastro de processos", method = "POST")
@@ -89,4 +93,6 @@ public class ProcessoController {
         boolean deletado = processoService.deletarProcesso(id);
         return deletado ? ResponseEntity.status(204).build() : ResponseEntity.status(404).build();
     }
+
+
 }
