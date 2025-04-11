@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
 
 @Entity

@@ -3,10 +3,11 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
-import com.project.softwave.backend_SoftWave.entity.Processo;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
-import com.project.softwave.backend_SoftWave.repository.ProcessoRepository;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class GeminiService {
 
         for (Processo processo : processos) {
             String prompt = "Explique de forma simples a seguinte movimentação processual:\n\n"
-                    + processo.getDescricao()
+                    + "\n\n"
                     + "\n\nUse uma linguagem clara para leigos e destaque os eventos mais importantes.";
 
             try {
@@ -46,7 +47,7 @@ public class GeminiService {
                 analiseRepository.save(analise);
 
             } catch (Exception e) {
-                System.err.println("Erro ao processar processo " + processo.getNumero() + ": " + e.getMessage());
+                System.err.println("Erro ao processar processo " + processo.getNumeroProcesso() + ": " + e.getMessage());
             }
         }
     }
