@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface DadosDelegaciaRepository extends JpaRepository<DadosDelegacia,Integer> {
 
-    Optional<Integer> findByNumero(String numero);
+    Optional<DadosDelegacia> findByNumero(String numero);
 }

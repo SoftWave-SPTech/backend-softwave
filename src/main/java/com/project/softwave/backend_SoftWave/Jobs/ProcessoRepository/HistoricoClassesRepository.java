@@ -12,7 +12,6 @@ public interface HistoricoClassesRepository extends JpaRepository<HistoricoClass
 
     // Aqui você pode adicionar métodos personalizados, se necessário
     // Exemplo: List<HistoricoClasses> findByTipo(String tipo);
-    List<HistoricoClasses> findByTipo(String tipo);
 
-    Optional<Integer> findByDataAndClasse(String data, String classe);
+    Optional<HistoricoClasses> findByDataAndClasse(String data, String classe);
 }

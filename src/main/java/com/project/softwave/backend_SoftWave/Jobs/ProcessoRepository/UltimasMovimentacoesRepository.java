@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface UltimasMovimentacoesRepository extends JpaRepository<UltimasMovimentacoes, Integer> {
-    Optional<Integer> findByMovimentoAndData(String movimento, String data);
+    Optional<UltimasMovimentacoes> findByMovimentoAndData(String movimento, String data);
 }

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface PeticoesDiversasRepository extends JpaRepository<PeticoesDiversas,Integer> {
-    Optional<Integer> findByDataAndTipo(String data, String tipo);
+    Optional<PeticoesDiversas> findByDataAndTipo(String data, String tipo);
 }

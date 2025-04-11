@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProcessoGrau1API {
@@ -80,80 +81,114 @@ public class ProcessoGrau1API {
                 JSONObject firstDataObject = dataArray.getJSONObject(0); // Pega o primeiro objeto dentro de "data"
                 JSONArray processosObject = firstDataObject.getJSONArray("processos"); // Obtém o valor de "processos"
                 System.out.println("Quantidade de Processos encontrados: " + processosObject.length());
-//                System.out.println(processosObject);
+                System.out.println(processosObject);
 
 
                 for (int i = 0; i < processosObject.length(); i++) {
-                    JSONObject processo = processosObject.getJSONObject(i);
-                    Processo novoProcesso = getProcesso(processo);
-//                    System.out.println(novoProcesso);
-                    processoRepository.save(novoProcesso);
-
-                    JSONArray ultimasMovimentacoes = processo.getJSONArray("ultimas_movimentacoes");
-                    if (ultimasMovimentacoes.isEmpty()){
-                        System.out.println("Ultimas movimentações não informadas");
-                    } else {
-                        for (Object obj : ultimasMovimentacoes) {
-                            UltimasMovimentacoes novaMovimentacao = getUltimasMovimentacoes((JSONObject) obj, novoProcesso);
-                            ultimasMovimentacoesRepository.save(novaMovimentacao);
-//                            System.out.println(novaMovimentacao);
+                    try {
+                        JSONObject processo = processosObject.getJSONObject(i);
+                        Processo novoProcesso = getProcesso(processo);
+                        System.out.println(novoProcesso);
+                        if (novoProcesso.getNumeroProcesso() == null || novoProcesso.getNumeroProcesso().isEmpty()) {
+                            System.err.println("Número do processo inválido: " + novoProcesso);
+                            continue; // Pule para o próximo processo
                         }
+                        processoRepository.save(novoProcesso);
+
+                        JSONArray ultimasMovimentacoes = processo.getJSONArray("ultimas_movimentacoes");
+                        if (ultimasMovimentacoes.isEmpty()) {
+                            System.out.println("Ultimas movimentações não informadas");
+                        } else {
+                            for (Object obj : ultimasMovimentacoes) {
+                                UltimasMovimentacoes novaMovimentacao = getUltimasMovimentacoes((JSONObject) obj, novoProcesso);
+                                ultimasMovimentacoesRepository.save(novaMovimentacao);
+                                System.out.println(novaMovimentacao);
+                            }
+                        }
+                        JSONArray peticoesDiversas = processo.getJSONArray("peticoes_diversas");
+                        if (peticoesDiversas.isEmpty()) {
+                            System.out.println("Peticoes diversas não informadas");
+                        } else {
+                            try {
+                                for (Object obj : peticoesDiversas) {
+                                    PeticoesDiversas novaPeticao = getPeticoesDiversas((JSONObject) obj, novoProcesso);
+                                    peticoesDiversasRepository.save(novaPeticao);
+                                    System.out.println(novaPeticao);
+                                }
+                            }catch (Exception e) {
+                                System.err.println("Erro ao processar petições diversas no processo de indice " + i + ": " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                        }
+
+                        JSONArray apensos = processo.getJSONArray("apensos");
+                        if (apensos.isEmpty()) {
+                            System.out.println("Apensos não informados");
+                        } else {
+                            try {
+                                for (Object object : apensos) {
+                                    Apensos novoApenso = getApensos((JSONObject) object, novoProcesso);
+                                    apensosRepository.save(novoApenso);
+                                    System.out.println(novoApenso);
+                                }
+                            }catch (Exception e) {
+                                System.err.println("Erro ao processar apensos no processo de indice " + i + ": " + e.getMessage());
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        JSONArray audiencias = processo.getJSONArray("audiencias");
+                        if (audiencias.isEmpty()) {
+                            System.out.println("Audiências não informadas");
+                        } else {
+                            try {
+                                for (Object obj : audiencias) {
+                                    Audiencias audiencia = getAudiencias((JSONObject) obj, novoProcesso);
+                                    audienciasRepository.save(audiencia);
+                                    System.out.println(audiencia);
+                                }
+                            }catch (Exception e) {
+                                System.err.println("Erro ao processar Audiencias no processo de indice " + i + ": " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                        }
+
+                        JSONArray dadosDelegacia = processo.getJSONArray("dados_da_delegacia");
+                        if (dadosDelegacia.isEmpty()) {
+                            System.out.println("Dados de delegacia não informados");
+                        } else {
+                            try{
+                                for (Object obj : dadosDelegacia) {
+                                    DadosDelegacia dadosDelegacao = getDadosDelegacia((JSONObject) obj, novoProcesso);
+                                    dadosDelegaciaRepository.save(dadosDelegacao);
+                                    System.out.println(dadosDelegacao);
+                                }
+                            }catch (Exception e) {
+                                System.err.println("Erro ao processar dados da delegacia no processo de indice " + i + ": " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                        }
+
+                        JSONArray historicoClasses = processo.getJSONArray("historico_classes");
+                        if (historicoClasses.isEmpty()) {
+                            System.out.println("Dados do historico não informados");
+                        } else {
+                            try{
+                                for (Object object : historicoClasses) {
+                                    HistoricoClasses historico = getHistoricoClasses((JSONObject) object, novoProcesso);
+                                    historicoClassesRepository.save(historico);
+                                    System.out.println(historico);
+                                }
+                            }catch (Exception e) {
+                                System.err.println("Erro ao processar historico de classes no processo de indice " + i + ": " + e.getMessage());
+                                e.printStackTrace();
+                            }
+                        }
+                    }catch (Exception e) {
+                        System.err.println("Erro ao processar o processo de índice " + i + ": " + e.getMessage());
+                        e.printStackTrace();
                     }
-                   JSONArray peticoesDiversas = processo.getJSONArray("peticoes_diversas");
-                   if (peticoesDiversas.isEmpty()) {
-                       System.out.println("Peticoes diversas não informadas");
-                   }else{
-                       for (Object obj : peticoesDiversas) {
-                           PeticoesDiversas novaPeticao = getPeticoesDiversas((JSONObject) obj, novoProcesso);
-                           peticoesDiversasRepository.save(novaPeticao);
-//                           System.out.println(novaPeticao);
-                       }
-                   }
-
-                   JSONArray apensos = processo.getJSONArray("apensos");
-                   if (apensos.isEmpty()) {
-                       System.out.println("Apensos não informados");
-                   }else {
-                       for (Object object : apensos) {
-                           Apensos novoApenso = getApensos((JSONObject) object, novoProcesso);
-                           apensosRepository.save(novoApenso);
-//                           System.out.println(novoApenso);
-                       }
-
-                   }
-
-                   JSONArray audiencias = processo.getJSONArray("audiencias");
-                   if (audiencias.isEmpty()) {
-                       System.out.println("Audiências não informadas");
-                   }else {
-                       for (Object obj : audiencias) {
-                           Audiencias audiencia = getAudiencias((JSONObject) obj, novoProcesso);
-                           audienciasRepository.save(audiencia);
-//                           System.out.println(audiencia);
-                       }
-                   }
-
-                   JSONArray dadosDelegacia = processo.getJSONArray("dados_da_delegacia");
-                   if (dadosDelegacia.isEmpty()){
-                          System.out.println("Dados de delegacia não informados");
-                   }else {
-                       for(Object obj : dadosDelegacia){
-                           DadosDelegacia dadosDelegacao = getDadosDelegacia((JSONObject) obj, novoProcesso);
-                           dadosDelegaciaRepository.save(dadosDelegacao);
-//                           System.out.println(dadosDelegacao);
-                       }
-                   }
-
-                   JSONArray historicoClasses = processo.getJSONArray("historico_classes");
-                   if (historicoClasses.isEmpty()){
-                       System.out.println("Dados do historico não informados");
-                   }else {
-                       for (Object object : historicoClasses) {
-                           HistoricoClasses historico = getHistoricoClasses((JSONObject) object, novoProcesso);
-                           historicoClassesRepository.save(historico);
-//                           System.out.println(historico);
-                       }
-                   }
 
                 }
 
@@ -177,7 +212,8 @@ public class ProcessoGrau1API {
         audiencia.setSituacao(audienciaObject.getString("situacao"));
         audiencia.setQuantidadePessoas(audienciaObject.getString("quantidade_pessoas"));
         audiencia.setProcesso(novoProcesso);
-        audienciasRepository.findByDataAndProcessoId(audiencia.getData(), audiencia.getProcesso().getId()).ifPresent(audiencia::setId);
+        Optional<Audiencias> audienciasExistentes = audienciasRepository.findByDataAndProcessoId(audiencia.getData(), audiencia.getProcesso().getId());
+        audienciasExistentes.ifPresent(e -> audiencia.setId(e.getId()));
         return audiencia;
     }
 
@@ -192,7 +228,8 @@ public class ProcessoGrau1API {
         String motivo = apenso.getString("motivo");
         novoApenso.setMotivo(motivo);
         novoApenso.setProcesso(novoProcesso);
-        apensosRepository.findByNumeroProcesso(numeroProcessoApenso).ifPresent(novoApenso::setId);
+        Optional<Apensos> apensosExistentes = apensosRepository.findByNumeroProcesso(numeroProcessoApenso);
+        apensosExistentes.ifPresent(e -> novoApenso.setId(e.getId()));
         return novoApenso;
     }
 
@@ -203,7 +240,8 @@ public class ProcessoGrau1API {
         String tipoPeticao = peticoesDiversasObject.optString("tipo", "Não Informado");
         novaPeticao.setTipo(tipoPeticao);
         novaPeticao.setProcesso(novoProcesso);
-        peticoesDiversasRepository.findByDataAndTipo(dataPeticao, tipoPeticao).ifPresent(novaPeticao::setId);
+        Optional<PeticoesDiversas> peticoesDiversasExistentes = peticoesDiversasRepository.findByDataAndTipo(dataPeticao, tipoPeticao);
+        peticoesDiversasExistentes.ifPresent(peticoesDiversas -> novaPeticao.setId(peticoesDiversas.getId()));
         return novaPeticao;
     }
 
@@ -214,7 +252,8 @@ public class ProcessoGrau1API {
         String movimento = ultimasMovimentacoesObject.getString("movimento");
         novaMovimentacao.setMovimento(movimento);
         novaMovimentacao.setProcesso(novoProcesso);
-        ultimasMovimentacoesRepository.findByMovimentoAndData(movimento,dataMovimentacao).ifPresent(novaMovimentacao::setId);
+        Optional<UltimasMovimentacoes> movimentacoesExistentes = ultimasMovimentacoesRepository.findByMovimentoAndData(movimento,dataMovimentacao);
+        movimentacoesExistentes.ifPresent(e -> novaMovimentacao.setId(e.getId()));
         return novaMovimentacao;
     }
 
@@ -223,7 +262,8 @@ public class ProcessoGrau1API {
         String documento = dadosDelegaciaObject.getString("documento");
         novosDados.setDocumento(documento);
         String numero = dadosDelegaciaObject.optString("numero");
-        dadosDelegaciaRepository.findByNumero(numero).ifPresent(novosDados::setId);
+        Optional<DadosDelegacia> dadosExistentes = dadosDelegaciaRepository.findByNumero(numero);
+        dadosExistentes.ifPresent(e -> novosDados.setId(e.getId()));
         novosDados.setNumero(numero);
         String distrito = dadosDelegaciaObject.getString("distrito_policial");
         novosDados.setDistritoPolicial(distrito);
@@ -237,7 +277,8 @@ public class ProcessoGrau1API {
         HistoricoClasses novaHistorico = new HistoricoClasses();
         String data = historicoClassesObject.getString("data");
         String classe = historicoClassesObject.getString("classe");
-        historicoClassesRepository.findByDataAndClasse(data, classe).ifPresent(novaHistorico::setId);
+        Optional<HistoricoClasses> historicoExistentes = historicoClassesRepository.findByDataAndClasse(data, classe);
+        historicoExistentes.ifPresent(e -> novaHistorico.setId(e.getId()));
         novaHistorico.setData(data);
         novaHistorico.setClasse(classe);
         String tipo = historicoClassesObject.getString("tipo");
@@ -253,7 +294,11 @@ public class ProcessoGrau1API {
     private Processo getProcesso(JSONObject processo){
         Processo novoProcesso = new Processo();
         String numeroProcesso = processo.getString("processo");
-        processoRepository.findProcessoByNumeroProcesso(numeroProcesso).ifPresent(novoProcesso::setId);
+        if(numeroProcesso.isBlank()){
+            numeroProcesso = ParametrosAPI.getParametroProcesso();
+        }
+         Optional<Processo> processoExistentes = processoRepository.findProcessoByNumeroProcesso(numeroProcesso);
+        processoExistentes.ifPresent(e -> novoProcesso.setId(e.getId()));
         novoProcesso.setNumeroProcesso(numeroProcesso);
         String classe = processo.optString("classe","Não informado");
         if (classe.isBlank()){
@@ -300,9 +345,9 @@ public class ProcessoGrau1API {
         novoProcesso.setRequerente(requerente);
         String advogado = processo.optString("advogado", "Não informado");
         if (advogado.equals("Não informado")){
-            if (requerente.contains("Advogado:")) {
+            if (requerente.contains("Advogado:") || requerente.contains("Advogada:")) {
                 advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
-            }else if (requerido.contains("Advogado:")) {
+            }else if (requerido.contains("Advogado:") || requerente.contains("Advogada:")) {
                 advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
             }else {
                 advogado = "Não informado";

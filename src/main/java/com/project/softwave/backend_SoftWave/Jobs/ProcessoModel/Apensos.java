@@ -2,6 +2,10 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
 
+import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Apensos {
 //            "numero": "0000123-50.2025.8.26.0542",

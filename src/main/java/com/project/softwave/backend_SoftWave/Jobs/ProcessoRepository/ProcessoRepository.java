@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ProcessoRepository extends JpaRepository<Processo, Integer> {
     boolean existsByNumeroProcesso(String numeroProcesso);
-    Optional<Integer> findProcessoByNumeroProcesso(String numeroProcesso);
+    Optional<Processo> findProcessoByNumeroProcesso(String numeroProcesso);
 
 }
