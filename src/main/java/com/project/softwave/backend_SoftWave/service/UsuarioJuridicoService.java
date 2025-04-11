@@ -1,6 +1,5 @@
 package com.project.softwave.backend_SoftWave.service;
 
-import com.project.softwave.backend_SoftWave.dto.SetorDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;

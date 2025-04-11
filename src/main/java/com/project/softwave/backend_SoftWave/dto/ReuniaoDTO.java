@@ -14,7 +14,6 @@ public class ReuniaoDTO {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer id;
 
-
         private Integer idAdvogado;
 
         private Integer idCliente;
