@@ -2,11 +2,11 @@ package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.Reuniao;
 import com.project.softwave.backend_SoftWave.entity.StatusReuniao;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+
 
 public class ReuniaoDTO {
 
@@ -27,12 +27,9 @@ public class ReuniaoDTO {
         @NotNull
         private Double duracao;
 
-
         private String plataforma;
 
-
         private StatusReuniao statusReuniao;
-
 
         @NotNull
         private Boolean confirmacaoCliente;
