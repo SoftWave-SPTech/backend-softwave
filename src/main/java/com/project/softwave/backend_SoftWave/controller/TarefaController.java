@@ -22,7 +22,7 @@ public class TarefaController {
 
     @PostMapping
     public ResponseEntity<TarefaDTO> cadastrarTarefa(@Valid @RequestBody TarefaDTO request) {
-        Tarefa tarefa = TarefaDTO.toEntity(request);
+            Tarefa tarefa = TarefaDTO.toEntity(request);
             Tarefa tarefaResponse = service.cadastrarTarefa(tarefa);
         return ResponseEntity.status(201).body(TarefaDTO.toResponseDto(tarefaResponse));
 

@@ -31,6 +31,20 @@ public class UsuarioJuridicoDTO {
         this.cnpj = usuarioJuridico.getCnpj();
     }
 
+    public static UsuarioJuridico toEntity(UsuarioJuridicoDTO dto) {
+        if(dto == null) {
+            return null;
+        }
+        UsuarioJuridico usuarioJuridico = new UsuarioJuridico();
+        usuarioJuridico.setId(dto.getId());
+        usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
+        usuarioJuridico.setEmail(dto.getEmail());
+        usuarioJuridico.setSenha(dto.getSenha());
+        usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
+        usuarioJuridico.setCnpj(dto.getCnpj());
+        return usuarioJuridico;
+    }
+
     public Integer getId() {
         return id;
     }

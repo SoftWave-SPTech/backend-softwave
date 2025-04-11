@@ -22,18 +22,6 @@ public class UserValidator {
         }
     }
 
-    public static Boolean validarEmail(String email){
-        if(email.contains("@") &&
-                email.contains(".com") &&
-                email != null &&
-                email != ""
-        ){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     public static Boolean validarCamposVaziosJuridico(String nomeFantasia, String razaoSocial, String cnpj){
         if(
                 nomeFantasia != null &&

@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
+import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,19 +19,19 @@ public class UsuarioJuridicoController {
 
 
     @PostMapping
-    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
-
-        UsuarioJuridicoDTO usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridicoDTO);
+    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@RequestBody UsuarioJuridicoDTO request){
+        UsuarioJuridico usuarioJuridico = UsuarioJuridicoDTO.toEntity(request);
+        UsuarioJuridico usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridico);
 
         if(usuarioNovo != null){
-            return ResponseEntity.status(201).body(usuarioNovo);
+            return ResponseEntity.status(201).body(new UsuarioJuridicoDTO(usuarioNovo));
         }
           return ResponseEntity.status(409).build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioJuridicoDTO> login(@RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
-        UsuarioJuridicoDTO usuarioAutenticado = usuarioJuridicoService.login(usuarioJuridicoDTO);
+    public ResponseEntity<UsuarioJuridicoDTO> login(@RequestBody UsuarioJuridicoDTO request){
+        UsuarioJuridicoDTO usuarioAutenticado = usuarioJuridicoService.login(request);
         if(usuarioAutenticado != null){
             return ResponseEntity.status(200).body(usuarioAutenticado);
         }

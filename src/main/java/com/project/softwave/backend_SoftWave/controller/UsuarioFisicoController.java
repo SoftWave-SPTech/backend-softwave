@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
+import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,12 @@ public class UsuarioFisicoController {
     private UsuarioFisicoService usuarioFisicoService;
 
     @PostMapping
-    public ResponseEntity<UsuarioFisicoDTO> cadastrar(@RequestBody UsuarioFisicoDTO usuarioFisicoDTO){
-
-        UsuarioFisicoDTO usuarioNovo = usuarioFisicoService.cadastrar(usuarioFisicoDTO);
+    public ResponseEntity<UsuarioFisicoDTO> cadastrar(@RequestBody UsuarioFisicoDTO request){
+        UsuarioFisico usuarioFisico = UsuarioFisicoDTO.toEntity(request);
+        UsuarioFisico usuarioNovo = usuarioFisicoService.cadastrar(usuarioFisico);
 
         if(usuarioNovo != null){
-            return ResponseEntity.status(201).body(usuarioNovo);
+            return ResponseEntity.status(201).body(new UsuarioFisicoDTO(usuarioNovo));
         }
         return ResponseEntity.status(409).build();
     }

@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,30 +20,27 @@ public class UsuarioFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
-    public UsuarioFisicoDTO cadastrar(UsuarioFisicoDTO usuarioFisicoDTO) {
+    public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
         if (
-                validarUsuarios.validarSenha(usuarioFisicoDTO.getSenha()) &&
+                validarUsuarios.validarSenha(usuarioFisico.getSenha()) &&
                         validarUsuarios.validarCamposVaziosFisico(
-                                usuarioFisicoDTO.getNome(),
-                                usuarioFisicoDTO.getRg()
+                                usuarioFisico.getNome(),
+                                usuarioFisico.getRg()
                         ) &&
-                        validarUsuarios.validarEmail(usuarioFisicoDTO.getEmail()) &&
-                        validarUsuarios.validarCpf(usuarioFisicoDTO.getCpf())
+                        validarUsuarios.validarCpf(usuarioFisico.getCpf())
         ) {
             if (
                     usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(
-                            usuarioFisicoDTO.getEmail(),
-                            usuarioFisicoDTO.getCpf()
+                            usuarioFisico.getEmail(),
+                            usuarioFisico.getCpf()
                     ).isPresent()
             ) {
                 throw new BasicException("Email ou CPF já existe");
             }
 
-            UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(
-                    new UsuarioFisico(usuarioFisicoDTO)
-            );
+            UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
 
-            return new UsuarioFisicoDTO(usuarioFisicoCadastrado);
+            return usuarioFisicoCadastrado;
 
         }
         throw new BasicException("Dados do usuário inválidos");
@@ -75,8 +73,7 @@ public class UsuarioFisicoService {
             } else if (validarUsuarios.validarSenha(usuarioFisicoDTO.getSenha()) &&
                     validarUsuarios.validarCamposVaziosFisico(
                             usuarioFisicoDTO.getNome(),
-                            usuarioFisicoDTO.getRg()) &&
-                    validarUsuarios.validarEmail(usuarioFisicoDTO.getEmail())) {
+                            usuarioFisicoDTO.getRg())) {
 
                 UsuarioFisico usuarioFisicoAtualizado = new UsuarioFisico(usuarioFisicoDTO);
                 usuarioFisicoAtualizado.setId(id);

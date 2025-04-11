@@ -1,6 +1,5 @@
 package com.project.softwave.backend_SoftWave.service;
 
-import com.project.softwave.backend_SoftWave.dto.SetorDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
@@ -21,30 +20,27 @@ public class UsuarioJuridicoService {
     @Autowired
     private UserValidator validacoesUsuarios;
 
-    public UsuarioJuridicoDTO cadastrar(UsuarioJuridicoDTO usuarioJuridicoDTO) {
+    public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
         if (
-                validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
+                validacoesUsuarios.validarSenha(usuarioJuridico.getSenha()) &&
                         validacoesUsuarios.validarCamposVaziosJuridico(
-                                usuarioJuridicoDTO.getNomeFantasia(),
-                                usuarioJuridicoDTO.getRazaoSocial(),
-                                usuarioJuridicoDTO.getCnpj()
-                        ) &&
-                        validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())
+                                usuarioJuridico.getNomeFantasia(),
+                                usuarioJuridico.getRazaoSocial(),
+                                usuarioJuridico.getCnpj()
+                        )
         ) {
             if (
                     usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
-                            usuarioJuridicoDTO.getEmail(),
-                            usuarioJuridicoDTO.getCnpj()
+                            usuarioJuridico.getEmail(),
+                            usuarioJuridico.getCnpj()
                     ).isPresent()
             ) {
                 throw new BasicException("Email ou CNPJ já cadastrado.");
             }
 
-            UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(
-                    new UsuarioJuridico(usuarioJuridicoDTO)
-            );
+            UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
 
-            return new UsuarioJuridicoDTO(usuarioJuridicoCadastrado);
+            return usuarioJuridicoCadastrado;
 
         }
         throw new BasicException("Dados inválidos para cadastro.");
@@ -82,8 +78,7 @@ public class UsuarioJuridicoService {
                                     usuarioJuridicoDTO.getNomeFantasia(),
                                     usuarioJuridicoDTO.getRazaoSocial(),
                                     usuarioJuridicoDTO.getCnpj()
-                            ) &&
-                            validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())){
+                            )) {
 
                 UsuarioJuridico usuarioJuridicoAtualizado = new UsuarioJuridico(usuarioJuridicoDTO);
                 usuarioJuridicoAtualizado.setId(id);
