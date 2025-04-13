@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,13 +31,11 @@ public class Reuniao {
     private Double duracao;
 
 
-private StatusReuniao statusReuniao;
+
+    private StatusReuniao statusReuniao;
 
 
     private String plataforma;
-
-
-
 
     private Boolean confirmacaoCliente;
 

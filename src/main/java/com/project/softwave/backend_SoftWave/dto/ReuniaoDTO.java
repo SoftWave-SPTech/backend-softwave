@@ -7,13 +7,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-@Entity
+
 public class ReuniaoDTO {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer id;
-
 
         private Integer idAdvogado;
 
@@ -30,9 +29,7 @@ public class ReuniaoDTO {
 
         private String plataforma;
 
-
         private StatusReuniao statusReuniao;
-
 
         @NotNull
         private Boolean confirmacaoCliente;
