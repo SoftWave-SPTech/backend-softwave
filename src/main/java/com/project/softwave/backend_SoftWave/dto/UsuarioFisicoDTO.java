@@ -50,6 +50,20 @@ public class UsuarioFisicoDTO {
     public UsuarioFisicoDTO() {
     }
 
+    public static UsuarioFisico toEntity(UsuarioFisicoDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        UsuarioFisico usuarioFisico = new UsuarioFisico();
+        usuarioFisico.setId(dto.getId());
+        usuarioFisico.setNome(dto.getNome());
+        usuarioFisico.setEmail(dto.getEmail());
+        usuarioFisico.setSenha(dto.getSenha());
+        usuarioFisico.setCpf(dto.getCpf());
+        usuarioFisico.setRg(dto.getRg());
+        return usuarioFisico;
+    }
+
     public void setId(Integer id) {
         this.id = id;
     }

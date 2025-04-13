@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
+import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,12 +30,12 @@ public class UsuarioJuridicoController {
     })
 
     @PostMapping
-    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
-
-        UsuarioJuridicoDTO usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridicoDTO);
+    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO request){
+        UsuarioJuridico usuarioJuridico = UsuarioJuridicoDTO.toEntity(request);
+        UsuarioJuridico usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridico);
 
         if(usuarioNovo != null){
-            return ResponseEntity.status(201).body(usuarioNovo);
+            return ResponseEntity.status(201).body(new UsuarioJuridicoDTO(usuarioNovo));
         }
           return ResponseEntity.status(409).build();
     }
@@ -44,10 +45,9 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "200", description = "Login do usuário jurídico realizado com sucesso"),
             @ApiResponse(responseCode = "401", description = "Email e/ou senha inválida")
     })
-
     @PostMapping("/login")
-    public ResponseEntity<UsuarioJuridicoDTO> login(@Valid @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO){
-        UsuarioJuridicoDTO usuarioAutenticado = usuarioJuridicoService.login(usuarioJuridicoDTO);
+    public ResponseEntity<UsuarioJuridicoDTO> login(@Valid @RequestBody UsuarioJuridicoDTO request){
+        UsuarioJuridicoDTO usuarioAutenticado = usuarioJuridicoService.login(request);
         if(usuarioAutenticado != null){
             return ResponseEntity.status(200).body(usuarioAutenticado);
         }
