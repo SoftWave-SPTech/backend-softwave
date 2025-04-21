@@ -39,6 +39,7 @@ public class GeminiService {
 
             try {
                 String resposta = chamarGemini(prompt);
+                resposta = resposta.replace("*", "").trim();
                 AnaliseProcesso analise = new AnaliseProcesso();
                 analise.setMovimentacoes(ultimasMovimentacoes);
                 analise.setResumoIA(resposta);
