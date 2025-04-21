@@ -30,8 +30,7 @@ public class UsuarioFisicoService {
                         validarUsuarios.validarCamposVaziosFisico(
                                 usuarioFisico.getNome(),
                                 usuarioFisico.getRg()
-                        ) &&
-                        validarUsuarios.validarCpf(usuarioFisico.getCpf())
+                        )
         ) {
             if (
                     usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(

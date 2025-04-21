@@ -49,11 +49,6 @@ public class UserValidator {
         return false;
     }
 
-    //Validar este campo melhor depois
-    public static Boolean validarCpf(String cpf){
-
-        return true;
-    }
 
 
 }

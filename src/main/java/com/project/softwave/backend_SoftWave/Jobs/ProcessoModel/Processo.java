@@ -1,6 +1,9 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
+import com.project.softwave.backend_SoftWave.entity.*;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 /*
 Classe para obterProcessos
@@ -47,6 +50,40 @@ public class Processo {
     private String requerido;
 //            "indiciado": null,
     private String indiciado;
+
+    @ManyToMany
+    @JoinTable(name = "processo_advogado_fisico",
+            joinColumns = @JoinColumn(name = "processo_id"),
+            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
+    private List<AdvogadoFisico> advogadosFisicos;
+
+    @ManyToMany
+    @JoinTable(name = "processo_advogado_juridico",
+            joinColumns = @JoinColumn(name = "processo_id"),
+            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
+    private List<AdvogadoJuridico> advogadosJuridicos;
+
+    @ManyToMany
+    @JoinTable(name = "processo_cliente_fisico",
+            joinColumns = @JoinColumn(name = "processo_id"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
+    private List<UsuarioFisico> clientesFisicos;
+
+    @ManyToMany
+    @JoinTable(name = "processo_cliente_juridico",
+            joinColumns = @JoinColumn(name = "processo_id"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
+    private List<UsuarioJuridico> clientesJuridicos;
+
+    @OneToMany
+    private List<ComentarioProcesso> comentarios;
+
+    @OneToMany
+    private List<Tarefa> tarefas;
+
+    @OneToMany
+    private List<RegistroFinanceiro> registros;
+
 
     public Integer getId() {
         return id;
