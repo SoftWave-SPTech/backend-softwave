@@ -1,16 +1,12 @@
 package com.project.softwave.backend_SoftWave.service;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovimentacoesRepository;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
-
 import org.springframework.stereotype.Service;
-
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -21,39 +17,40 @@ import java.util.List;
 @Service
 public class GeminiService {
 
-    private final ProcessoRepository processoRepository;
     private final AnaliseProcessoRepository analiseRepository;
-    private final String apiKey = "AIzaSyAtYHo_lun-el1wWyDirq06awLH7G74uMI";
+    private final UltimasMovimentacoesRepository ultimasMovimentacoesRepository;
 
-    public GeminiService(ProcessoRepository processoRepository,
-                         AnaliseProcessoRepository analiseRepository) {
-        this.processoRepository = processoRepository;
+    private final String apiKey =  "AIzaSyAtYHo_lun-el1wWyDirq06awLH7G74uMI";
+
+    public GeminiService(
+            AnaliseProcessoRepository analiseRepository,
+            UltimasMovimentacoesRepository ultimasMovimentacoesRepository) {
         this.analiseRepository = analiseRepository;
+        this.ultimasMovimentacoesRepository = ultimasMovimentacoesRepository;
     }
 
     public void gerarAnalises() {
-        List<Processo> processos = processoRepository.findAll();
+        List<UltimasMovimentacoes> movimentacoesList = ultimasMovimentacoesRepository.findAll();
 
-        for (Processo processo : processos) {
+        for (UltimasMovimentacoes ultimasMovimentacoes : movimentacoesList) {
             String prompt = "Explique de forma simples a seguinte movimentação processual:\n\n"
-                    + "\n\n"
-                    + "\n\nUse uma linguagem clara para leigos e destaque os eventos mais importantes.";
+                    + ultimasMovimentacoes.getMovimento() + "\n\n"
+                    + "Use uma linguagem clara para leigos em juridiquês e destaque os eventos mais importantes.";
 
             try {
                 String resposta = chamarGemini(prompt);
                 AnaliseProcesso analise = new AnaliseProcesso();
-                analise.setProcesso(processo);
+                analise.setMovimentacoes(ultimasMovimentacoes);
                 analise.setResumoIA(resposta);
                 analiseRepository.save(analise);
 
             } catch (Exception e) {
-                System.err.println("Erro ao processar processo " + processo.getNumeroProcesso() + ": " + e.getMessage());
+                System.err.println("Erro ao processar movimentação " + ultimasMovimentacoes.getId() + ": " + e.getMessage());
             }
         }
     }
 
     private String chamarGemini(String prompt) throws Exception {
-
         String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
         String requestBody = String.format("""
@@ -96,6 +93,4 @@ public class GeminiService {
                 .asText()
                 .trim();
     }
-
-
 }

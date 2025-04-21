@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.entity;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,7 +13,7 @@ public class AnaliseProcesso {
         private Integer id;
 
         @ManyToOne
-        private Processo processo;
+        private UltimasMovimentacoes movimentacoes;
 
         @Lob
         @Column(columnDefinition = "TEXT")
@@ -26,12 +27,12 @@ public class AnaliseProcesso {
                 this.id = id;
         }
 
-        public Processo getProcesso() {
-                return processo;
+        public UltimasMovimentacoes getMovimentacoes() {
+                return movimentacoes;
         }
 
-        public void setProcesso(Processo processo) {
-                this.processo = processo;
+        public void setMovimentacoes(UltimasMovimentacoes movimentacoes) {
+                this.movimentacoes = movimentacoes;
         }
 
         public String getResumoIA() {
