@@ -1,9 +1,7 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,6 +15,13 @@ public class RegistroFinanceiro {
     private String descricao;
     private BigDecimal valor;
     private LocalDate data;
+
+    @ManyToOne
+    private Processo processo;
+
+
+    @ManyToOne
+    private AdvogadoFisico advogado;
 
     public Long getId() {
         return id;

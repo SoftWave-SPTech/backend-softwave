@@ -19,7 +19,6 @@ public class ComentarioProcessoService {
 
     public ComentarioProcessoDTO criarComentario(ComentarioProcessoDTO dto) {
         ComentarioProcesso comentario = new ComentarioProcesso();
-        comentario.setProcessoId(dto.getProcessoId());
         comentario.setComentario(dto.getComentario());
         comentario.setDataCriacao(dto.getDataCriacao());
 
@@ -33,7 +32,6 @@ public class ComentarioProcessoService {
                 .stream()
                 .map(comentario -> new ComentarioProcessoDTO(
                         comentario.getId(),
-                        comentario.getProcessoId(),
                         comentario.getComentario(),
                         comentario.getDataCriacao()))
                 .collect(Collectors.toList());
@@ -44,7 +42,6 @@ public class ComentarioProcessoService {
         return comentarioOptional
                 .map(comentario -> new ComentarioProcessoDTO(
                         comentario.getId(),
-                        comentario.getProcessoId(),
                         comentario.getComentario(),
                         comentario.getDataCriacao()))
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Comentário não encontrado"));
@@ -57,7 +54,6 @@ public class ComentarioProcessoService {
         }
 
         ComentarioProcesso comentario = comentarioOptional.get();
-        comentario.setProcessoId(dto.getProcessoId());
         comentario.setComentario(dto.getComentario());
         comentario.setDataCriacao(dto.getDataCriacao());
 

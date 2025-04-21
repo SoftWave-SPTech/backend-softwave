@@ -1,8 +1,13 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.List;
 
 @Entity
 @Table(name = "pessoa_juridica")
@@ -10,6 +15,12 @@ public class UsuarioJuridico extends Usuario{
     private String cnpj;
     private String nomeFantasia;
     private String razaoSocial;
+
+    @OneToMany
+    private List<DocumentoPessoal> documentos;
+
+    @ManyToMany
+    private List<Processo> processosCliente;
 
     public UsuarioJuridico(Integer id, String senha, String email, String cnpj, String nomeFantasia, String razaoSocial) {
         super(id, senha, email);

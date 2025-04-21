@@ -1,9 +1,7 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +12,18 @@ public class ComentarioProcesso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long processoId;
     private String comentario;
     private LocalDateTime dataCriacao;
+
+
+    @ManyToOne
+    private Processo processo;
+
+    @ManyToOne
+    private AdvogadoFisico advogadoFisico;
+
+    @ManyToOne
+    private AdvogadoJuridico advogadoJuridico;
 
     public Long getId() {
         return id;
@@ -26,13 +33,6 @@ public class ComentarioProcesso {
         this.id = id;
     }
 
-    public Long getProcessoId() {
-        return processoId;
-    }
-
-    public void setProcessoId(Long processoId) {
-        this.processoId = processoId;
-    }
 
     public String getComentario() {
         return comentario;

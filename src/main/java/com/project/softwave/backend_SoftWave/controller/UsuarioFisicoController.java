@@ -38,6 +38,8 @@ public class UsuarioFisicoController {
         return ResponseEntity.status(409).build();
     }
 
+
+
     @Operation(summary = "Login dos usuários físicos", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login do usuário físico realizado com sucesso"),

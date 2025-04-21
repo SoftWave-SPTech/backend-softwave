@@ -13,7 +13,6 @@ public class ComentarioProcessoDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long processoId;
 
     @NotBlank
     private String comentario;
@@ -24,9 +23,8 @@ public class ComentarioProcessoDTO {
     public ComentarioProcessoDTO() {
     }
 
-    public ComentarioProcessoDTO(Long id, Long processoId, String comentario, LocalDateTime dataCriacao) {
+    public ComentarioProcessoDTO(Long id, String comentario, LocalDateTime dataCriacao) {
         this.id = id;
-        this.processoId = processoId;
         this.comentario = comentario;
         this.dataCriacao = dataCriacao;
     }
@@ -39,13 +37,6 @@ public class ComentarioProcessoDTO {
         this.id = id;
     }
 
-    public Long getProcessoId() {
-        return processoId;
-    }
-
-    public void setProcessoId(Long processoId) {
-        this.processoId = processoId;
-    }
 
     public String getComentario() {
         return comentario;
