@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
@@ -9,6 +10,7 @@ import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,9 @@ public class UsuarioJuridicoService {
 
     @Autowired
     private UserValidator validacoesUsuarios;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
         if (
@@ -40,6 +45,9 @@ public class UsuarioJuridicoService {
             ) {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
+            String senhaCriptografada = passwordEncoder.encode(usuarioJuridico.getSenha());
+            usuarioJuridico.setSenha(senhaCriptografada);
+            usuarioJuridico.setRole(Role.ROLE_USUARIO);
 
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
 
@@ -114,6 +122,5 @@ public class UsuarioJuridicoService {
         UsuarioJuridico usuarioJuridicoAutendicado = possivelUsuario.get();
 
         return new UsuarioJuridicoDTO(usuarioJuridicoAutendicado);
-
     }
 }

@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class UsuarioJuridicoController {
     })
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO request){
         UsuarioJuridico usuarioJuridico = UsuarioJuridicoDTO.toEntity(request);
         UsuarioJuridico usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridico);
@@ -61,6 +63,7 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "404", description = "Usuário Jurídico não encontrado")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletar(@Valid @PathVariable Integer id){
 
         if(usuarioJuridicoService.deletar(id)){
@@ -85,6 +88,7 @@ public class UsuarioJuridicoController {
     })
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioJuridicoDTO> atualizar(
            @Valid @PathVariable Integer id,
            @Valid @RequestBody UsuarioJuridicoDTO usuarioJuridicoDTO
@@ -104,6 +108,7 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "204", description = "Não há usuários jurídicos cadastrados")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuarioJuridicoDTO>> listar(){
         List<UsuarioJuridicoDTO> usuarios = usuarioJuridicoService.listar();
 

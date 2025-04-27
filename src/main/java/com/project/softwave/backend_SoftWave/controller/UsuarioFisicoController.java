@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioFisicoDTO> cadastrar(@Valid @RequestBody UsuarioFisicoDTO request){
         UsuarioFisico usuarioFisico = UsuarioFisicoDTO.toEntity(request);
         UsuarioFisico usuarioNovo = usuarioFisicoService.cadastrar(usuarioFisico);
@@ -60,6 +62,7 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "404", description = "Usuário físico não encontrado")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletar(@Valid @PathVariable Integer id){
 
         if(usuarioFisicoService.deletar(id)){
@@ -84,6 +87,7 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "404", description = "Usuário físico não encontrado")
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioFisicoDTO> atualizar(
           @Valid  @PathVariable Integer id,
             @RequestBody UsuarioFisicoDTO usuarioFisicoDTO
@@ -102,6 +106,7 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "204", description = "Não há usuários físicos cadastrados")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuarioFisicoDTO>> listar(){
         List<UsuarioFisicoDTO> usuarios = usuarioFisicoService.listar();
 

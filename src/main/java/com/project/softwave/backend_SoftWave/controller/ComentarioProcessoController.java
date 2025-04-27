@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.service.ComentarioProcessoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ComentarioProcessoDTO> criarComentario(@Valid @RequestBody ComentarioProcessoDTO dto) {
         ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentario(dto);
         return ResponseEntity.status(201).body(novoComentario);
@@ -36,6 +38,7 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "204", description = "Não há comentários dos processos cadastrados")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ComentarioProcessoDTO>> listarComentarios() {
         List<ComentarioProcessoDTO> comentarios = comentarioProcessoService.listarComentarios();
         return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
@@ -48,6 +51,7 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "204", description = "Não há comentário do processo cadastrado com esse ID")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ComentarioProcessoDTO> buscarComentarioPorId(@Valid @PathVariable Long id) {
         try {
             ComentarioProcessoDTO comentario = comentarioProcessoService.buscarComentarioPorId(id);
@@ -64,6 +68,7 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "404", description = "Comentário do processo não encontrado")
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ComentarioProcessoDTO> atualizarComentario(@Valid @PathVariable Long id, @RequestBody ComentarioProcessoDTO dto) {
         try {
             ComentarioProcessoDTO comentarioAtualizado = comentarioProcessoService.atualizarComentario(id, dto);
@@ -80,6 +85,7 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "404", description = "Comentário do processo não encontrado")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarComentario(@Valid @PathVariable Long id) {
         try {
             comentarioProcessoService.deletarComentario(id);

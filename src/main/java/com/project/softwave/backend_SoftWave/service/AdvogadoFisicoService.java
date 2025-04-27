@@ -2,12 +2,14 @@ package com.project.softwave.backend_SoftWave.service;
 
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.AdvogadoFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -22,17 +24,23 @@ public class AdvogadoFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AdvogadoFisico cadastrar(AdvogadoFisico advogadoFisico) {
 
 
-            if (
+        if (
                     advogadoFisicoRepository.findByEmailEqualsOrCpfEquals(
                             advogadoFisico.getEmail(),
                             advogadoFisico.getCpf()
                     ).isPresent()
-            ) {
+           ) {
                 throw new EntidadeConflitoException("Email ou CPF já existe");
-            }
+        }
+        String senhaCriptografada = passwordEncoder.encode(advogadoFisico.getSenha());
+        advogadoFisico.setSenha(senhaCriptografada);
+        advogadoFisico.setRole(Role.ROLE_ADVOGADO);
 
             return   advogadoFisicoRepository.save(advogadoFisico);
     }

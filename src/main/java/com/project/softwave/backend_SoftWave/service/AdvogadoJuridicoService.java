@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
@@ -8,6 +9,7 @@ import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.AdvogadoJuridicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +24,9 @@ public class AdvogadoJuridicoService {
     @Autowired
     private UserValidator userValidator;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AdvogadoJuridico cadastrar(AdvogadoJuridico advogadoJuridico) {
         if (advogadoJuridicoRepository.findByEmailEqualsOrCnpjEquals(
                 advogadoJuridico.getEmail(), advogadoJuridico.getCnpj()).isPresent()) {
@@ -35,6 +40,9 @@ public class AdvogadoJuridicoService {
                         advogadoJuridico.getCnpj())) {
             throw new BasicException("Dados inválidos para cadastro.");
         }
+        String senhaCriptografada = passwordEncoder.encode(advogadoJuridico.getSenha());
+        advogadoJuridico.setSenha(senhaCriptografada);
+        advogadoJuridico.setRole(Role.ROLE_ADVOGADO);
 
         return advogadoJuridicoRepository.save(advogadoJuridico);
     }

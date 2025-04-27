@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
@@ -10,6 +11,7 @@ import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,9 @@ public class UsuarioFisicoService {
 
     @Autowired
     private UserValidator validarUsuarios;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
         if (
@@ -40,6 +45,10 @@ public class UsuarioFisicoService {
             ) {
                 throw new EntidadeConflitoException("Email ou CPF já existe");
             }
+            String senhaCriptografada = passwordEncoder.encode(usuarioFisico.getSenha());
+            usuarioFisico.setSenha(senhaCriptografada);
+            usuarioFisico.setRole(Role.ROLE_USUARIO);
+
 
             UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
 
