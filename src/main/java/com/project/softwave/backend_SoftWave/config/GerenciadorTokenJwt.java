@@ -30,16 +30,26 @@ public class GerenciadorTokenJwt {
         return getClaimForToken(token, Claims::getExpiration);
     }
 
-    public String generateToken(final Authentication authentication) {
-
+    public String generateToken(final Authentication authentication, String tipoUsuario) {
         // Para verificacoes de permissões;
-        final String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+        final String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        return Jwts.builder().setSubject(authentication.getName())
-                .signWith(parseSecret()).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1_000)).compact();
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim("authorities", authorities)   // Aqui adiciona as roles
+                .claim("tipoUsuario", tipoUsuario)   // Aqui adiciona o tipo de usuário
+                .signWith(parseSecret())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1_000))
+                .compact();
     }
+// Aqui pega a role
+//    String role = (String) getAllClaimsFromToken(token).get("authorities");
+// Aqui pega o tipo de usuário
+//    String tipoUsuario = (String) getAllClaimsFromToken(token).get("tipoUsuario");
+
 
     public <T> T getClaimForToken(String token, Function<Claims, T> claimsResolver) {
         Claims claims = getAllClaimsFromToken(token);
