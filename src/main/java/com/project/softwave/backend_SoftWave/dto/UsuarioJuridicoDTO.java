@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -7,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 public class UsuarioJuridicoDTO {
@@ -30,25 +32,35 @@ public class UsuarioJuridicoDTO {
     @CNPJ
     private String cnpj;
 
+
+    @NotNull
+    private Integer cep;
+    @NotBlank
+    private String logradouro;
+    @NotBlank
+    private String bairro;
+    @NotBlank
+    private String cidade;
+    @NotBlank
+    private String telefone;
+
+
+
     public UsuarioJuridicoDTO() {
     }
 
-    public UsuarioJuridicoDTO(Integer id, String nomeFantasia, String email, String senha, String razaoSocial, String cnpj) {
+    public UsuarioJuridicoDTO(Integer id, String nomeFantasia, String email, String senha, String razaoSocial, String cnpj, Integer cep, String logradouro, String bairro, String cidade, String telefone) {
         this.id = id;
         this.nomeFantasia = nomeFantasia;
         this.email = email;
         this.senha = senha;
         this.razaoSocial = razaoSocial;
         this.cnpj = cnpj;
-    }
-
-    public UsuarioJuridicoDTO(UsuarioJuridico usuarioJuridico) {
-        this.id = usuarioJuridico.getId();
-        this.nomeFantasia = usuarioJuridico.getNomeFantasia();
-        this.email = usuarioJuridico.getEmail();
-        this.senha = usuarioJuridico.getSenha();
-        this.razaoSocial = usuarioJuridico.getRazaoSocial();
-        this.cnpj = usuarioJuridico.getCnpj();
+        this.cep = cep;
+        this.logradouro = logradouro;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.telefone = telefone;
     }
 
     public static UsuarioJuridico toEntity(UsuarioJuridicoDTO dto) {
@@ -62,7 +74,30 @@ public class UsuarioJuridicoDTO {
         usuarioJuridico.setSenha(dto.getSenha());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setCnpj(dto.getCnpj());
+        usuarioJuridico.setLogradouro(dto.getLogradouro());
+        usuarioJuridico.setBairro(dto.getBairro());
+        usuarioJuridico.setCidade(dto.getCidade());
+        usuarioJuridico.setTelefone(dto.getTelefone());
+        usuarioJuridico.setCep(dto.getCep());
+
         return usuarioJuridico;
+    }
+
+    public static UsuarioJuridicoDTO toResponseDto(UsuarioJuridico usuarioJuridico) {
+        UsuarioJuridicoDTO responseDto = new UsuarioJuridicoDTO();
+        responseDto.setId(usuarioJuridico.getId());
+        responseDto.setNomeFantasia(usuarioJuridico.getNomeFantasia());
+        responseDto.setEmail(usuarioJuridico.getEmail());
+        responseDto.setSenha(usuarioJuridico.getSenha());
+        responseDto.setRazaoSocial(usuarioJuridico.getRazaoSocial());
+        responseDto.setCnpj(usuarioJuridico.getCnpj());
+        responseDto.setLogradouro(usuarioJuridico.getLogradouro());
+        responseDto.setBairro(usuarioJuridico.getBairro());
+        responseDto.setCidade(usuarioJuridico.getCidade());
+        responseDto.setTelefone(usuarioJuridico.getTelefone());
+        responseDto.setCep(usuarioJuridico.getCep());
+
+        return responseDto;
     }
 
     public Integer getId() {
@@ -111,5 +146,45 @@ public class UsuarioJuridicoDTO {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+    public String getLogradouro() {
+        return logradouro;
+    }
+
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public Integer getCep() {
+        return cep;
+    }
+
+    public void setCep(Integer cep) {
+        this.cep = cep;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
     }
 }

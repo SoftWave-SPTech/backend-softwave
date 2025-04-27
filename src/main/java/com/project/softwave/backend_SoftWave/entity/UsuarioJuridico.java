@@ -22,29 +22,30 @@ public class UsuarioJuridico extends Usuario{
     @ManyToMany
     private List<Processo> processosCliente;
 
-    public UsuarioJuridico(Integer id, String senha, String email, String cnpj, String nomeFantasia, String razaoSocial) {
-        super(id, senha, email);
+    public UsuarioJuridico(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial) {
+        super(senha, email, cep, logradouro, bairro, cidade, telefone, foto);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
     }
 
-    public UsuarioJuridico(UsuarioJuridicoDTO usuarioJuridicoDTO) {
-        super(null, usuarioJuridicoDTO.getSenha(), usuarioJuridicoDTO.getEmail());
-        this.cnpj = usuarioJuridicoDTO.getCnpj();
-        this.nomeFantasia = usuarioJuridicoDTO.getNomeFantasia();
-        this.razaoSocial = usuarioJuridicoDTO.getRazaoSocial();
+    public UsuarioJuridico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial) {
+        super(id, senha, email, cep, logradouro, bairro, cidade, telefone, foto);
+        this.cnpj = cnpj;
+        this.nomeFantasia = nomeFantasia;
+        this.razaoSocial = razaoSocial;
     }
+
+    //    public UsuarioJuridico(UsuarioJuridicoDTO usuarioJuridicoDTO) {
+//        super(null, usuarioJuridicoDTO.getSenha(), usuarioJuridicoDTO.getEmail());
+//        this.cnpj = usuarioJuridicoDTO.getCnpj();
+//        this.nomeFantasia = usuarioJuridicoDTO.getNomeFantasia();
+//        this.razaoSocial = usuarioJuridicoDTO.getRazaoSocial();
+//    }
 
     public UsuarioJuridico() {
     }
 
-    public UsuarioJuridico(String senha, String email,String cnpj, String nomeFantasia, String razaoSocial) {
-        super(senha , email);
-        this.cnpj = cnpj;
-        this.nomeFantasia = nomeFantasia;
-        this.razaoSocial = razaoSocial;
-    }
 
     public String getCnpj() {
         return cnpj;

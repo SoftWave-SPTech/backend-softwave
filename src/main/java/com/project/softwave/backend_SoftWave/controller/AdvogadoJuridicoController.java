@@ -1,7 +1,12 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridicoDTO;
+import com.project.softwave.backend_SoftWave.dto.TarefaDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.service.AdvogadoJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,6 +39,10 @@ public class AdvogadoJuridicoController {
     }
 
     @Operation(summary = "Listar todos os advogados jurídicos", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+            @ApiResponse(responseCode = "204", description = "Nenhum advogado jurídico encontrado")
+    })
     @GetMapping
     public ResponseEntity<List<AdvogadoJuridicoDTO>> listar() {
         List<AdvogadoJuridico> advogados = service.listar();
@@ -44,6 +53,10 @@ public class AdvogadoJuridicoController {
     }
 
     @Operation(summary = "Buscar advogado jurídico por ID", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Advogado jurídico não encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<AdvogadoJuridicoDTO> buscarPorId(@PathVariable Integer id) {
         AdvogadoJuridico advogado = service.buscarPorId(id);
@@ -51,6 +64,10 @@ public class AdvogadoJuridicoController {
     }
 
     @Operation(summary = "Buscar advogado jurídico por OAB", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Advogado jurídico não encontrado")
+    })
     @GetMapping("/oab/{oab}")
     public ResponseEntity<AdvogadoJuridicoDTO> buscarPorOab(@PathVariable Integer oab) {
         AdvogadoJuridico advogado = service.buscarPorOab(oab);
@@ -58,14 +75,28 @@ public class AdvogadoJuridicoController {
     }
 
     @Operation(summary = "Atualizar advogado jurídico", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Atualização realizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Advogado jurídico não encontrado")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<AdvogadoJuridicoDTO> atualizar(@PathVariable Integer id, @Valid @RequestBody AdvogadoJuridicoDTO request) {
-        AdvogadoJuridico advogado = AdvogadoJuridicoDTO.toEntity(request);
-        AdvogadoJuridico atualizado = service.atualizar(id, advogado);
-        return ResponseEntity.ok(AdvogadoJuridicoDTO.toResponseDTO(atualizado));
+    public ResponseEntity<UsuarioJuridicoAtualizacaoDTO> atualizar(
+            @Valid @RequestBody UsuarioJuridicoAtualizacaoDTO request,
+            @PathVariable Integer id) {
+
+        AdvogadoJuridico advogadoAtualizado = service.atualizar(id, request);
+
+        return ResponseEntity.status(200).body(UsuarioJuridicoAtualizacaoDTO.toResponseAdvogadoDto(advogadoAtualizado));
     }
 
+
+
+
     @Operation(summary = "Deletar advogado jurídico", method = "DELETE")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Exclusão realizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Advogado jurídico não encontrado")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Integer id) {
         service.deletar(id);

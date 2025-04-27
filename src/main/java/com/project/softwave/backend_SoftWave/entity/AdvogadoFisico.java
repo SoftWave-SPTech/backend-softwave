@@ -10,12 +10,6 @@ import java.util.List;
 public class AdvogadoFisico extends UsuarioFisico {
 
 
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-
     private Integer oab;
 
     @ManyToMany
@@ -30,15 +24,12 @@ public class AdvogadoFisico extends UsuarioFisico {
     @ManyToMany
     private List<Reuniao> reunioes;
 
-
-
-    public Integer getId() {
-        return id;
+    public AdvogadoFisico() {
     }
 
-
-    public void setId(Integer id) {
-        this.id = id;
+    public AdvogadoFisico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String telefone, String foto, String nome, String cpf, String rg, Integer oab) {
+        super(id, senha, email, cep, logradouro, bairro, cidade, telefone, foto, nome, cpf, rg);
+        this.oab = oab;
     }
 
     public Integer getOab() {
