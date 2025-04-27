@@ -1,7 +1,10 @@
 package com.project.softwave.backend_SoftWave.controller;
 
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
+import com.project.softwave.backend_SoftWave.dto.*;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
+import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,10 +35,7 @@ public class UsuarioFisicoController {
         UsuarioFisico usuarioFisico = UsuarioFisicoDTO.toEntity(request);
         UsuarioFisico usuarioNovo = usuarioFisicoService.cadastrar(usuarioFisico);
 
-        if(usuarioNovo != null){
-            return ResponseEntity.status(201).body(new UsuarioFisicoDTO(usuarioNovo));
-        }
-        return ResponseEntity.status(409).build();
+        return ResponseEntity.status(201).body(UsuarioFisicoDTO.toResponseDto(usuarioNovo));
     }
 
 
@@ -46,13 +46,20 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "401", description = "Email e/ou senha inválida")
     })
     @PostMapping("/login")
-    public ResponseEntity<UsuarioFisicoDTO> login(@Valid @RequestBody UsuarioFisicoDTO usuarioFisicoDTO){
-        UsuarioFisicoDTO usuarioAutenticado = usuarioFisicoService.login(usuarioFisicoDTO);
-        if(usuarioAutenticado != null){
-            return ResponseEntity.status(200).body(usuarioAutenticado);
-        }
-        return ResponseEntity.status(409).build();
+    public ResponseEntity<UsuarioFisicoDTO> login(@Valid @RequestBody UsuarioLoginDTO loginDTO) {
+        UsuarioFisico login = new UsuarioFisico();
+        login.setEmail(loginDTO.getEmail());
+        login.setSenha(loginDTO.getSenha());
+
+        UsuarioFisico usuarioAutenticado = usuarioFisicoService.login(login);
+
+        UsuarioFisicoDTO response = UsuarioFisicoDTO.toResponseDto(usuarioAutenticado);
+
+        return ResponseEntity.ok(response);
     }
+
+
+
 
     @Operation(summary = "Exclusão de um usuário físico", method = "DELETE")
     @ApiResponses(value = {
@@ -84,17 +91,15 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "404", description = "Usuário físico não encontrado")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioFisicoDTO> atualizar(
-          @Valid  @PathVariable Integer id,
-            @RequestBody UsuarioFisicoDTO usuarioFisicoDTO
-    ){
-        UsuarioFisicoDTO usuarioAtualizado = usuarioFisicoService.atualizar(id,usuarioFisicoDTO);
+    public ResponseEntity<UsuarioFisicoAtualizacaoDTO> atualizar(
+            @Valid @RequestBody UsuarioFisicoAtualizacaoDTO request,
+            @PathVariable Integer id) {
 
-        if(usuarioAtualizado != null){
-            return ResponseEntity.status(200).body(usuarioAtualizado);
-        }
-        return ResponseEntity.status(409).build();
+        UsuarioFisico usuarioAtualizado = usuarioFisicoService.atualizar(id, request);
+
+        return ResponseEntity.status(200).body(UsuarioFisicoAtualizacaoDTO.toResponseDto(usuarioAtualizado));
     }
+
 
     @Operation(summary = "Busca por todos dos usuários físicos", method = "GET")
     @ApiResponses(value = {
@@ -103,12 +108,23 @@ public class UsuarioFisicoController {
     })
     @GetMapping
     public ResponseEntity<List<UsuarioFisicoDTO>> listar(){
-        List<UsuarioFisicoDTO> usuarios = usuarioFisicoService.listar();
+        List<UsuarioFisico> usuariosFisicos = usuarioFisicoService.listar();
 
-        if(usuarios.isEmpty()){
-            return ResponseEntity.status(204).build();
-        }
-        return ResponseEntity.status(200).body(usuarios);
+        List<UsuarioFisicoDTO> usuarioFisicoDtos = usuariosFisicos.stream()
+                .map(UsuarioFisicoDTO::toResponseDto)
+                .toList();
 
+        return ResponseEntity.status(200).body(usuarioFisicoDtos);
+    }
+
+    @Operation(summary = "Buscar usuário físico por ID", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Usuário físico não encontrado")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioFisicoDTO> buscarPorId(@PathVariable Integer id) {
+        UsuarioFisico usuario = usuarioFisicoService.buscarPorId(id);
+        return ResponseEntity.ok(UsuarioFisicoDTO.toResponseDto(usuario));
     }
 }
