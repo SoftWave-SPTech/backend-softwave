@@ -7,6 +7,7 @@ import com.project.softwave.backend_SoftWave.service.ReuniaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,7 @@ public class ReuniaoController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ReuniaoDTO> cadastrarReuniao(@Valid @RequestBody ReuniaoDTO request) {
         Reuniao reuniao = ReuniaoDTO.toEntity(request);
         Reuniao reuniaoResponse = reuniaoService.cadastrarReuniao(reuniao);
@@ -42,6 +44,7 @@ public class ReuniaoController {
             @ApiResponse(responseCode = "204", description = "Não há reuniões cadastradas")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ReuniaoDTO>> listarReuniao() {
         List<Reuniao> reunioes = reuniaoService.listarReuniao();
 
@@ -61,6 +64,7 @@ public class ReuniaoController {
             @ApiResponse(responseCode = "204", description = "Não há reunião cadastrada com esse ID")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ReuniaoDTO> buscarPorId(@PathVariable Integer id) {
         Reuniao reuniaoResponse = reuniaoService.buscarPorId(id);
         return ResponseEntity.status(200).body(ReuniaoDTO.toResponseDto(reuniaoResponse));
@@ -72,6 +76,7 @@ public class ReuniaoController {
             @ApiResponse(responseCode = "404", description = "Reunião não encontrada")
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ReuniaoDTO> atualizarReuniao(@Valid @RequestBody Reuniao reuniao, @PathVariable Integer id ) {
 
         Reuniao reuniaoResponse = reuniaoService.atualizarReuniao(reuniao, id);
@@ -85,6 +90,7 @@ public class ReuniaoController {
             @ApiResponse(responseCode = "404", description = "Reunião não encontrada")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarReuniao (@Valid @PathVariable Integer id){
         reuniaoService.removerPorId(id);
         return ResponseEntity.status(204).build();

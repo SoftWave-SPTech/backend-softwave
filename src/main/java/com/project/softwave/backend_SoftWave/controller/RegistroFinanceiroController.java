@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.service.RegistroFinanceiroService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class RegistroFinanceiroController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<RegistroFinanceiroDTO> criarRegistro(@Valid @RequestBody RegistroFinanceiroDTO dto) {
         RegistroFinanceiroDTO novoRegistro = registroFinanceiroService.criarRegistro(dto);
         return ResponseEntity.status(201).body(novoRegistro);
@@ -38,6 +40,7 @@ public class RegistroFinanceiroController {
             @ApiResponse(responseCode = "204", description = "Não há registros financeiros cadastrados")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<RegistroFinanceiroDTO>> listarRegistros() {
         List<RegistroFinanceiroDTO> registros = registroFinanceiroService.listarRegistros();
         return registros.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(registros);
@@ -51,6 +54,7 @@ public class RegistroFinanceiroController {
             @ApiResponse(responseCode = "204", description = "Não há um registro financeiro cadastrado com esse ID")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<RegistroFinanceiroDTO> buscarRegistroPorId(@Valid @PathVariable Long id) {
         RegistroFinanceiroDTO registro = registroFinanceiroService.buscarRegistroPorId(id);
         return registro != null ? ResponseEntity.ok(registro) : ResponseEntity.status(404).build();
@@ -63,6 +67,7 @@ public class RegistroFinanceiroController {
             @ApiResponse(responseCode = "404", description = "Registro financeiro não encontrado")
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<RegistroFinanceiroDTO> atualizarRegistro(@Valid @PathVariable Long id, @RequestBody RegistroFinanceiroDTO dto) {
         RegistroFinanceiroDTO registroAtualizado = registroFinanceiroService.atualizarRegistro(id, dto);
         return registroAtualizado != null ? ResponseEntity.ok(registroAtualizado) : ResponseEntity.status(404).build();
@@ -74,6 +79,7 @@ public class RegistroFinanceiroController {
             @ApiResponse(responseCode = "404", description = "Registro financeiro não encontrado")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarRegistro(@Valid @PathVariable Long id) {
         boolean deletado = registroFinanceiroService.deletarRegistro(id);
         return deletado ? ResponseEntity.status(204).build() : ResponseEntity.status(404).build();

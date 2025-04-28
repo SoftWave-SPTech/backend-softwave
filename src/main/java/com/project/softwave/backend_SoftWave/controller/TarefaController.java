@@ -7,6 +7,7 @@ import com.project.softwave.backend_SoftWave.service.TarefaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ public class TarefaController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<TarefaDTO> cadastrarTarefa(@Valid @RequestBody TarefaDTO request) {
             Tarefa tarefa = TarefaDTO.toEntity(request);
             Tarefa tarefaResponse = service.cadastrarTarefa(tarefa);
@@ -43,7 +45,8 @@ public class TarefaController {
             @ApiResponse(responseCode = "200", description = "Busca das tarefas realizada com sucesso"),
             @ApiResponse(responseCode = "204", description = "Não há tarefas cadastradas")
     })
-        @GetMapping
+    @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<TarefaDTO>> listarTarefas() {
         List<Tarefa> tarefas = service.listarTarefas();
 
@@ -62,6 +65,7 @@ public class TarefaController {
             @ApiResponse(responseCode = "204", description = "Não há tarefa cadastrada com esse ID")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<TarefaDTO> buscarPorId(@Valid @PathVariable Integer id) {
         Tarefa tarefaResponse = service.buscarPorId(id);
         return ResponseEntity.status(200).body(TarefaDTO.toResponseDto(tarefaResponse));
@@ -74,6 +78,7 @@ public class TarefaController {
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada")
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<TarefaDTO> atualizarTarefa(@Valid @RequestBody Tarefa tarefa, @Valid @PathVariable Integer id ) {
 
         Tarefa tarefaResponse = service.atualizarTarefa(tarefa, id);
@@ -87,6 +92,7 @@ public class TarefaController {
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarTarefa (@Valid @PathVariable Integer id){
         service.deletarTarefa(id);
         return ResponseEntity.status(204).build();

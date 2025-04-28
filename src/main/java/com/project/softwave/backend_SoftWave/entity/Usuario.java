@@ -5,8 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +17,8 @@ public abstract class Usuario {
 
     @Email
     private String email;
+
+    private Role role;
 
     @NotNull
     private Integer cep;
@@ -138,5 +140,13 @@ public abstract class Usuario {
 
     public void setComplemento(String complemento) {
         this.complemento = complemento;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

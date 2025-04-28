@@ -28,7 +28,7 @@ public class DocumentoPessoalDTO {
         DocumentoPessoal documento = new DocumentoPessoal();
         documento.setDocumento(dto.getDocumento());
         documento.setConteudo(dto.getConteudo());
-        documento.setFkCliente(dto.getFkCliente());
+//        documento.setFkCliente(dto.getFkCliente());
         return documento;
     }
 
@@ -40,7 +40,7 @@ public class DocumentoPessoalDTO {
         dto.setId(documento.getId());
         dto.setDocumento(documento.getDocumento());
         dto.setConteudo(documento.getConteudo());
-        dto.setFkCliente(documento.getFkCliente());
+//        dto.setFkCliente(documento.getFkCliente());
         return dto;
     }
 

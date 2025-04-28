@@ -13,6 +13,7 @@ import com.project.softwave.backend_SoftWave.repository.AdvogadoFisicoRepository
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -27,14 +28,22 @@ public class AdvogadoFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AdvogadoFisico cadastrar(AdvogadoFisico advogadoFisico) {
 
 
-            if (advogadoFisicoRepository.findByEmailEqualsOrCpfEquals
-                    (advogadoFisico.getEmail(), advogadoFisico.getCpf()).isPresent()
-            ) {
+        if (
+                    advogadoFisicoRepository.findByEmailEqualsOrCpfEquals(
+                            advogadoFisico.getEmail(),
+                            advogadoFisico.getCpf()
+                    ).isPresent()
+           ) {
                 throw new EntidadeConflitoException("Email ou CPF já existe");
-            }
+        }
+        String senhaCriptografada = passwordEncoder.encode(advogadoFisico.getSenha());
+        advogadoFisico.setSenha(senhaCriptografada);
 
         if (!validarUsuarios.validarSenha(advogadoFisico.getSenha())) {
             throw new DadosInvalidosException("Senha inválida para cadastro.");
@@ -96,23 +105,4 @@ public class AdvogadoFisicoService {
         }
     }
 
-    public AdvogadoFisico login(AdvogadoFisico advogadoFisico) {
-        if (advogadoFisico.getEmail() == null || advogadoFisico.getSenha() == null) {
-            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
-        }
-
-        Optional<AdvogadoFisico> possivelUsuario =
-                advogadoFisicoRepository.findByEmailEqualsAndSenhaEquals(
-                        advogadoFisico.getEmail(),
-                        advogadoFisico.getSenha()
-                );
-
-        if (possivelUsuario.isEmpty()) {
-            throw new LoginIncorretoException("Email ou senha inválidos");
-        }
-
-       AdvogadoFisico advogadoFisicoAutenticado = possivelUsuario.get();
-
-        return advogadoFisicoAutenticado;
-    }
 }

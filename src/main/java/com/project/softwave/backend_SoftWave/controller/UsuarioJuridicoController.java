@@ -9,6 +9,7 @@ import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,29 +34,13 @@ public class UsuarioJuridicoController {
     })
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO request){
         UsuarioJuridico usuarioJuridico = UsuarioJuridicoDTO.toEntity(request);
         UsuarioJuridico usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridico);
         return ResponseEntity.status(201).body(UsuarioJuridicoDTO.toResponseDto(usuarioNovo));
     }
 
-    @Operation(summary = "Login dos usuários jurídicos", method = "POST")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login do usuário jurídico realizado com sucesso"),
-            @ApiResponse(responseCode = "401", description = "Email e/ou senha inválida")
-    })
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioJuridicoDTO> login(@Valid @RequestBody UsuarioLoginDTO loginDTO) {
-        UsuarioJuridico login = new UsuarioJuridico();
-        login.setEmail(loginDTO.getEmail());
-        login.setSenha(loginDTO.getSenha());
-
-        UsuarioJuridico usuarioAutenticado = usuarioJuridicoService.login(login);
-
-        UsuarioJuridicoDTO response = UsuarioJuridicoDTO.toResponseDto(usuarioAutenticado);
-
-        return ResponseEntity.ok(response);
-    }
 
     @Operation(summary = "Exclusão de um usuário jurídico", method = "DELETE")
     @ApiResponses(value = {
@@ -63,6 +48,7 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "404", description = "Usuário Jurídico não encontrado")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletar(@Valid @PathVariable Integer id){
 
         if(usuarioJuridicoService.deletar(id)){
@@ -71,15 +57,6 @@ public class UsuarioJuridicoController {
         return ResponseEntity.status(404).build();
     }
 
-//    Com RequestParam ao invés de PathVariable
-//    @DeleteMapping("/id")
-//    public ResponseEntity deletar(@RequestParam Integer id){
-//        if(usuarioJuridicoService.deletar(id)){
-//            return  ResponseEntity.status(200).build();
-//        }
-//        return ResponseEntity.status(404).build();
-//    }
-
     @Operation(summary = "Atualização dos dados dos usuários jurídicos", method = "PUT")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Atualização do usuário jurídico realizada com sucesso"),
@@ -87,15 +64,14 @@ public class UsuarioJuridicoController {
     })
 
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioJuridicoAtualizacaoDTO> atualizar(
             @Valid @RequestBody UsuarioJuridicoAtualizacaoDTO request,
             @PathVariable Integer id) {
-
         UsuarioJuridico usuarioAtualizado = usuarioJuridicoService.atualizar(id, request);
 
         return ResponseEntity.status(200).body(UsuarioJuridicoAtualizacaoDTO.toResponseDto(usuarioAtualizado));
     }
-
 
     @Operation(summary = "Busca por todos dos usuários jurídicos", method = "GET")
     @ApiResponses(value = {
@@ -103,6 +79,7 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "204", description = "Não há usuários jurídicos cadastrados")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuarioJuridicoDTO>> listar(){
         List<UsuarioJuridico> usuariosJuridicos = usuarioJuridicoService.listar();
 
@@ -119,6 +96,7 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "404", description = "Usuário jurídico não encontrado")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioJuridicoDTO> buscarPorId(@PathVariable Integer id) {
         UsuarioJuridico usuario = usuarioJuridicoService.buscarPorId(id);
         return ResponseEntity.ok(UsuarioJuridicoDTO.toResponseDto(usuario));

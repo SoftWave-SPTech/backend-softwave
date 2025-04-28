@@ -3,6 +3,7 @@ package com.project.softwave.backend_SoftWave.controller;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.service.AnaliseProcessoService;
 import com.project.softwave.backend_SoftWave.service.GeminiService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ public class AnaliseProcessoController {
 
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> analisarProcessos() {
         geminiService.gerarAnalises();
         return ResponseEntity.status(201).body("Análises geradas com sucesso!");
@@ -31,6 +33,7 @@ public class AnaliseProcessoController {
 
 
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<AnaliseProcesso>> listarAnalises() {
         List<AnaliseProcesso> analises = analiseService.listarTodas();
         return ResponseEntity.ok(analises);

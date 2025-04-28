@@ -1,9 +1,6 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class DocumentoPessoal {
@@ -13,7 +10,12 @@ public class DocumentoPessoal {
     private Integer id;
     private String documento;
     private String conteudo;
-    private Integer fkCliente;
+
+//    TODO IMPLEMENTAR ESSE CAMPO NO FUTURO
+//    @ManyToOne
+//    @JoinColumn(name = "fk_cliente_id", referencedColumnName = "id")
+//    private Usuario fkCliente;
+
 
     public Integer getId() {
         return id;
@@ -39,11 +41,4 @@ public class DocumentoPessoal {
         this.conteudo = conteudo;
     }
 
-    public Integer getFkCliente() {
-        return fkCliente;
-    }
-
-    public void setFkCliente(Integer fkCliente) {
-        this.fkCliente = fkCliente;
-    }
 }

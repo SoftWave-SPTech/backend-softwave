@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.service.DocumentoPessoalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ public class DocumentoPessoalController {
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<DocumentoPessoalDTO> cadastrarDocumento(@Valid @RequestBody DocumentoPessoalDTO request) {
         DocumentoPessoal documento = DocumentoPessoalDTO.toEntity(request);
         DocumentoPessoal documentoSalvo = service.cadastrarDocumento(documento);
@@ -39,6 +41,7 @@ public class DocumentoPessoalController {
             @ApiResponse(responseCode = "204", description = "Não há documentos pessoais cadastrados")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<DocumentoPessoalDTO>> listarDocumentos() {
         List<DocumentoPessoal> documentos = service.listarDocumentos();
         List<DocumentoPessoalDTO> documentoDtos = documentos.stream()
@@ -54,6 +57,7 @@ public class DocumentoPessoalController {
             @ApiResponse(responseCode = "204", description = "Não há documento pessoal cadastrado com esse ID")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<DocumentoPessoalDTO> buscarPorId(@PathVariable Integer id) {
         DocumentoPessoal documento = service.buscarPorId(id);
         return ResponseEntity.status(200).body(DocumentoPessoalDTO.toResponseDto(documento));
@@ -65,6 +69,7 @@ public class DocumentoPessoalController {
             @ApiResponse(responseCode = "404", description = "Documento pessoal não encontrado")
     })
     @PutMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<DocumentoPessoalDTO> atualizarDocumento(@Valid @RequestBody DocumentoPessoal documento, @PathVariable Integer id) {
         DocumentoPessoal documentoAtualizado = service.atualizarDocumento(documento, id);
         return ResponseEntity.status(200).body(DocumentoPessoalDTO.toResponseDto(documentoAtualizado));
@@ -76,6 +81,7 @@ public class DocumentoPessoalController {
             @ApiResponse(responseCode = "404", description = "Documento pessoal não encontrado")
     })
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarDocumento(@PathVariable Integer id) {
         service.deletarDocumento(id);
         return ResponseEntity.status(204).build();

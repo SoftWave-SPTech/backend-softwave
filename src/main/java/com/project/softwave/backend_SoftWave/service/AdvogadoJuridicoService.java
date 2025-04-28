@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,9 @@ public class AdvogadoJuridicoService {
     @Autowired
     private UserValidator userValidator;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AdvogadoJuridico cadastrar(AdvogadoJuridico advogadoJuridico) {
         if (advogadoJuridicoRepository.findByEmailEqualsOrCnpjEquals(
                 advogadoJuridico.getEmail(), advogadoJuridico.getCnpj()).isPresent()) {
@@ -33,6 +37,8 @@ public class AdvogadoJuridicoService {
         if (!userValidator.validarSenha(advogadoJuridico.getSenha())) {
             throw new DadosInvalidosException("Senha inválida para cadastro.");
         }
+        String senhaCriptografada = passwordEncoder.encode(advogadoJuridico.getSenha());
+        advogadoJuridico.setSenha(senhaCriptografada);
 
         return advogadoJuridicoRepository.save(advogadoJuridico);
     }
@@ -98,18 +104,4 @@ public class AdvogadoJuridicoService {
         }
     }
 
-    public AdvogadoJuridico login(AdvogadoJuridico advogadoJuridico) {
-        if (advogadoJuridico.getEmail() == null || advogadoJuridico.getSenha() == null) {
-            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
-        }
-
-        Optional<AdvogadoJuridico> possivelUsuario = advogadoJuridicoRepository
-                .findByEmailEqualsAndSenhaEquals(advogadoJuridico.getEmail(), advogadoJuridico.getSenha());
-
-        if (possivelUsuario.isEmpty()) {
-            throw new LoginIncorretoException("Email ou senha incorretos");
-        }
-
-        return (possivelUsuario.get());
-    }
 }

@@ -41,6 +41,7 @@ public class Processo {
 //            "autor": null,
     private String autor;
 //            "advogado": null,
+    //TODO CONECTAR AOS ADVOGADOS CADASTRADOS
     private String advogado;
 //            "exectdo": null,
     private String executado;
@@ -92,14 +93,6 @@ public class Processo {
     public void setId(Integer id) {
         this.id = id;
     }
-//            "ultimas_movimentacoes": [],
-//    private UltimasMovimentacoes ultimasMovimentacoes;
-////            "peticoes_diversas": [],
-//    private PeticoesDiversas peticoesDiversas;
-////            "apensos": [],
-//    private Apensos apensos;
-////            "audiencias": [],
-//    private Audiencias audiencias;
 
     public String getNumeroProcesso() {
         return numeroProcesso;

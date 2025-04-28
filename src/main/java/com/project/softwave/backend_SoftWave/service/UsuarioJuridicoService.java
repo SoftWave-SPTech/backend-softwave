@@ -8,9 +8,11 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepositor
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
-
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsuarioJuridicoService {
@@ -19,6 +21,9 @@ public class UsuarioJuridicoService {
 
     @Autowired
     private UserValidator validacoesUsuarios;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
         if (
@@ -31,6 +36,8 @@ public class UsuarioJuridicoService {
             ) {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
+            String senhaCriptografada = passwordEncoder.encode(usuarioJuridico.getSenha());
+            usuarioJuridico.setSenha(senhaCriptografada);
 
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
 
@@ -88,17 +95,6 @@ public class UsuarioJuridicoService {
             return true;
         }
         throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
-    }
-
-    public UsuarioJuridico login(UsuarioJuridico login) {
-        if (login == null || login.getEmail() == null || login.getSenha() == null) {
-            throw new LoginIncorretoException("Email e senha são obrigatórios.");
-        }
-
-        return usuariosJuridicosRepository.findByEmailEqualsAndSenhaEquals(
-                login.getEmail(),
-                login.getSenha()
-        ).orElseThrow(() -> new LoginIncorretoException("Email ou senha inválidos."));
     }
 
 }
