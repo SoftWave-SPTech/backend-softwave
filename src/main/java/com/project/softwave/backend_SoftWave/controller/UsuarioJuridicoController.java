@@ -96,6 +96,7 @@ public class UsuarioJuridicoController {
             @ApiResponse(responseCode = "404", description = "Usuário jurídico não encontrado")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioJuridicoDTO> buscarPorId(@PathVariable Integer id) {
         UsuarioJuridico usuario = usuarioJuridicoService.buscarPorId(id);
         return ResponseEntity.ok(UsuarioJuridicoDTO.toResponseDto(usuario));

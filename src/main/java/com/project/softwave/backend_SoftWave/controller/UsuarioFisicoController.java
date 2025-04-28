@@ -94,6 +94,7 @@ public class UsuarioFisicoController {
             @ApiResponse(responseCode = "404", description = "Usuário físico não encontrado")
     })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioFisicoDTO> buscarPorId(@PathVariable Integer id) {
         UsuarioFisico usuario = usuarioFisicoService.buscarPorId(id);
         return ResponseEntity.ok(UsuarioFisicoDTO.toResponseDto(usuario));
