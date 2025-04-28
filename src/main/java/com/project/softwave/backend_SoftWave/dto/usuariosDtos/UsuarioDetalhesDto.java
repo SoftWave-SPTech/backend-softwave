@@ -1,6 +1,5 @@
-package com.project.softwave.backend_SoftWave.dto;
+package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
-import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

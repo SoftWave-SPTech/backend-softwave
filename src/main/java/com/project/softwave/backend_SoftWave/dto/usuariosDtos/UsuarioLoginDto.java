@@ -1,6 +1,4 @@
-package com.project.softwave.backend_SoftWave.dto;
-
-import com.project.softwave.backend_SoftWave.entity.Usuario;
+package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
 public class UsuarioLoginDto {
 

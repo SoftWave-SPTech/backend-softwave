@@ -1,7 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto.mappers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.softwave.backend_SoftWave.dto.UsuarioLoginDto;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
 import com.project.softwave.backend_SoftWave.entity.*;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface AdvogadoJuridicoRepository extends JpaRepository<AdvogadoJuridico, Integer> {
 
-    Optional<AdvogadoJuridico> findByEmailEqualsOrCnpjEquals(String email, String cnpj);
+    Optional<Object> findByEmailEqualsOrCnpjEquals(String email, String cnpj);
 
     boolean existsByEmailEqualsOrCnpjEqualsAndIdNot(String email, String cnpj, Integer id);
 

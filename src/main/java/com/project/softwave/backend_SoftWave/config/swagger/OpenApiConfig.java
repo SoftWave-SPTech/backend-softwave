@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "Projeto Usuários",
-                description = "Exemplo de implementação de JWT com Spring Security",
+                title = "Documentação Swagger da API SoftWave",
+                description = "API REST desenvolvida para um sistema de gestão de clientes e processos jurídicos",
                 contact = @Contact(
-                        name = "Diego",
-                        url = "https://github.com/BandTec/spring-security-jwt-exemplo",
-                        email = "diego.lima@sptech.school"
+                        name = "Leticia Fonseca",
+                        url = "https://github.com/SoftWave-SPTech/backend-softwave",
+                        email = "leticia.fonseca@sptech.school"
                 ),
                 license = @License(name = "UNLICENSED"),
                 version = "1.0.0"

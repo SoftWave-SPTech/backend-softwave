@@ -1,7 +1,6 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
-import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
@@ -42,7 +41,6 @@ public class AdvogadoJuridicoService {
         }
         String senhaCriptografada = passwordEncoder.encode(advogadoJuridico.getSenha());
         advogadoJuridico.setSenha(senhaCriptografada);
-        advogadoJuridico.setRole(Role.ROLE_ADVOGADO);
 
         return advogadoJuridicoRepository.save(advogadoJuridico);
     }

@@ -1,7 +1,6 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
-import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
@@ -47,7 +46,6 @@ public class UsuarioJuridicoService {
             }
             String senhaCriptografada = passwordEncoder.encode(usuarioJuridico.getSenha());
             usuarioJuridico.setSenha(senhaCriptografada);
-            usuarioJuridico.setRole(Role.ROLE_USUARIO);
 
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
 

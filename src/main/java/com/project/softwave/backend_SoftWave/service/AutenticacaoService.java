@@ -1,6 +1,6 @@
 package com.project.softwave.backend_SoftWave.service;
 
-import com.project.softwave.backend_SoftWave.dto.UsuarioDetalhesDto;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioDetalhesDto;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;

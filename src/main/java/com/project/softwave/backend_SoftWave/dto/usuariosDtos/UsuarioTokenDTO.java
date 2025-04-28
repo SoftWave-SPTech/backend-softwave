@@ -1,10 +1,6 @@
-package com.project.softwave.backend_SoftWave.dto;
+package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
 import com.project.softwave.backend_SoftWave.entity.Usuario;
-import lombok.Getter;
-import lombok.Setter;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 public class UsuarioTokenDTO {
 
