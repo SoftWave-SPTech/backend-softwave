@@ -30,8 +30,22 @@ public class AdvogadoJuridico  extends UsuarioJuridico {
 
     }
 
-    public AdvogadoJuridico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
-        super(id, senha, email, cep, logradouro, bairro, cidade, telefone, foto, cnpj, nomeFantasia, razaoSocial);
+    public AdvogadoJuridico(String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
+        super(cnpj, nomeFantasia, razaoSocial);
+        this.oab = oab;
+    }
+
+    public AdvogadoJuridico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
+        super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto, cnpj, nomeFantasia, razaoSocial);
+        this.oab = oab;
+    }
+
+    public AdvogadoJuridico(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
+        super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto, cnpj, nomeFantasia, razaoSocial);
+        this.oab = oab;
+    }
+
+    public AdvogadoJuridico(Integer oab) {
         this.oab = oab;
     }
 

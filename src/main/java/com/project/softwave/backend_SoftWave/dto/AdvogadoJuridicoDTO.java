@@ -42,13 +42,14 @@ public class AdvogadoJuridicoDTO {
     private String bairro;
     @NotBlank
     private String cidade;
+    private String complemento;
     @NotBlank
     private String telefone;
 
     public AdvogadoJuridicoDTO() {
     }
 
-    public AdvogadoJuridicoDTO(Integer id, Integer oab, String email, String senha, String nomeFantasia, String razaoSocial, String cnpj, Integer cep, String logradouro, String bairro, String cidade, String telefone) {
+    public AdvogadoJuridicoDTO(Integer id, Integer oab, String email, String senha, String nomeFantasia, String razaoSocial, String cnpj, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
         this.id = id;
         this.oab = oab;
         this.email = email;
@@ -60,6 +61,7 @@ public class AdvogadoJuridicoDTO {
         this.logradouro = logradouro;
         this.bairro = bairro;
         this.cidade = cidade;
+        this.complemento = complemento;
         this.telefone = telefone;
     }
 
@@ -76,6 +78,7 @@ public class AdvogadoJuridicoDTO {
         this.bairro = advogadoJuridico.getBairro();
         this.cidade = advogadoJuridico.getCidade();
         this.telefone = advogadoJuridico.getTelefone();
+        this.complemento = advogadoJuridico.getComplemento();
 
     }
 
@@ -96,6 +99,7 @@ public class AdvogadoJuridicoDTO {
         advogadoJuridico.setBairro(dto.getBairro());
         advogadoJuridico.setCidade(dto.getCidade());
         advogadoJuridico.setTelefone(dto.getTelefone());
+        advogadoJuridico.setComplemento(dto.getComplemento());
 
         return advogadoJuridico;
     }
@@ -117,6 +121,7 @@ public class AdvogadoJuridicoDTO {
         dto.setLogradouro(advogado.getLogradouro());
         dto.setBairro(advogado.getBairro());
         dto.setCep(advogado.getCep());
+        dto.setComplemento(advogado.getComplemento());
         return dto;
     }
 
@@ -212,6 +217,14 @@ public class AdvogadoJuridicoDTO {
 
     public String getTelefone() {
         return telefone;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 
     public void setTelefone(String telefone) {

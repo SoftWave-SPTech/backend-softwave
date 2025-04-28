@@ -45,10 +45,11 @@ public class AdvogadoFisicoDTO {
     private String bairro;
     @NotBlank
     private String cidade;
+    private String complemento;
     @NotBlank
     private String telefone;
 
-    public AdvogadoFisicoDTO(Integer id, Integer oab, String nome, String email, String senha, String cpf, String rg, Integer cep, String logradouro, String bairro, String cidade, String telefone) {
+    public AdvogadoFisicoDTO(Integer id, Integer oab, String nome, String email, String senha, String cpf, String rg, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
         this.id = id;
         this.oab = oab;
         this.nome = nome;
@@ -60,6 +61,7 @@ public class AdvogadoFisicoDTO {
         this.logradouro = logradouro;
         this.bairro = bairro;
         this.cidade = cidade;
+        this.complemento = complemento;
         this.telefone = telefone;
     }
 
@@ -76,6 +78,7 @@ public class AdvogadoFisicoDTO {
         this.bairro = advogadoFisico.getBairro();
         this.cidade = advogadoFisico.getCidade();
         this.telefone = advogadoFisico.getTelefone();
+        this.complemento = advogadoFisico.getComplemento();
 
 
     }
@@ -100,7 +103,7 @@ public class AdvogadoFisicoDTO {
         advogadoFisico.setTelefone(dto.getTelefone());
         advogadoFisico.setLogradouro(dto.getLogradouro());
         advogadoFisico.setCep(dto.getCep());
-
+        advogadoFisico.setComplemento(dto.getComplemento());
         return advogadoFisico;
     }
 
@@ -121,6 +124,7 @@ public class AdvogadoFisicoDTO {
         dto.setCidade(advogado.getCidade());
         dto.setTelefone(advogado.getTelefone());
         dto.setBairro(advogado.getBairro());
+        dto.setComplemento(advogado.getComplemento());
         return dto;
     }
 
@@ -152,6 +156,13 @@ public class AdvogadoFisicoDTO {
         this.rg = rg;
     }
 
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
 
     public String getNome() {
         return nome;

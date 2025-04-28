@@ -41,20 +41,22 @@ public class UsuarioFisicoDTO {
     @NotBlank
     private String telefone;
 
+    private String complemento;
 
 
-    public UsuarioFisicoDTO(Integer id, String nome, String email, String senha, String cpf, String rg, String logradouro, String bairro, String cidade, String telefone, Integer cep) {
+    public UsuarioFisicoDTO(Integer id, String nome, String email, String senha, String cpf, String rg, Integer cep, String logradouro, String bairro, String cidade, String telefone, String complemento) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.cpf = cpf;
         this.rg = rg;
+        this.cep = cep;
         this.logradouro = logradouro;
         this.bairro = bairro;
         this.cidade = cidade;
         this.telefone = telefone;
-        this.cep = cep;
+        this.complemento = complemento;
     }
 
     public UsuarioFisicoDTO() {
@@ -76,6 +78,7 @@ public class UsuarioFisicoDTO {
         usuarioFisico.setCidade(dto.getCidade());
         usuarioFisico.setTelefone(dto.getTelefone());
         usuarioFisico.setCep(dto.getCep());
+        usuarioFisico.setComplemento(dto.getComplemento());
         return usuarioFisico;
     }
 
@@ -92,6 +95,7 @@ public class UsuarioFisicoDTO {
         responseDto.setCidade(usuarioFisico.getCidade());
         responseDto.setTelefone(usuarioFisico.getTelefone());
         responseDto.setCep(usuarioFisico.getCep());
+        responseDto.setComplemento(usuarioFisico.getComplemento());
 
         return responseDto;
     }
@@ -178,6 +182,14 @@ public class UsuarioFisicoDTO {
 
     public String getTelefone() {
         return telefone;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 
     public void setTelefone(String telefone) {
