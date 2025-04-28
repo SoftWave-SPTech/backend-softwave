@@ -1,13 +1,19 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
+import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import com.project.softwave.backend_SoftWave.exception.*;
+import com.project.softwave.backend_SoftWave.exception.BasicException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,11 +35,8 @@ public class UsuarioFisicoService {
 
     public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
         if (
-                validarUsuarios.validarSenha(usuarioFisico.getSenha()) &&
-                        validarUsuarios.validarCamposVaziosFisico(
-                                usuarioFisico.getNome(),
-                                usuarioFisico.getRg()
-                        )
+                validarUsuarios.validarSenha(usuarioFisico.getSenha())
+
         ) {
             if (
                     usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(
@@ -52,10 +55,10 @@ public class UsuarioFisicoService {
             return usuarioFisicoCadastrado;
 
         }
-        throw new BasicException("Dados do usuário inválidos");
+        throw new DadosInvalidosException("Senha inválida para cadastro");
     }
 
-    public List<UsuarioFisicoDTO> listar() {
+    public List<UsuarioFisico> listar() {
 
         List<UsuarioFisico> usuariosFisicos = usuariosFisicosRepository.findAll();
 
@@ -63,37 +66,34 @@ public class UsuarioFisicoService {
             throw new EntidadeNaoEncontradaException("Nenhum usuário encontrado");
         }
 
-        List<UsuarioFisicoDTO> todosUsuariosFisicos = usuariosFisicos.stream()
-                .map(usuarioFisico -> new UsuarioFisicoDTO(usuarioFisico))
-                .collect(Collectors.toList());
-
-        return todosUsuariosFisicos;
+        return usuariosFisicos;
     }
 
-    public UsuarioFisicoDTO atualizar(Integer id, UsuarioFisicoDTO usuarioFisicoDTO) {
+    public UsuarioFisico buscarPorId(Integer id) {
+        return usuariosFisicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário Físico com ID " + id + " não encontrado."));
+    }
 
-        Optional<UsuarioFisico> usuarioFisicoOptional = usuariosFisicosRepository.findById(id);
-        if (usuarioFisicoOptional.isPresent()) {
-            if (usuariosFisicosRepository.existsByEmailEqualsOrCpfEqualsAndIdNot(
-                    usuarioFisicoDTO.getEmail(),
-                    usuarioFisicoDTO.getCpf(),
-                    id)) {
-                throw new BasicException("Email ou CPF já existe para outro usuário");
-            } else if (validarUsuarios.validarSenha(usuarioFisicoDTO.getSenha()) &&
-                    validarUsuarios.validarCamposVaziosFisico(
-                            usuarioFisicoDTO.getNome(),
-                            usuarioFisicoDTO.getRg())) {
+    @Transactional
+    public UsuarioFisico atualizar(Integer id, UsuarioFisicoAtualizacaoDTO dto) {
 
-                UsuarioFisico usuarioFisicoAtualizado = new UsuarioFisico(usuarioFisicoDTO);
-                usuarioFisicoAtualizado.setId(id);
+        UsuarioFisico usuarioFisico = usuariosFisicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
 
-                return new UsuarioFisicoDTO(usuarioFisicoAtualizado);
-            } else {
-                throw new BasicException("Dados do usuário inválidos");
-            }
-        } else {
-            throw new EntidadeNaoEncontradaException("Usuário não encontrado");
+        usuarioFisico.setNome(dto.getNome());
+        usuarioFisico.setEmail(dto.getEmail());
+        usuarioFisico.setSenha(dto.getSenha());
+        usuarioFisico.setTelefone(dto.getTelefone());
+        usuarioFisico.setLogradouro(dto.getLogradouro());
+        usuarioFisico.setCep(dto.getCep());
+        usuarioFisico.setBairro(dto.getBairro());
+        usuarioFisico.setCidade(dto.getCidade());
+
+        if (!validarUsuarios.validarSenha(usuarioFisico.getSenha())) {
+            throw new DadosInvalidosException("Senha inválida");
         }
+
+        return usuariosFisicosRepository.save(usuarioFisico);
     }
 
     public Boolean deletar(Integer id) {
@@ -106,23 +106,4 @@ public class UsuarioFisicoService {
         }
     }
 
-    public UsuarioFisicoDTO login(UsuarioFisicoDTO usuarioFisicoDTO) {
-        if (usuarioFisicoDTO.getEmail() == null || usuarioFisicoDTO.getSenha() == null) {
-            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
-        }
-
-        Optional<UsuarioFisico> possivelUsuario =
-                usuariosFisicosRepository.findByEmailEqualsAndSenhaEquals(
-                        usuarioFisicoDTO.getEmail(),
-                        usuarioFisicoDTO.getSenha()
-                );
-
-        if (possivelUsuario.isEmpty()) {
-            throw new LoginIncorretoException("Email ou senha inválidos");
-        }
-
-        UsuarioFisico usuarioFisicoAutendicado = possivelUsuario.get();
-
-        return new UsuarioFisicoDTO(usuarioFisicoAutendicado);
-    }
 }

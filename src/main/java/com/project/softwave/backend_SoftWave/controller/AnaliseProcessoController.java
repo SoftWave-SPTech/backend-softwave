@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/analises")
+@RequestMapping("/analise-processo")
 public class AnaliseProcessoController {
 
     @Autowired

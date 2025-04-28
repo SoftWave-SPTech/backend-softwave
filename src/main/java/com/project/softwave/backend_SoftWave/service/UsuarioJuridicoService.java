@@ -1,17 +1,15 @@
 package com.project.softwave.backend_SoftWave.service;
 
-import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
-import com.project.softwave.backend_SoftWave.exception.BasicException;
-import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
-import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
-import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
+import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,13 +27,7 @@ public class UsuarioJuridicoService {
 
     public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
         if (
-                validacoesUsuarios.validarSenha(usuarioJuridico.getSenha()) &&
-                        validacoesUsuarios.validarCamposVaziosJuridico(
-                                usuarioJuridico.getNomeFantasia(),
-                                usuarioJuridico.getRazaoSocial(),
-                                usuarioJuridico.getCnpj()
-                        )
-        ) {
+                validacoesUsuarios.validarSenha(usuarioJuridico.getSenha())) {
             if (
                     usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
                             usuarioJuridico.getEmail(),
@@ -52,50 +44,49 @@ public class UsuarioJuridicoService {
             return usuarioJuridicoCadastrado;
 
         }
-        throw new BasicException("Dados inválidos para cadastro.");
+        throw new DadosInvalidosException("Senha inválida para cadastro.");
     }
 
-    public List<UsuarioJuridicoDTO> listar(){
+    public List<UsuarioJuridico> listar(){
 
         if (usuariosJuridicosRepository.findAll().isEmpty()){
-            throw new BasicException("Nenhum usuário jurídico encontrado.");
+            throw new EntidadeNaoEncontradaException("Nenhum usuário jurídico encontrado.");
         }
 
-        List<UsuarioJuridicoDTO> todosUsuariosJuridicos =
-                usuariosJuridicosRepository.findAll()
-                        .stream()
-                        .map(usuarioJuridico -> new UsuarioJuridicoDTO(usuarioJuridico))
-                        .collect(Collectors.toList());
+        return usuariosJuridicosRepository.findAll();
 
-        return todosUsuariosJuridicos;
     }
 
-    public UsuarioJuridicoDTO atualizar(Integer id, UsuarioJuridicoDTO usuarioJuridicoDTO){
 
-        if (usuariosJuridicosRepository.findById(id).isPresent()){
-            if(
-                    usuariosJuridicosRepository.existsByEmailEqualsOrCnpjEqualsAndIdNot(
-                            usuarioJuridicoDTO.getEmail(),
-                            usuarioJuridicoDTO.getCnpj(),
-                            id
-                    )
-            ){
-                throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
-            }else if(
-                    validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
-                            validacoesUsuarios.validarCamposVaziosJuridico(
-                                    usuarioJuridicoDTO.getNomeFantasia(),
-                                    usuarioJuridicoDTO.getRazaoSocial(),
-                                    usuarioJuridicoDTO.getCnpj()
-                            )) {
+    public UsuarioJuridico buscarPorId(Integer id) {
+        return usuariosJuridicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário jurídico com ID " + id + " não encontrado."));
+    }
 
-                UsuarioJuridico usuarioJuridicoAtualizado = new UsuarioJuridico(usuarioJuridicoDTO);
-                usuarioJuridicoAtualizado.setId(id);
+    @Transactional
+    public UsuarioJuridico atualizar(Integer id, UsuarioJuridicoAtualizacaoDTO dto) {
 
-                return new UsuarioJuridicoDTO(usuarioJuridicoAtualizado);
-            }
+        UsuarioJuridico usuarioJuridico = usuariosJuridicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
+
+
+        usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
+        usuarioJuridico.setEmail(dto.getEmail());
+        usuarioJuridico.setSenha(dto.getSenha());
+        usuarioJuridico.setCnpj(dto.getCnpj());
+        usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
+        usuarioJuridico.setTelefone(dto.getTelefone());
+        usuarioJuridico.setLogradouro(dto.getLogradouro());
+        usuarioJuridico.setCep(dto.getCep());
+        usuarioJuridico.setBairro(dto.getBairro());
+        usuarioJuridico.setCidade(dto.getCidade());
+
+
+        if (!validacoesUsuarios.validarSenha(usuarioJuridico.getSenha())) {
+            throw new DadosInvalidosException("Senha inválida");
         }
-        throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
+
+        return usuariosJuridicosRepository.save(usuarioJuridico);
     }
 
     public Boolean deletar(Integer id){
@@ -106,19 +97,4 @@ public class UsuarioJuridicoService {
         throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
     }
 
-    public UsuarioJuridicoDTO login(UsuarioJuridicoDTO usuarioJuridicoDTO){
-        Optional<UsuarioJuridico> possivelUsuario =
-                usuariosJuridicosRepository.findByEmailEqualsAndSenhaEquals(
-                        usuarioJuridicoDTO.getEmail(),
-                        usuarioJuridicoDTO.getSenha()
-                );
-
-        if (possivelUsuario.isEmpty()){
-            throw new LoginIncorretoException("Email ou senha incorretos.");
-        }
-
-        UsuarioJuridico usuarioJuridicoAutendicado = possivelUsuario.get();
-
-        return new UsuarioJuridicoDTO(usuarioJuridicoAutendicado);
-    }
 }

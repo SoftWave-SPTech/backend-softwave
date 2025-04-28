@@ -1,12 +1,17 @@
 package com.project.softwave.backend_SoftWave.service;
 
 
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.AdvogadoFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,6 +45,10 @@ public class AdvogadoFisicoService {
         String senhaCriptografada = passwordEncoder.encode(advogadoFisico.getSenha());
         advogadoFisico.setSenha(senhaCriptografada);
 
+        if (!validarUsuarios.validarSenha(advogadoFisico.getSenha())) {
+            throw new DadosInvalidosException("Senha inválida para cadastro.");
+        }
+
             return   advogadoFisicoRepository.save(advogadoFisico);
     }
 
@@ -53,29 +62,26 @@ public class AdvogadoFisicoService {
             return advogadosFisicos;
     }
 
-    public AdvogadoFisico atualizar(Integer id, AdvogadoFisico advogadoFisico) {
+    @Transactional
+    public AdvogadoFisico atualizar(Integer id, UsuarioFisicoAtualizacaoDTO dto) {
 
-        Optional<AdvogadoFisico> advogadoFisicoOptional = advogadoFisicoRepository.findById(id);
-        if (advogadoFisicoOptional.isPresent()) {
-            if (advogadoFisicoRepository.existsByEmailEqualsOrCpfEqualsAndIdNot(
-                    advogadoFisico.getEmail(),
-                    advogadoFisico.getCpf(),
-                    id)) {
-                throw new EntidadeConflitoException("Email ou CPF já existe para outro usuário");
-            } else if (validarUsuarios.validarSenha(advogadoFisico.getSenha()) &&
-                    validarUsuarios.validarCamposVaziosFisico(
-                            advogadoFisico.getNome(),
-                            advogadoFisico.getRg())) {
+        AdvogadoFisico advogado = advogadoFisicoRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado com id: " + id));
 
 
-                advogadoFisico.setId(id);
-                return advogadoFisicoRepository.save(advogadoFisico);
-            } else {
-                throw new EntidadeConflitoException("Dados do usuário inválidos");
-            }
-        } else {
-            throw new EntidadeNaoEncontradaException("Usuário não encontrado");
+        advogado.setNome(dto.getNome());
+        advogado.setEmail(dto.getEmail());
+        advogado.setSenha(dto.getSenha());
+        advogado.setTelefone(dto.getTelefone());
+        advogado.setLogradouro(dto.getLogradouro());
+        advogado.setCep(dto.getCep());
+        advogado.setBairro(dto.getBairro());
+        advogado.setCidade(dto.getCidade());
+
+        if (!validarUsuarios.validarSenha(advogado.getSenha())) {
+            throw new DadosInvalidosException("Senha inválida");
         }
+        return advogadoFisicoRepository.save(advogado);
     }
 
 
@@ -99,23 +105,4 @@ public class AdvogadoFisicoService {
         }
     }
 
-    public AdvogadoFisico login(AdvogadoFisico advogadoFisico) {
-        if (advogadoFisico.getEmail() == null || advogadoFisico.getSenha() == null) {
-            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
-        }
-
-        Optional<AdvogadoFisico> possivelUsuario =
-                advogadoFisicoRepository.findByEmailEqualsAndSenhaEquals(
-                        advogadoFisico.getEmail(),
-                        advogadoFisico.getSenha()
-                );
-
-        if (possivelUsuario.isEmpty()) {
-            throw new LoginIncorretoException("Email ou senha inválidos");
-        }
-
-       AdvogadoFisico advogadoFisicoAutenticado = possivelUsuario.get();
-
-        return advogadoFisicoAutenticado;
-    }
 }

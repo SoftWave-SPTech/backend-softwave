@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.controller;
 
 
 import com.project.softwave.backend_SoftWave.dto.AdvogadoFisicoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.service.AdvogadoFisicoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,9 +82,13 @@ import java.util.List;
         })
         @PutMapping("/{id}")
         @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<AdvogadoFisicoDTO> atualizar(@Valid @RequestBody AdvogadoFisicoDTO request, @PathVariable Integer id) {
-            AdvogadoFisico atualizado = service.atualizar(id, AdvogadoFisicoDTO.toEntity(request));
-            return ResponseEntity.ok(AdvogadoFisicoDTO.toResponseDTO(atualizado));
+        public ResponseEntity<UsuarioFisicoAtualizacaoDTO> atualizar(
+                @Valid @RequestBody UsuarioFisicoAtualizacaoDTO request,
+                @PathVariable Integer id) {
+
+            AdvogadoFisico advogadoAtualizado = service.atualizar(id, request);
+
+            return ResponseEntity.status(200).body(UsuarioFisicoAtualizacaoDTO.toResponseAdvogadoDto(advogadoAtualizado));
         }
 
         @Operation(summary = "Excluir advogado físico por ID", method = "DELETE")
