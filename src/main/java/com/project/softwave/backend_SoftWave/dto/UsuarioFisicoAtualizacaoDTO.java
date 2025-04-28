@@ -1,8 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
-import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,8 +33,10 @@ public class UsuarioFisicoAtualizacaoDTO {
     private String bairro;
     @NotBlank
     private String cidade;
+    private String complemento;
     @NotBlank
     private String telefone;
+
 
     private String foto;
 
@@ -57,6 +57,8 @@ public class UsuarioFisicoAtualizacaoDTO {
         usuarioFisico.setCidade(dto.getCidade());
         usuarioFisico.setTelefone(dto.getTelefone());
         usuarioFisico.setFoto(dto.getFoto());
+        usuarioFisico.setComplemento(dto.getComplemento());
+
         return usuarioFisico;
     }
 
@@ -75,6 +77,7 @@ public class UsuarioFisicoAtualizacaoDTO {
         dto.setCidade(usuarioFisico.getCidade());
         dto.setTelefone(usuarioFisico.getTelefone());
         dto.setFoto(usuarioFisico.getFoto());
+        dto.setComplemento(usuarioFisico.getComplemento());
         return dto;
     }
 
@@ -93,6 +96,7 @@ public class UsuarioFisicoAtualizacaoDTO {
         advogadoFisico.setCidade(dto.getCidade());
         advogadoFisico.setTelefone(dto.getTelefone());
         advogadoFisico.setFoto(dto.getFoto());
+        advogadoFisico.setComplemento(dto.getComplemento());
         return advogadoFisico;
     }
 
@@ -111,6 +115,7 @@ public class UsuarioFisicoAtualizacaoDTO {
         dto.setCidade(advogadoFisico.getCidade());
         dto.setTelefone(advogadoFisico.getTelefone());
         dto.setFoto(advogadoFisico.getFoto());
+        dto.setComplemento(advogadoFisico.getComplemento());
         return dto;
     }
 
@@ -149,6 +154,14 @@ public class UsuarioFisicoAtualizacaoDTO {
 
     public String getLogradouro() {
         return logradouro;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 
     public void setLogradouro(String logradouro) {

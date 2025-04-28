@@ -18,7 +18,6 @@ public abstract class Usuario {
     @Email
     private String email;
 
-
     @NotNull
     private Integer cep;
     @NotBlank
@@ -27,6 +26,7 @@ public abstract class Usuario {
     private String bairro;
     @NotBlank
     private String cidade;
+    private String complemento;
     @NotBlank
     private String telefone;
 
@@ -35,18 +35,7 @@ public abstract class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String telefone, String foto) {
-        this.senha = senha;
-        this.email = email;
-        this.cep = cep;
-        this.logradouro = logradouro;
-        this.bairro = bairro;
-        this.cidade = cidade;
-        this.telefone = telefone;
-        this.foto = foto;
-    }
-
-    public Usuario(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String telefone, String foto) {
+    public Usuario(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
         this.id = id;
         this.senha = senha;
         this.email = email;
@@ -54,6 +43,19 @@ public abstract class Usuario {
         this.logradouro = logradouro;
         this.bairro = bairro;
         this.cidade = cidade;
+        this.complemento = complemento;
+        this.telefone = telefone;
+        this.foto = foto;
+    }
+
+    public Usuario(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
+        this.senha = senha;
+        this.email = email;
+        this.cep = cep;
+        this.logradouro = logradouro;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.complemento = complemento;
         this.telefone = telefone;
         this.foto = foto;
     }
@@ -128,5 +130,13 @@ public abstract class Usuario {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
     }
 }

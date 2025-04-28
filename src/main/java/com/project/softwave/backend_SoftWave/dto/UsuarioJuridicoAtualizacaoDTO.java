@@ -44,6 +44,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
     private String cidade;
     @NotBlank
     private String telefone;
+    private String complemento;
 
     private String foto;
 
@@ -66,8 +67,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         usuarioJuridico.setFoto(dto.getFoto());
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
-        
-        
+        usuarioJuridico.setComplemento(dto.getComplemento());
+
         return usuarioJuridico;
     }
 
@@ -88,6 +89,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setCidade(usuarioJuridico.getCidade());
         dto.setTelefone(usuarioJuridico.getTelefone());
         dto.setFoto(usuarioJuridico.getFoto());
+        dto.setComplemento(usuarioJuridico.getComplemento());
 
         return dto;
     }
@@ -96,10 +98,9 @@ public class UsuarioJuridicoAtualizacaoDTO {
         if (dto == null) {
             return null;
         }
-        // Cria uma instância de AdvogadoJuridico, preservando os dados existentes
+
         AdvogadoJuridico advogadoJuridico = advogadoExistente;
 
-        // Atualiza os campos que podem ser modificados
         advogadoJuridico.setId(dto.getId());
         advogadoJuridico.setEmail(dto.getEmail());
         advogadoJuridico.setSenha(dto.getSenha());
@@ -112,8 +113,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         advogadoJuridico.setFoto(dto.getFoto());
         advogadoJuridico.setNomeFantasia(dto.getNomeFantasia());
         advogadoJuridico.setRazaoSocial(dto.getRazaoSocial());
+        advogadoJuridico.setComplemento(dto.getComplemento());
 
-        // A OAB permanece inalterada, pois não foi passada no DTO
         return advogadoJuridico;
     }
 
@@ -135,6 +136,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setCnpj(advogadoJuridico.getCnpj());
         dto.setNomeFantasia(advogadoJuridico.getNomeFantasia());
         dto.setRazaoSocial(advogadoJuridico.getRazaoSocial());
+        dto.setComplemento(advogadoJuridico.getComplemento());
         return dto;
     }
 
@@ -148,7 +150,13 @@ public class UsuarioJuridicoAtualizacaoDTO {
         this.id = id;
     }
 
+    public String getComplemento() {
+        return complemento;
+    }
 
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
 
     public String getEmail() {
         return email;

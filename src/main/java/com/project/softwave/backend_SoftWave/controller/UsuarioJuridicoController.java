@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/usuariosJuridicos")
+@RequestMapping("/usuarios-juridicos")
 public class UsuarioJuridicoController {
 
     @Autowired
