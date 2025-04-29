@@ -36,12 +36,12 @@ public class AdvogadoFisico extends UsuarioFisico {
         this.oab = oab;
     }
 
-    public AdvogadoFisico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg, Integer oab) {
+    public AdvogadoFisico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg, Integer oab) {
         super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto, nome, cpf, rg);
         this.oab = oab;
     }
 
-    public AdvogadoFisico(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg, Integer oab) {
+    public AdvogadoFisico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg, Integer oab) {
         super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto, nome, cpf, rg);
         this.oab = oab;
     }

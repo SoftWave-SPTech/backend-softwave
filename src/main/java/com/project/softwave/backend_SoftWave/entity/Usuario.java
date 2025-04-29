@@ -21,7 +21,7 @@ public abstract class Usuario {
     private Role role;
 
     @NotNull
-    private Integer cep;
+    private String cep;
     @NotBlank
     private String logradouro;
     @NotBlank
@@ -37,7 +37,7 @@ public abstract class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
+    public Usuario(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
         this.id = id;
         this.senha = senha;
         this.email = email;
@@ -50,7 +50,7 @@ public abstract class Usuario {
         this.foto = foto;
     }
 
-    public Usuario(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
+    public Usuario(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
         this.senha = senha;
         this.email = email;
         this.cep = cep;
@@ -86,11 +86,11 @@ public abstract class Usuario {
         return email;
     }
 
-    public Integer getCep() {
+    public String getCep() {
         return cep;
     }
 
-    public void setCep(Integer cep) {
+    public void setCep(String cep) {
         this.cep = cep;
     }
 

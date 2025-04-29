@@ -38,7 +38,7 @@ public class AdvogadoFisicoDTO {
     private String rg;
 
     @NotNull
-    private Integer cep;
+    private String cep;
     @NotBlank
     private String logradouro;
     @NotBlank
@@ -49,7 +49,7 @@ public class AdvogadoFisicoDTO {
     @NotBlank
     private String telefone;
 
-    public AdvogadoFisicoDTO(Integer id, Integer oab, String nome, String email, String senha, String cpf, String rg, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
+    public AdvogadoFisicoDTO(Integer id, Integer oab, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
         this.id = id;
         this.oab = oab;
         this.nome = nome;
@@ -192,11 +192,11 @@ public class AdvogadoFisicoDTO {
         this.oab = oab;
     }
 
-    public Integer getCep() {
+    public String getCep() {
         return cep;
     }
 
-    public void setCep(Integer cep) {
+    public void setCep(String cep) {
         this.cep = cep;
     }
 

@@ -31,14 +31,14 @@ public class UsuarioFisico extends Usuario{
         this.rg = rg;
     }
 
-    public UsuarioFisico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg) {
+    public UsuarioFisico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg) {
         super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto);
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
     }
 
-    public UsuarioFisico(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg) {
+    public UsuarioFisico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg) {
         super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto);
         this.nome = nome;
         this.cpf = cpf;

@@ -58,21 +58,21 @@ public class UsuarioService {
     }
 
     public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
-            if (usuario.getEmail() == null || usuario.getSenha() == null) {
-                throw new LoginIncorretoException("Email ou senha não podem ser nulos");
-            }
+        if (usuario.getEmail() == null || usuario.getSenha() == null) {
+            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
+        }
 
-            Optional<Usuario> possivelUsuario =
-                    usuarioRepository.findByEmailEqualsAndSenhaEquals(
+        Optional<Usuario> possivelUsuario =
+                usuarioRepository.findByEmailEqualsAndSenhaEquals(
                             usuario.getEmail(),usuario.getSenha());
-            if (possivelUsuario.isEmpty()) {
-                throw new LoginIncorretoException("Email ou senha inválidos");
-            }
+        if (possivelUsuario.isEmpty()) {
+            throw new LoginIncorretoException("Email ou senha inválidos");
+        }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
                 possivelUsuario.get().getSenha());
 
-            return primeiroAcesso;
+        return primeiroAcesso;
         }
 
     @Transactional

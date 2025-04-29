@@ -22,7 +22,7 @@ public class UsuarioFisicoAtualizacaoDTO {
     private String email;
 
     @NotNull
-    private Integer cep;
+    private String cep;
     @NotBlank
     private String logradouro;
     @NotBlank
@@ -185,11 +185,11 @@ public class UsuarioFisicoAtualizacaoDTO {
         this.foto = foto;
     }
 
-    public Integer getCep() {
+    public String getCep() {
         return cep;
     }
 
-    public void setCep(Integer cep) {
+    public void setCep(String cep) {
         this.cep = cep;
     }
 }
