@@ -1,7 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
-import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioJuridicoService {
@@ -26,25 +24,13 @@ public class UsuarioJuridicoService {
     private PasswordEncoder passwordEncoder;
 
     public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
-        if (
-                validacoesUsuarios.validarSenha(usuarioJuridico.getSenha())) {
-            if (
-                    usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
-                            usuarioJuridico.getEmail(),
-                            usuarioJuridico.getCnpj()
-                    ).isPresent()
-            ) {
+            if (usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
+                    usuarioJuridico.getEmail(), usuarioJuridico.getCnpj()).isPresent()) {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
-            String senhaCriptografada = passwordEncoder.encode(usuarioJuridico.getSenha());
-            usuarioJuridico.setSenha(senhaCriptografada);
-
+            usuarioJuridico.setRole(Role.ROLE_USUARIO);
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
-
             return usuarioJuridicoCadastrado;
-
-        }
-        throw new DadosInvalidosException("Senha inválida para cadastro.");
     }
 
     public List<UsuarioJuridico> listar(){

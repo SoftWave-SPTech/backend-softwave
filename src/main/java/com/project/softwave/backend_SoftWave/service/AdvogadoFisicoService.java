@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
@@ -32,23 +33,11 @@ public class AdvogadoFisicoService {
     private PasswordEncoder passwordEncoder;
 
     public AdvogadoFisico cadastrar(AdvogadoFisico advogadoFisico) {
-
-
-        if (
-                    advogadoFisicoRepository.findByEmailEqualsOrCpfEquals(
-                            advogadoFisico.getEmail(),
-                            advogadoFisico.getCpf()
-                    ).isPresent()
-           ) {
-                throw new EntidadeConflitoException("Email ou CPF já existe");
+        if (advogadoFisicoRepository.findByEmailEqualsOrCpfEquals(
+                advogadoFisico.getEmail(), advogadoFisico.getCpf()).isPresent()) {
+            throw new EntidadeConflitoException("Email ou CPF já existe");
         }
-        String senhaCriptografada = passwordEncoder.encode(advogadoFisico.getSenha());
-        advogadoFisico.setSenha(senhaCriptografada);
-
-        if (!validarUsuarios.validarSenha(advogadoFisico.getSenha())) {
-            throw new DadosInvalidosException("Senha inválida para cadastro.");
-        }
-
+            advogadoFisico.setRole(Role.ROLE_ADVOGADO);
             return   advogadoFisicoRepository.save(advogadoFisico);
     }
 
