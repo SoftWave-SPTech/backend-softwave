@@ -22,18 +22,15 @@ public class UsuarioFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
         if (usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(
                 usuarioFisico.getEmail(),usuarioFisico.getCpf()).isPresent()) {
             throw new EntidadeConflitoException("Email ou CPF já existe");
         }
-            usuarioFisico.setRole(Role.ROLE_USUARIO);
-            UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
-            return usuarioFisicoCadastrado;
-        }
+        usuarioFisico.setRole(Role.ROLE_USUARIO);
+        UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
+        return usuarioFisicoCadastrado;
+    }
 
     public List<UsuarioFisico> listar() {
 

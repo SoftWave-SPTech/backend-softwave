@@ -22,9 +22,6 @@ public class AdvogadoJuridicoService {
     @Autowired
     private UserValidator userValidator;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     public AdvogadoJuridico cadastrar(AdvogadoJuridico advogadoJuridico) {
         if (advogadoJuridicoRepository.findByEmailEqualsOrCnpjEquals(
                 advogadoJuridico.getEmail(), advogadoJuridico.getCnpj()).isPresent()) {
@@ -44,14 +41,11 @@ public class AdvogadoJuridicoService {
         return advogadosJuridicos;
     }
 
-
-
     @Transactional
     public AdvogadoJuridico atualizar(Integer id, UsuarioJuridicoAtualizacaoDTO dto) {
 
         AdvogadoJuridico advogado = advogadoJuridicoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado com id: " + id));
-
 
         advogado.setNomeFantasia(dto.getNomeFantasia());
         advogado.setEmail(dto.getEmail());

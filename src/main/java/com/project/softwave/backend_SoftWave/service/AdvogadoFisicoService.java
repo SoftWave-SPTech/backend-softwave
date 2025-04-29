@@ -29,9 +29,6 @@ public class AdvogadoFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     public AdvogadoFisico cadastrar(AdvogadoFisico advogadoFisico) {
         if (advogadoFisicoRepository.findByEmailEqualsOrCpfEquals(
                 advogadoFisico.getEmail(), advogadoFisico.getCpf()).isPresent()) {
@@ -57,7 +54,6 @@ public class AdvogadoFisicoService {
         AdvogadoFisico advogado = advogadoFisicoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado com id: " + id));
 
-
         advogado.setNome(dto.getNome());
         advogado.setEmail(dto.getEmail());
         advogado.setTelefone(dto.getTelefone());
@@ -68,7 +64,6 @@ public class AdvogadoFisicoService {
 
         return advogadoFisicoRepository.save(advogado);
     }
-
 
     public AdvogadoFisico buscarPorId(Integer id) {
         return advogadoFisicoRepository.findById(id)

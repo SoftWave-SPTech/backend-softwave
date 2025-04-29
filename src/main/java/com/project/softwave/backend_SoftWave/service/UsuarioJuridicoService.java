@@ -20,9 +20,6 @@ public class UsuarioJuridicoService {
     @Autowired
     private UserValidator validacoesUsuarios;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
             if (usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
                     usuarioJuridico.getEmail(), usuarioJuridico.getCnpj()).isPresent()) {
@@ -43,7 +40,6 @@ public class UsuarioJuridicoService {
 
     }
 
-
     public UsuarioJuridico buscarPorId(Integer id) {
         return usuariosJuridicosRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário jurídico com ID " + id + " não encontrado."));
@@ -55,7 +51,6 @@ public class UsuarioJuridicoService {
         UsuarioJuridico usuarioJuridico = usuariosJuridicosRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
 
-
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setEmail(dto.getEmail());
         usuarioJuridico.setCnpj(dto.getCnpj());
@@ -65,7 +60,6 @@ public class UsuarioJuridicoService {
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setBairro(dto.getBairro());
         usuarioJuridico.setCidade(dto.getCidade());
-
 
         return usuariosJuridicosRepository.save(usuarioJuridico);
     }
