@@ -28,14 +28,14 @@ public class UsuarioJuridico extends Usuario{
         this.razaoSocial = razaoSocial;
     }
 
-    public UsuarioJuridico(Integer id, String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial) {
         super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
     }
 
-    public UsuarioJuridico(String senha, String email, Integer cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String cnpj, String nomeFantasia, String razaoSocial) {
         super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;

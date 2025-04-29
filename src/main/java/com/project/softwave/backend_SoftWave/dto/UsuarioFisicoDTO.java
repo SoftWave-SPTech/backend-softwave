@@ -31,7 +31,7 @@ public class UsuarioFisicoDTO {
     private String rg;
 
     @NotNull
-    private Integer cep;
+    private String cep;
     @NotBlank
     private String logradouro;
     @NotBlank
@@ -44,7 +44,7 @@ public class UsuarioFisicoDTO {
     private String complemento;
 
 
-    public UsuarioFisicoDTO(Integer id, String nome, String email, String senha, String cpf, String rg, Integer cep, String logradouro, String bairro, String cidade, String telefone, String complemento) {
+    public UsuarioFisicoDTO(Integer id, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String telefone, String complemento) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -148,11 +148,11 @@ public class UsuarioFisicoDTO {
         return rg;
     }
 
-    public Integer getCep() {
+    public String getCep() {
         return cep;
     }
 
-    public void setCep(Integer cep) {
+    public void setCep(String cep) {
         this.cep = cep;
     }
 
