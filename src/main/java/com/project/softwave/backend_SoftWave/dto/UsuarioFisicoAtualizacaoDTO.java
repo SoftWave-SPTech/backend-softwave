@@ -21,10 +21,6 @@ public class UsuarioFisicoAtualizacaoDTO {
     @Email
     private String email;
 
-    @NotBlank
-    private String senha;
-
-
     @NotNull
     private Integer cep;
     @NotBlank
@@ -50,7 +46,6 @@ public class UsuarioFisicoAtualizacaoDTO {
         usuarioFisico.setId(dto.getId());
         usuarioFisico.setNome(dto.getNome());
         usuarioFisico.setEmail(dto.getEmail());
-        usuarioFisico.setSenha(dto.getSenha());
         usuarioFisico.setCep(dto.getCep());
         usuarioFisico.setLogradouro(dto.getLogradouro());
         usuarioFisico.setBairro(dto.getBairro());
@@ -70,7 +65,6 @@ public class UsuarioFisicoAtualizacaoDTO {
         dto.setId(usuarioFisico.getId());
         dto.setNome(usuarioFisico.getNome());
         dto.setEmail(usuarioFisico.getEmail());
-        dto.setSenha(usuarioFisico.getSenha());
         dto.setCep(usuarioFisico.getCep());
         dto.setLogradouro(usuarioFisico.getLogradouro());
         dto.setBairro(usuarioFisico.getBairro());
@@ -89,7 +83,6 @@ public class UsuarioFisicoAtualizacaoDTO {
         advogadoFisico.setId(dto.getId());
         advogadoFisico.setNome(dto.getNome());
         advogadoFisico.setEmail(dto.getEmail());
-        advogadoFisico.setSenha(dto.getSenha());
         advogadoFisico.setCep(dto.getCep());
         advogadoFisico.setLogradouro(dto.getLogradouro());
         advogadoFisico.setBairro(dto.getBairro());
@@ -108,7 +101,6 @@ public class UsuarioFisicoAtualizacaoDTO {
         dto.setId(advogadoFisico.getId());
         dto.setNome(advogadoFisico.getNome());
         dto.setEmail(advogadoFisico.getEmail());
-        dto.setSenha(advogadoFisico.getSenha());
         dto.setCep(advogadoFisico.getCep());
         dto.setLogradouro(advogadoFisico.getLogradouro());
         dto.setBairro(advogadoFisico.getBairro());
@@ -144,13 +136,6 @@ public class UsuarioFisicoAtualizacaoDTO {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 
     public String getLogradouro() {
         return logradouro;

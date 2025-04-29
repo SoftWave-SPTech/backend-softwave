@@ -82,16 +82,11 @@ public class UsuarioFisicoService {
 
         usuarioFisico.setNome(dto.getNome());
         usuarioFisico.setEmail(dto.getEmail());
-        usuarioFisico.setSenha(dto.getSenha());
         usuarioFisico.setTelefone(dto.getTelefone());
         usuarioFisico.setLogradouro(dto.getLogradouro());
         usuarioFisico.setCep(dto.getCep());
         usuarioFisico.setBairro(dto.getBairro());
         usuarioFisico.setCidade(dto.getCidade());
-
-        if (!validarUsuarios.validarSenha(usuarioFisico.getSenha())) {
-            throw new DadosInvalidosException("Senha inválida");
-        }
 
         return usuariosFisicosRepository.save(usuarioFisico);
     }
