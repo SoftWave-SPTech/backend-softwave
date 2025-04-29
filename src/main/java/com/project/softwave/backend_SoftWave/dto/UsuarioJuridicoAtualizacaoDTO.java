@@ -30,10 +30,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
     @Email
     private String email;
 
-    @NotBlank
-    private String senha;
-
-
     @NotNull
     private Integer cep;
     @NotBlank
@@ -57,7 +53,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         UsuarioJuridico usuarioJuridico = new UsuarioJuridico();
         usuarioJuridico.setId(dto.getId());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setSenha(dto.getSenha());
         usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setLogradouro(dto.getLogradouro());
@@ -82,7 +77,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setRazaoSocial(usuarioJuridico.getRazaoSocial());
         dto.setCnpj(usuarioJuridico.getCnpj());
         dto.setEmail(usuarioJuridico.getEmail());
-        dto.setSenha(usuarioJuridico.getSenha());
         dto.setCep(usuarioJuridico.getCep());
         dto.setLogradouro(usuarioJuridico.getLogradouro());
         dto.setBairro(usuarioJuridico.getBairro());
@@ -103,7 +97,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
 
         advogadoJuridico.setId(dto.getId());
         advogadoJuridico.setEmail(dto.getEmail());
-        advogadoJuridico.setSenha(dto.getSenha());
         advogadoJuridico.setCnpj(dto.getCnpj());
         advogadoJuridico.setCep(dto.getCep());
         advogadoJuridico.setLogradouro(dto.getLogradouro());
@@ -126,7 +119,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         UsuarioJuridicoAtualizacaoDTO dto = new UsuarioJuridicoAtualizacaoDTO();
         dto.setId(advogadoJuridico.getId());
         dto.setEmail(advogadoJuridico.getEmail());
-        dto.setSenha(advogadoJuridico.getSenha());
         dto.setCep(advogadoJuridico.getCep());
         dto.setLogradouro(advogadoJuridico.getLogradouro());
         dto.setBairro(advogadoJuridico.getBairro());
@@ -166,13 +158,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
 
     public String getLogradouro() {
         return logradouro;

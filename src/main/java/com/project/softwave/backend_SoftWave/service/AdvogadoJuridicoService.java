@@ -64,7 +64,6 @@ public class AdvogadoJuridicoService {
 
         advogado.setNomeFantasia(dto.getNomeFantasia());
         advogado.setEmail(dto.getEmail());
-        advogado.setSenha(dto.getSenha());
         advogado.setCnpj(dto.getCnpj());
         advogado.setRazaoSocial(dto.getRazaoSocial());
         advogado.setTelefone(dto.getTelefone());
@@ -72,11 +71,6 @@ public class AdvogadoJuridicoService {
         advogado.setCep(dto.getCep());
         advogado.setBairro(dto.getBairro());
         advogado.setCidade(dto.getCidade());
-
-
-        if (!userValidator.validarSenha(advogado.getSenha())) {
-            throw new DadosInvalidosException("Senha inválida");
-        }
 
         return advogadoJuridicoRepository.save(advogado);
     }

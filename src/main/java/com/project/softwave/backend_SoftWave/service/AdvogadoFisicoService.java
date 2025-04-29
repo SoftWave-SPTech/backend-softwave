@@ -71,16 +71,12 @@ public class AdvogadoFisicoService {
 
         advogado.setNome(dto.getNome());
         advogado.setEmail(dto.getEmail());
-        advogado.setSenha(dto.getSenha());
         advogado.setTelefone(dto.getTelefone());
         advogado.setLogradouro(dto.getLogradouro());
         advogado.setCep(dto.getCep());
         advogado.setBairro(dto.getBairro());
         advogado.setCidade(dto.getCidade());
 
-        if (!validarUsuarios.validarSenha(advogado.getSenha())) {
-            throw new DadosInvalidosException("Senha inválida");
-        }
         return advogadoFisicoRepository.save(advogado);
     }
 

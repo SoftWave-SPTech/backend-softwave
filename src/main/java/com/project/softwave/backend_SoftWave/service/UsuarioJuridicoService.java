@@ -72,7 +72,6 @@ public class UsuarioJuridicoService {
 
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setSenha(dto.getSenha());
         usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setTelefone(dto.getTelefone());
@@ -81,10 +80,6 @@ public class UsuarioJuridicoService {
         usuarioJuridico.setBairro(dto.getBairro());
         usuarioJuridico.setCidade(dto.getCidade());
 
-
-        if (!validacoesUsuarios.validarSenha(usuarioJuridico.getSenha())) {
-            throw new DadosInvalidosException("Senha inválida");
-        }
 
         return usuariosJuridicosRepository.save(usuarioJuridico);
     }
