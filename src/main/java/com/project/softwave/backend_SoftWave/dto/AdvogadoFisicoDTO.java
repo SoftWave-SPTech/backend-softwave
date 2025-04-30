@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,39 +15,56 @@ import org.hibernate.validator.constraints.br.CPF;
 public class AdvogadoFisicoDTO {
 
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Identificador único do advogado", example = "1")
     private Integer id;
 
     @NotNull
+    @Schema(description = "Número da OAB", example = "123456")
     private Integer oab;
-    
+
     @NotBlank
+    @Schema(description = "Nome completo do advogado", example = "João Carlos Mendes")
     private String nome;
 
     @Email
+    @Schema(description = "Email do advogado", example = "joao.mendes@advocacia.com")
     private String email;
 
     @NotBlank
+    @Schema(description = "Senha de acesso ao sistema", example = "SenhaSegura@2024")
     private String senha;
 
     @CPF
+    @Schema(description = "CPF do advogado", example = "123.456.789-00")
     private String cpf;
 
     @NotNull
+    @Schema(description = "RG do advogado", example = "12.345.678-9")
     private String rg;
 
     @NotNull
+    @Schema(description = "CEP do endereço", example = "04567000")
     private String cep;
+
     @NotBlank
+    @Schema(description = "Logradouro do endereço", example = "Rua das Laranjeiras")
     private String logradouro;
+
     @NotBlank
+    @Schema(description = "Bairro do endereço", example = "Jardim Paulista")
     private String bairro;
+
     @NotBlank
+    @Schema(description = "Cidade do endereço", example = "São Paulo")
     private String cidade;
+
+    @Schema(description = "Complemento do endereço", example = "Apto 102, Bloco B")
     private String complemento;
+
     @NotBlank
+    @Schema(description = "Telefone de contato", example = "(11) 98765-4321")
     private String telefone;
 
     public AdvogadoFisicoDTO(Integer id, Integer oab, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {

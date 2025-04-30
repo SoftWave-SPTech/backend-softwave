@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,38 +13,57 @@ import org.hibernate.validator.constraints.br.CNPJ;
 
 public class AdvogadoJuridicoDTO {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Identificador único do advogado jurídico", example = "1")
     private Integer id;
 
     @NotNull
+    @Schema(description = "Número da OAB do advogado responsável", example = "56789")
     private Integer oab;
 
     @Email
+    @Schema(description = "Email da empresa/advogado", example = "advocacia.exemplo@empresa.com")
     private String email;
 
     @NotBlank
+    @Schema(description = "Senha de acesso ao sistema", example = "SenhaForte@123")
     private String senha;
 
     @NotBlank
+    @Schema(description = "Nome fantasia da empresa de advocacia", example = "Advocacia Pereira & Associados")
     private String nomeFantasia;
 
     @NotBlank
+    @Schema(description = "Razão social da empresa", example = "Pereira e Associados Sociedade de Advogados LTDA")
     private String razaoSocial;
 
     @CNPJ
+    @Schema(description = "CNPJ da empresa", example = "12.345.678/0001-90")
     private String cnpj;
 
     @NotNull
+    @Schema(description = "CEP do endereço comercial", example = "01310930")
     private String cep;
+
     @NotBlank
+    @Schema(description = "Logradouro do endereço", example = "Avenida Paulista")
     private String logradouro;
+
     @NotBlank
+    @Schema(description = "Bairro do endereço", example = "Bela Vista")
     private String bairro;
+
     @NotBlank
+    @Schema(description = "Cidade do endereço", example = "São Paulo")
     private String cidade;
+
+    @Schema(description = "Complemento do endereço", example = "Sala 801, Torre Oeste")
     private String complemento;
+
     @NotBlank
+    @Schema(description = "Telefone comercial de contato", example = "(11) 97654-3210")
     private String telefone;
 
     public AdvogadoJuridicoDTO() {

@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,35 +16,51 @@ public class UsuarioJuridicoDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Identificador único do usuário", example = "1")
     private Integer id;
-
     @NotBlank
+    @Schema(description = "Nome fantasia da empresa", example = "Empresa XPTO")
     private String nomeFantasia;
 
     @Email
+    @Schema(description = "Email do usuário", example = "usuario@exemplo.com")
     private String email;
 
     @NotBlank
+    @Schema(description = "Senha do usuário", example = "Senha123@")
     private String senha;
 
     @NotBlank
+    @Schema(description = "Razão social da empresa", example = "XPTO LTDA")
     private String razaoSocial;
 
+    @Schema(description = "CNPJ da empresa", example = "15529313000109")
     @CNPJ
     private String cnpj;
 
-
     @NotNull
+    @Schema(description = "CEP do endereço", example = "03471047")
     private String cep;
+
     @NotBlank
+    @Schema(description = "Logradouro do endereço", example = "Rua das Flores")
     private String logradouro;
+
     @NotBlank
+    @Schema(description = "Bairro do endereço", example = "Centro")
     private String bairro;
+
     @NotBlank
+    @Schema(description = "Cidade do endereço", example = "São Paulo")
     private String cidade;
+
     @NotBlank
+    @Schema(description = "Telefone para contato", example = "(11) 91234-5678")
     private String telefone;
+
+    @Schema(description = "Complemento do endereço", example = "Sala 3, Edifício Central")
     private String complemento;
+
 
 
 

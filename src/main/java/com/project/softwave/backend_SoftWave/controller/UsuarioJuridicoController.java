@@ -1,9 +1,6 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.*;
-import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
-import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;

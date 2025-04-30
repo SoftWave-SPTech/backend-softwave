@@ -1,9 +1,9 @@
 package com.project.softwave.backend_SoftWave.dto;
 
 
-import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,33 +16,49 @@ public class UsuarioJuridicoAtualizacaoDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Identificador único do usuário", example = "1")
     private Integer id;
 
     @NotBlank
+    @Schema(description = "Nome fantasia da empresa", example = "Empresa XPTOS")
     private String nomeFantasia;
-    
+
+    @Email
+    @Schema(description = "Email do usuário", example = "usuario.admin@exemplo.com")
+    private String email;
+
     @NotBlank
+    @Schema(description = "Razão social da empresa", example = "XPTO LTDA")
     private String razaoSocial;
 
+    @Schema(description = "CNPJ da empresa", example = "15529313000109")
     @CNPJ
     private String cnpj;
 
-    @Email
-    private String email;
-
     @NotNull
+    @Schema(description = "CEP do endereço", example = "03471047")
     private String cep;
+
     @NotBlank
+    @Schema(description = "Logradouro do endereço", example = "Rua das Flores")
     private String logradouro;
+
     @NotBlank
+    @Schema(description = "Bairro do endereço", example = "Centro")
     private String bairro;
+
     @NotBlank
+    @Schema(description = "Cidade do endereço", example = "São Paulo")
     private String cidade;
+
     @NotBlank
+    @Schema(description = "Telefone para contato", example = "(11) 91234-5678")
     private String telefone;
+
+    @Schema(description = "Complemento do endereço", example = "Sala 5, Edifício Central")
     private String complemento;
 
-    private String foto;
+   // private String foto;
 
 
 
@@ -59,7 +75,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
         usuarioJuridico.setBairro(dto.getBairro());
         usuarioJuridico.setCidade(dto.getCidade());
         usuarioJuridico.setTelefone(dto.getTelefone());
-        usuarioJuridico.setFoto(dto.getFoto());
+       // usuarioJuridico.setFoto(dto.getFoto());
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setComplemento(dto.getComplemento());
@@ -82,7 +98,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setBairro(usuarioJuridico.getBairro());
         dto.setCidade(usuarioJuridico.getCidade());
         dto.setTelefone(usuarioJuridico.getTelefone());
-        dto.setFoto(usuarioJuridico.getFoto());
+      //  dto.setFoto(usuarioJuridico.getFoto());
         dto.setComplemento(usuarioJuridico.getComplemento());
 
         return dto;
@@ -103,7 +119,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
         advogadoJuridico.setBairro(dto.getBairro());
         advogadoJuridico.setCidade(dto.getCidade());
         advogadoJuridico.setTelefone(dto.getTelefone());
-        advogadoJuridico.setFoto(dto.getFoto());
+       // advogadoJuridico.setFoto(dto.getFoto());
         advogadoJuridico.setNomeFantasia(dto.getNomeFantasia());
         advogadoJuridico.setRazaoSocial(dto.getRazaoSocial());
         advogadoJuridico.setComplemento(dto.getComplemento());
@@ -124,7 +140,7 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setBairro(advogadoJuridico.getBairro());
         dto.setCidade(advogadoJuridico.getCidade());
         dto.setTelefone(advogadoJuridico.getTelefone());
-        dto.setFoto(advogadoJuridico.getFoto());
+       // dto.setFoto(advogadoJuridico.getFoto());
         dto.setCnpj(advogadoJuridico.getCnpj());
         dto.setNomeFantasia(advogadoJuridico.getNomeFantasia());
         dto.setRazaoSocial(advogadoJuridico.getRazaoSocial());
@@ -198,14 +214,14 @@ public class UsuarioJuridicoAtualizacaoDTO {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
-
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
+//
+//    public String getFoto() {
+//        return foto;
+//    }
+//
+//    public void setFoto(String foto) {
+//        this.foto = foto;
+//    }
 
     public String getNomeFantasia() {
         return nomeFantasia;
