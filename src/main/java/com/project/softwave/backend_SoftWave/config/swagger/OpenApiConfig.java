@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
                 title = "Documentação Swagger da API SoftWave",
                 description = "API REST desenvolvida para um sistema de gestão de clientes e processos jurídicos",
                 contact = @Contact(
-                        name = "Leticia Fonseca",
+                        name = "SoftWave",
                         url = "https://github.com/SoftWave-SPTech/backend-softwave",
-                        email = "leticia.fonseca@sptech.school"
+                        email = "softwave@sptech.school"
                 ),
                 license = @License(name = "UNLICENSED"),
                 version = "1.0.0"

@@ -31,21 +31,21 @@ public class UsuarioFisico extends Usuario{
         this.rg = rg;
     }
 
-    public UsuarioFisico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg) {
-        super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto);
+    public UsuarioFisico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String nome, String cpf, String rg) {
+        super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone);
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
     }
 
-    public UsuarioFisico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto, String nome, String cpf, String rg) {
-        super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, foto);
+    public UsuarioFisico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String nome, String cpf, String rg) {
+        super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone);
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
     }
 
-//
+    //
 //    public UsuarioFisico(UsuarioFisicoDTO  usuarioFisicoDTO) {
 //        super(null, usuarioFisicoDTO.getSenha(), usuarioFisicoDTO.getEmail());
 //        this.nome = usuarioFisicoDTO.getNome();

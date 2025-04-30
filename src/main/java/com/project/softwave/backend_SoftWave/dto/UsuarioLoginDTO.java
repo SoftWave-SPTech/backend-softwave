@@ -12,7 +12,6 @@ public class UsuarioLoginDTO {
     @NotBlank
     private String senha;
 
-
     public String getEmail() {
         return email;
     }

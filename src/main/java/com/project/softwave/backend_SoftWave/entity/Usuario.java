@@ -12,32 +12,22 @@ public abstract class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+
     private String senha;
-
-    @Email
     private String email;
-
     private Role role;
-
-    @NotNull
     private String cep;
-    @NotBlank
     private String logradouro;
-    @NotBlank
     private String bairro;
-    @NotBlank
     private String cidade;
     private String complemento;
-    @NotBlank
     private String telefone;
-
-    private String foto;
+    //private String foto;
 
     public Usuario() {
     }
 
-    public Usuario(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
+    public Usuario(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
         this.id = id;
         this.senha = senha;
         this.email = email;
@@ -47,10 +37,9 @@ public abstract class Usuario {
         this.cidade = cidade;
         this.complemento = complemento;
         this.telefone = telefone;
-        this.foto = foto;
     }
 
-    public Usuario(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String foto) {
+    public Usuario(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
         this.senha = senha;
         this.email = email;
         this.cep = cep;
@@ -59,7 +48,6 @@ public abstract class Usuario {
         this.cidade = cidade;
         this.complemento = complemento;
         this.telefone = telefone;
-        this.foto = foto;
     }
 
     public void setId(Integer id) {
@@ -126,13 +114,13 @@ public abstract class Usuario {
         this.telefone = telefone;
     }
 
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
+//    public String getFoto() {
+//        return foto;
+//    }
+//
+//    public void setFoto(String foto) {
+//        this.foto = foto;
+//    }
 
     public String getComplemento() {
         return complemento;
