@@ -15,5 +15,5 @@ public interface ReuniaoRepository extends JpaRepository<Reuniao, Integer> {
     boolean existsByIdClienteAndDataHoraInicioLessThanEqualAndDataHoraFimGreaterThanEqual(
             Integer idCliente, LocalDateTime dataHoraFim, LocalDateTime dataHoraInicio);
 
-    boolean getStatusReuniao();
+
 }

@@ -1,14 +1,14 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import com.project.softwave.backend_SoftWave.enums.StatusReuniao;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "reuniao")
@@ -23,33 +23,52 @@ public class Reuniao {
 
     private Integer idCliente;
 
-    @NotBlank
+
     private LocalDateTime dataHoraInicio;
 
-    @NotBlank
+
     private LocalDateTime dataHoraFim;
 
-    @NotBlank
+
     private Double duracao;
 
-
-
-
-
-    private String plataforma;
 
 
     private StatusReuniao statusReuniao;
 
 
-    @NotNull
+    private String plataforma;
+
     private Boolean confirmacaoCliente;
 
-    @NotNull
     private Boolean confirmacaoAdvogado;
 
 
     private String notasAdvogado;
+
+    @ManyToMany
+    @JoinTable(name = "reuniao_cliente_fisico",
+            joinColumns = @JoinColumn(name = "reuniao_id"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
+    private List<UsuarioFisico> clientesFisicos;
+
+    @ManyToMany
+    @JoinTable(name = "reuniao_cliente_juridico",
+            joinColumns = @JoinColumn(name = "reuniao_id"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
+    private List<UsuarioJuridico> clientesJuridicos;
+
+    @ManyToMany
+    @JoinTable(name = "reuniao_advogado_fisico",
+            joinColumns = @JoinColumn(name = "reuniao_id"),
+            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
+    private List<AdvogadoFisico> advogadosFisicos;
+
+    @ManyToMany
+    @JoinTable(name = "reuniao_advogado_juridico",
+            joinColumns = @JoinColumn(name = "reuniao_id"),
+            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
+    private List<AdvogadoJuridico> advogadosJuridicos;
 
     public Integer getId(Integer id) {
         return this.id;
@@ -82,7 +101,6 @@ public class Reuniao {
     public void setDuracao(Double duracao) {
         this.duracao = duracao;
     }
-
 
     public String getPlataforma() {
         return plataforma;
@@ -143,4 +161,5 @@ public class Reuniao {
     public void setIdCliente(Integer idCliente) {
         this.idCliente = idCliente;
     }
+
 }

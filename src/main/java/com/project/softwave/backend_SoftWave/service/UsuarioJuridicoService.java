@@ -1,16 +1,16 @@
 package com.project.softwave.backend_SoftWave.service;
 
-import com.project.softwave.backend_SoftWave.dto.SetorDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioJuridicoService {
@@ -20,77 +20,48 @@ public class UsuarioJuridicoService {
     @Autowired
     private UserValidator validacoesUsuarios;
 
-    public UsuarioJuridicoDTO cadastrar(UsuarioJuridicoDTO usuarioJuridicoDTO){
-        if(
-                validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
-                validacoesUsuarios.validarCamposVaziosJuridico(
-                        usuarioJuridicoDTO.getNomeFantasia(),
-                        usuarioJuridicoDTO.getRazaoSocial(),
-                        usuarioJuridicoDTO.getCnpj()
-                ) &&
-                validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())
-        ){
-            if(
-                    usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
-                        usuarioJuridicoDTO.getEmail(),
-                        usuarioJuridicoDTO.getCnpj()
-                    ).isPresent()
-            ){
-                return null;
+    public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
+            if (usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
+                    usuarioJuridico.getEmail(), usuarioJuridico.getCnpj()).isPresent()) {
+                throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
-
-            UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(
-                    new UsuarioJuridico(usuarioJuridicoDTO)
-            );
-
-            return new UsuarioJuridicoDTO(usuarioJuridicoCadastrado);
-
-        }
-        return null;
+            usuarioJuridico.setRole(Role.ROLE_USUARIO);
+            UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
+            return usuarioJuridicoCadastrado;
     }
 
-    public List<UsuarioJuridicoDTO> listar(){
+    public List<UsuarioJuridico> listar(){
 
         if (usuariosJuridicosRepository.findAll().isEmpty()){
-            return null;
+            throw new EntidadeNaoEncontradaException("Nenhum usuário jurídico encontrado.");
         }
 
-        List<UsuarioJuridicoDTO> todosUsuariosJuridicos =
-                usuariosJuridicosRepository.findAll()
-                .stream()
-                .map(usuarioJuridico -> new UsuarioJuridicoDTO(usuarioJuridico))
-                .collect(Collectors.toList());
+        return usuariosJuridicosRepository.findAll();
 
-                return todosUsuariosJuridicos;
     }
 
-    public UsuarioJuridicoDTO atualizar(Integer id, UsuarioJuridicoDTO usuarioJuridicoDTO){
+    public UsuarioJuridico buscarPorId(Integer id) {
+        return usuariosJuridicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário jurídico com ID " + id + " não encontrado."));
+    }
 
-        if (usuariosJuridicosRepository.findById(id).isPresent()){
-            if(
-                    usuariosJuridicosRepository.existsByEmailEqualsOrCnpjEqualsAndIdNot(
-                        usuarioJuridicoDTO.getEmail(),
-                        usuarioJuridicoDTO.getCnpj(),
-                        id
-                    )
-            ){
-                return null;
-            }else if(
-                    validacoesUsuarios.validarSenha(usuarioJuridicoDTO.getSenha()) &&
-                    validacoesUsuarios.validarCamposVaziosJuridico(
-                            usuarioJuridicoDTO.getNomeFantasia(),
-                            usuarioJuridicoDTO.getRazaoSocial(),
-                            usuarioJuridicoDTO.getCnpj()
-                    ) &&
-                    validacoesUsuarios.validarEmail(usuarioJuridicoDTO.getEmail())){
+    @Transactional
+    public UsuarioJuridico atualizar(Integer id, UsuarioJuridicoAtualizacaoDTO dto) {
 
-                UsuarioJuridico usuarioJuridicoAtualizado = new UsuarioJuridico(usuarioJuridicoDTO);
-                usuarioJuridicoAtualizado.setId(id);
+        UsuarioJuridico usuarioJuridico = usuariosJuridicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
 
-                return new UsuarioJuridicoDTO(usuarioJuridicoAtualizado);
-            }
-        }
-        return null;
+        usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
+        usuarioJuridico.setEmail(dto.getEmail());
+        usuarioJuridico.setCnpj(dto.getCnpj());
+        usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
+        usuarioJuridico.setTelefone(dto.getTelefone());
+        usuarioJuridico.setLogradouro(dto.getLogradouro());
+        usuarioJuridico.setCep(dto.getCep());
+        usuarioJuridico.setBairro(dto.getBairro());
+        usuarioJuridico.setCidade(dto.getCidade());
+
+        return usuariosJuridicosRepository.save(usuarioJuridico);
     }
 
     public Boolean deletar(Integer id){
@@ -98,23 +69,7 @@ public class UsuarioJuridicoService {
             usuariosJuridicosRepository.deleteById(id);
             return true;
         }
-        return false;
+        throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
     }
 
-    public UsuarioJuridicoDTO login(UsuarioJuridicoDTO usuarioJuridicoDTO){
-        Optional<UsuarioJuridico> possivelUsuario =
-                usuariosJuridicosRepository.findByEmailEqualsAndSenhaEquals(
-                    usuarioJuridicoDTO.getEmail(),
-                    usuarioJuridicoDTO.getSenha()
-                );
-
-        if (possivelUsuario.isEmpty()){
-            return null;
-        }
-
-        UsuarioJuridico usuarioJuridicoAutendicado = possivelUsuario.get();
-
-        return new UsuarioJuridicoDTO(usuarioJuridicoAutendicado);
-
-    }
 }

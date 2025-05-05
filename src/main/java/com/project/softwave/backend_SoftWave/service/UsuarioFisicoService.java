@@ -1,15 +1,18 @@
 package com.project.softwave.backend_SoftWave.service;
 
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioFisicoService {
@@ -19,100 +22,57 @@ public class UsuarioFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
-    public UsuarioFisicoDTO cadastrar(UsuarioFisicoDTO usuarioFisicoDTO){
-        if(
-                validarUsuarios.validarSenha(usuarioFisicoDTO.getSenha()) &&
-                        validarUsuarios.validarCamposVaziosFisico(
-                                usuarioFisicoDTO.getNome(),
-                                usuarioFisicoDTO.getRg()
-                        ) &&
-                        validarUsuarios.validarEmail(usuarioFisicoDTO.getEmail()) &&
-                        validarUsuarios.validarCpf(usuarioFisicoDTO.getCpf())
-        ){
-            if(
-                    usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(
-                            usuarioFisicoDTO.getEmail(),
-                            usuarioFisicoDTO.getCpf()
-                    ).isPresent()
-            ){
-                return null;
-            }
-
-            UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(
-                    new UsuarioFisico(usuarioFisicoDTO)
-            );
-
-            return new UsuarioFisicoDTO(usuarioFisicoCadastrado);
-
+    public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
+        if (usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(
+                usuarioFisico.getEmail(),usuarioFisico.getCpf()).isPresent()) {
+            throw new EntidadeConflitoException("Email ou CPF já existe");
         }
-        return null;
+        usuarioFisico.setRole(Role.ROLE_USUARIO);
+        UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
+        return usuarioFisicoCadastrado;
     }
 
-    public List<UsuarioFisicoDTO> listar(){
+    public List<UsuarioFisico> listar() {
 
-        if (usuariosFisicosRepository.findAll().isEmpty()){
-            return null;
+        List<UsuarioFisico> usuariosFisicos = usuariosFisicosRepository.findAll();
+
+        if (usuariosFisicos.isEmpty()) {
+            throw new EntidadeNaoEncontradaException("Nenhum usuário encontrado");
         }
 
-        List<UsuarioFisicoDTO> todosUsuariosFisicos =
-                usuariosFisicosRepository.findAll()
-                        .stream()
-                        .map(usuarioFisico -> new UsuarioFisicoDTO(usuarioFisico))
-                        .collect(Collectors.toList());
-
-        return todosUsuariosFisicos;
+        return usuariosFisicos;
     }
 
-    public UsuarioFisicoDTO atualizar(Integer id, UsuarioFisicoDTO usuarioFisicoDTO){
-
-        if (usuariosFisicosRepository.findById(id).isPresent()){
-            if(
-                    usuariosFisicosRepository.existsByEmailEqualsOrCpfEqualsAndIdNot(
-                            usuarioFisicoDTO.getEmail(),
-                            usuarioFisicoDTO.getCpf(),
-                            id
-                    )
-            ){
-                return null;
-            }else if(
-                    validarUsuarios.validarSenha(usuarioFisicoDTO.getSenha()) &&
-                            validarUsuarios.validarCamposVaziosFisico(
-                                    usuarioFisicoDTO.getNome(),
-                                    usuarioFisicoDTO.getRg()
-                            ) &&
-                            validarUsuarios.validarEmail(usuarioFisicoDTO.getEmail())){
-
-                UsuarioFisico usuarioFisicoAtualizado = new UsuarioFisico(usuarioFisicoDTO);
-                usuarioFisicoAtualizado.setId(id);
-
-                return new UsuarioFisicoDTO(usuarioFisicoAtualizado);
-            }
-        }
-        return null;
+    public UsuarioFisico buscarPorId(Integer id) {
+        return usuariosFisicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário Físico com ID " + id + " não encontrado."));
     }
 
-    public Boolean deletar(Integer id){
-        if (usuariosFisicosRepository.findById(id).isPresent()){
+    @Transactional
+    public UsuarioFisico atualizar(Integer id, UsuarioFisicoAtualizacaoDTO dto) {
+
+        UsuarioFisico usuarioFisico = usuariosFisicosRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
+
+        usuarioFisico.setNome(dto.getNome());
+        usuarioFisico.setEmail(dto.getEmail());
+        usuarioFisico.setTelefone(dto.getTelefone());
+        usuarioFisico.setLogradouro(dto.getLogradouro());
+        usuarioFisico.setCep(dto.getCep());
+        usuarioFisico.setBairro(dto.getBairro());
+        usuarioFisico.setCidade(dto.getCidade());
+
+        return usuariosFisicosRepository.save(usuarioFisico);
+    }
+
+    public Boolean deletar(Integer id) {
+        Optional<UsuarioFisico> usuarioFisicoOptional = usuariosFisicosRepository.findById(id);
+        if (usuarioFisicoOptional.isPresent()) {
             usuariosFisicosRepository.deleteById(id);
             return true;
+        } else {
+            throw new EntidadeNaoEncontradaException("Usuário não encontrado");
         }
-        return false;
     }
 
-    public UsuarioFisicoDTO login(UsuarioFisicoDTO usuarioFisicoDTO){
-        Optional<UsuarioFisico> possivelUsuario =
-                usuariosFisicosRepository.findByEmailEqualsAndSenhaEquals(
-                        usuarioFisicoDTO.getEmail(),
-                        usuarioFisicoDTO.getSenha()
-                );
-
-        if (possivelUsuario.isEmpty()){
-            return null;
-        }
-
-        UsuarioFisico usuarioFisicoAutendicado = possivelUsuario.get();
-
-        return new UsuarioFisicoDTO(usuarioFisicoAutendicado);
-
-    }
 }

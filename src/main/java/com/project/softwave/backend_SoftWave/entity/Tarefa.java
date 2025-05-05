@@ -15,18 +15,10 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotBlank
     private String titulo;
-
-    @NotBlank
     private String descricao;
-
-    @NotBlank
     private LocalDateTime prazo;
-
-
     private String prioridade;
-
     private boolean isFinalizada;
 
 
