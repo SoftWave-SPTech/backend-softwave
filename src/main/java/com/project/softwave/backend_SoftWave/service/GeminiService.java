@@ -33,6 +33,13 @@ public class GeminiService {
         List<UltimasMovimentacoes> movimentacoesList = ultimasMovimentacoesRepository.findAll();
 
         for (UltimasMovimentacoes ultimasMovimentacoes : movimentacoesList) {
+
+            boolean jaTemAnalise = analiseRepository.findByMovimentacoesId(ultimasMovimentacoes.getId()).isPresent();
+
+            if (jaTemAnalise) {
+                continue;
+            }
+
             String prompt = "Explique de forma simples a seguinte movimentação processual:\n\n"
                     + ultimasMovimentacoes.getMovimento() + "\n\n"
                     + "Use uma linguagem clara para leigos em juridiquês e destaque os eventos mais importantes.";
