@@ -1,6 +1,5 @@
 package com.project.softwave.backend_SoftWave.dto;
 
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.GeneratedValue;

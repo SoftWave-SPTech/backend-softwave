@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+//@Repository
 public interface PeticoesDiversasRepository extends JpaRepository<PeticoesDiversas,Integer> {
     Optional<PeticoesDiversas> findByDataAndTipo(String data, String tipo);
 }

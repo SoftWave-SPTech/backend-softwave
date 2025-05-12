@@ -6,7 +6,7 @@ import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+//@Entity
 public class Apensos {
 //            "numero": "0000123-50.2025.8.26.0542",
 //            "classe": "Comunicado de Mandado de Prisão",

@@ -2,25 +2,17 @@ package com.project.softwave.backend_SoftWave.entity;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
-@Table(name="pessoa_fisica")
+@DiscriminatorValue("usuario_fisico")
 public class UsuarioFisico extends Usuario{
+
     private String nome;
     private String cpf;
     private String rg;
-
-    @OneToMany
-    private List<DocumentoPessoal> documentos;
-
-    @ManyToMany
-    private List<Processo> processosCliente;
 
     public UsuarioFisico() {
     }

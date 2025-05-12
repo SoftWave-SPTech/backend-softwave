@@ -2,7 +2,7 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 public class Audiencias {
 //                          "data": "26/02/2025",
 //                          "audiencia": "Instrução, Interrogatório, Debates e Julgamento",

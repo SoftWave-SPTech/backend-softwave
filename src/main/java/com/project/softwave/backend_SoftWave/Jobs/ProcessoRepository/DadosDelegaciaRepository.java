@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+//@Repository
 public interface DadosDelegaciaRepository extends JpaRepository<DadosDelegacia,Integer> {
 
     Optional<DadosDelegacia> findByNumero(String numero);

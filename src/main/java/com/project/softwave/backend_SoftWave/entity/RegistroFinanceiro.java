@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class RegistroFinanceiro {
@@ -17,11 +18,16 @@ public class RegistroFinanceiro {
     private LocalDate data;
 
     @ManyToOne
-    private Processo processo;
-
+    private Usuario usuarios;
 
     @ManyToOne
-    private AdvogadoFisico advogado;
+    private Processo processos;
+
+//    @ManyToOne
+//    private Processo processo;
+//
+//    @ManyToOne
+//    private AdvogadoFisico advogado;
 
     public Long getId() {
         return id;
@@ -53,5 +59,21 @@ public class RegistroFinanceiro {
 
     public void setData(LocalDate data) {
         this.data = data;
+    }
+
+    public Usuario getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(Usuario usuarios) {
+        this.usuarios = usuarios;
+    }
+
+    public Processo getProcessos() {
+        return processos;
+    }
+
+    public void setProcessos(Processo processos) {
+        this.processos = processos;
     }
 }

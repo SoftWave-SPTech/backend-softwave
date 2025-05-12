@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+//@Repository
 public interface HistoricoClassesRepository extends JpaRepository<HistoricoClasses,Integer> {
 
     // Aqui você pode adicionar métodos personalizados, se necessário

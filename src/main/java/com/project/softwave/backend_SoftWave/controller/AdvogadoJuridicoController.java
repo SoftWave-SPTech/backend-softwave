@@ -1,12 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridicoDTO;
-import com.project.softwave.backend_SoftWave.dto.TarefaDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
-import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.service.AdvogadoJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -7,24 +7,10 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
+@DiscriminatorValue("advogado_juridico")
 public class AdvogadoJuridico  extends UsuarioJuridico {
 
-
-
-
     private Integer oab;
-
-    @ManyToMany
-    private List<Processo> processos;
-
-    @OneToMany
-    private List<RegistroFinanceiro> registros;
-
-    @ManyToMany
-    private List<Reuniao> reunioes;
-
-    @OneToMany
-    private List<ComentarioProcesso> comentarios;
 
     public AdvogadoJuridico() {
 

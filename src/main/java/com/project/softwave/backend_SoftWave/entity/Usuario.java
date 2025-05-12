@@ -1,28 +1,48 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Usuario {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_usuario",
+        discriminatorType = DiscriminatorType.STRING)
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
 
-
     private String senha;
+
     private String email;
+
     private Role role;
+
     private String cep;
+
     private String logradouro;
+
     private String bairro;
+
     private String cidade;
+
     private String complemento;
+
     private String telefone;
+
     //private String foto;
+
+    @ManyToMany
+    private List<Processo> processos;
+
+    @ManyToMany
+    private List<Reuniao> reunioes;
 
     public Usuario() {
     }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
+//@Repository
 public interface ApensosRepository extends JpaRepository<Apensos, Integer> {
     Optional<Apensos> findByNumeroProcesso(String numeroProcessoApenso);
 }
