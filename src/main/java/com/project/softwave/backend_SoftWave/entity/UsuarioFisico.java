@@ -8,7 +8,7 @@ public class UsuarioFisico extends Usuario{
 
     private String nome;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String cpf;
 
     private String rg;

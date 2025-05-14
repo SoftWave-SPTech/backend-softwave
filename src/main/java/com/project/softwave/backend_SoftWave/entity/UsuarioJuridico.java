@@ -6,9 +6,9 @@ import java.util.List;
 
 @Entity
 @DiscriminatorValue("usuario_juridico")
-public class UsuarioJuridico extends Usuario{
+public class UsuarioJuridico extends Usuario {
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String cnpj;
 
     private String nomeFantasia;
