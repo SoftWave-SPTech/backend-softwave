@@ -22,21 +22,26 @@ import java.util.Optional;
 @Service
 public class ProcessoGrau1API {
 
-    private final ApensosRepository apensosRepository;
-    private final AudienciasRepository audienciasRepository;
+//    private final ApensosRepository apensosRepository;
+//    private final AudienciasRepository audienciasRepository;
     private final ProcessoRepository processoRepository;
-    private final HistoricoClassesRepository historicoClassesRepository;
-    private final PeticoesDiversasRepository peticoesDiversasRepository;
-    private final DadosDelegaciaRepository dadosDelegaciaRepository;
+//    private final HistoricoClassesRepository historicoClassesRepository;
+//    private final PeticoesDiversasRepository peticoesDiversasRepository;
+//    private final DadosDelegaciaRepository dadosDelegaciaRepository;
     private final UltimasMovimentacoesRepository ultimasMovimentacoesRepository;
 
-    public ProcessoGrau1API(ApensosRepository apensosRepository, AudienciasRepository audienciasRepository, ProcessoRepository processoRepository, HistoricoClassesRepository historicoClassesRepository, PeticoesDiversasRepository peticoesDiversasRepository, DadosDelegaciaRepository dadosDelegaciaRepository, UltimasMovimentacoesRepository ultimasMovimentacoesRepository) {
-        this.apensosRepository = apensosRepository;
-        this.audienciasRepository = audienciasRepository;
+//    public ProcessoGrau1API(ApensosRepository apensosRepository, AudienciasRepository audienciasRepository, ProcessoRepository processoRepository, HistoricoClassesRepository historicoClassesRepository, PeticoesDiversasRepository peticoesDiversasRepository, DadosDelegaciaRepository dadosDelegaciaRepository, UltimasMovimentacoesRepository ultimasMovimentacoesRepository) {
+//        this.apensosRepository = apensosRepository;
+//        this.audienciasRepository = audienciasRepository;
+//        this.processoRepository = processoRepository;
+//        this.historicoClassesRepository = historicoClassesRepository;
+//        this.peticoesDiversasRepository = peticoesDiversasRepository;
+//        this.dadosDelegaciaRepository = dadosDelegaciaRepository;
+//        this.ultimasMovimentacoesRepository = ultimasMovimentacoesRepository;
+//    }
+
+    public ProcessoGrau1API(ProcessoRepository processoRepository, UltimasMovimentacoesRepository ultimasMovimentacoesRepository) {
         this.processoRepository = processoRepository;
-        this.historicoClassesRepository = historicoClassesRepository;
-        this.peticoesDiversasRepository = peticoesDiversasRepository;
-        this.dadosDelegaciaRepository = dadosDelegaciaRepository;
         this.ultimasMovimentacoesRepository = ultimasMovimentacoesRepository;
     }
 
@@ -45,7 +50,6 @@ public class ProcessoGrau1API {
 //  "0000005-27.2025.8.26.0008";
 //  "509556";advogado.getOab();
 //  "hdVPC0gzW8u6f9cb6cvCC75d-G6Q1brCLjy_NWJG"//  "600";
-
 
         List<NameValuePair> params = new ArrayList<>(2);
         params.add(new BasicNameValuePair("processo", ParametrosAPI.getParametroProcesso()));

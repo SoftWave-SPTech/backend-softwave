@@ -13,7 +13,6 @@ public class AdvogadoJuridico  extends UsuarioJuridico {
     private Integer oab;
 
     public AdvogadoJuridico() {
-
     }
 
     public AdvogadoJuridico(String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {

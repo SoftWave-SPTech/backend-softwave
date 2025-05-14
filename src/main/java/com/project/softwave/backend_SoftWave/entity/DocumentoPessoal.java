@@ -7,11 +7,13 @@ public class DocumentoPessoal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
+
     private String documento;
+
     private String conteudo;
 
-//    TODO IMPLEMENTAR ESSE CAMPO NO FUTURO
     @ManyToOne
     private Usuario usuario;
 

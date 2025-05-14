@@ -36,15 +36,15 @@ public class ReuniaoService {
 
 
     public Reuniao cadastrarReuniao(Reuniao reuniao) {
-        boolean conflitoAdvogado = reuniaoRepository.existsByIdAdvogadoAndDataHoraInicioLessThanEqualAndDataHoraFimGreaterThanEqual(
-                reuniao.getIdAdvogado(), reuniao.getDataHoraFim(), reuniao.getDataHoraInicio());
-
-        boolean conflitoCliente = reuniaoRepository.existsByIdClienteAndDataHoraInicioLessThanEqualAndDataHoraFimGreaterThanEqual(
-                reuniao.getIdCliente(), reuniao.getDataHoraFim(), reuniao.getDataHoraInicio());
-
-        if (conflitoAdvogado || conflitoCliente) {
-            throw new EntidadeConflitoException("O advogado ou o cliente já possuem outra reunião neste horário.");
-        }
+//        boolean conflitoAdvogado = reuniaoRepository.existsByIdAdvogadoAndDataHoraInicioLessThanEqualAndDataHoraFimGreaterThanEqual(
+//                reuniao.getIdAdvogado(), reuniao.getDataHoraFim(), reuniao.getDataHoraInicio());
+//
+//        boolean conflitoCliente = reuniaoRepository.existsByIdClienteAndDataHoraInicioLessThanEqualAndDataHoraFimGreaterThanEqual(
+//                reuniao.getIdCliente(), reuniao.getDataHoraFim(), reuniao.getDataHoraInicio());
+//
+//        if (conflitoAdvogado || conflitoCliente) {
+//            throw new EntidadeConflitoException("O advogado ou o cliente já possuem outra reunião neste horário.");
+//        }
 
         return reuniaoRepository.save(reuniao);
     }

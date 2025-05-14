@@ -18,10 +18,6 @@ public class Reuniao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer idAdvogado;
-
-    private Integer idCliente;
-
     private LocalDateTime dataHoraInicio;
 
     private LocalDateTime dataHoraFim;
@@ -114,20 +110,20 @@ public class Reuniao {
         return id;
     }
 
-    public Integer getIdAdvogado() {
-        return idAdvogado;
-    }
-
-    public void setIdAdvogado(Integer idAdvogado) {
-        this.idAdvogado = idAdvogado;
-    }
-
-    public Integer getIdCliente() {
-        return idCliente;
-    }
-
-    public void setIdCliente(Integer idCliente) {
-        this.idCliente = idCliente;
-    }
+    //    public Integer getIdAdvogado() {
+//        return idAdvogado;
+//    }
+//
+//    public void setIdAdvogado(Integer idAdvogado) {
+//        this.idAdvogado = idAdvogado;
+//    }
+//
+//    public Integer getIdCliente() {
+//        return idCliente;
+//    }
+//
+//    public void setIdCliente(Integer idCliente) {
+//        this.idCliente = idCliente;
+//    }
 
 }

@@ -19,15 +19,6 @@ public class ComentarioProcesso {
     @ManyToOne
     private Processo processo;
 
-    @ManyToOne
-    private Usuario usuario;
-
-//    @ManyToOne
-//    private AdvogadoFisico advogadoFisico;
-//
-//    @ManyToOne
-//    private AdvogadoJuridico advogadoJuridico;
-
     public Long getId() {
         return id;
     }
@@ -59,13 +50,5 @@ public class ComentarioProcesso {
 
     public void setProcesso(Processo processo) {
         this.processo = processo;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 }

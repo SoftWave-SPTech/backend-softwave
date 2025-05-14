@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 //@Repository
-public interface AudienciasRepository extends JpaRepository<Audiencias,Integer> {
-    Optional<Audiencias> findByDataAndProcessoId(String data, Integer processoId);
+public interface AudienciasRepository{
+//    Optional<Audiencias> findByDataAndProcessoId(String data, Integer processoId);
 }
