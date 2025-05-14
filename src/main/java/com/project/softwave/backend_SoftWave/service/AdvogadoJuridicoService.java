@@ -49,7 +49,6 @@ public class AdvogadoJuridicoService {
 
         advogado.setNomeFantasia(dto.getNomeFantasia());
         advogado.setEmail(dto.getEmail());
-        advogado.setCnpj(dto.getCnpj());
         advogado.setRazaoSocial(dto.getRazaoSocial());
         advogado.setTelefone(dto.getTelefone());
         advogado.setLogradouro(dto.getLogradouro());

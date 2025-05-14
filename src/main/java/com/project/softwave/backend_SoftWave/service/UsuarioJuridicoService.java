@@ -53,7 +53,6 @@ public class UsuarioJuridicoService {
 
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setTelefone(dto.getTelefone());
         usuarioJuridico.setLogradouro(dto.getLogradouro());
