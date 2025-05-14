@@ -13,17 +13,11 @@ public class ComentarioProcesso {
     private Long id;
 
     private String comentario;
-    private LocalDateTime dataCriacao;
 
+    private LocalDateTime dataCriacao;
 
     @ManyToOne
     private Processo processo;
-
-    @ManyToOne
-    private AdvogadoFisico advogadoFisico;
-
-    @ManyToOne
-    private AdvogadoJuridico advogadoJuridico;
 
     public Long getId() {
         return id;
@@ -48,5 +42,13 @@ public class ComentarioProcesso {
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public Processo getProcesso() {
+        return processo;
+    }
+
+    public void setProcesso(Processo processo) {
+        this.processo = processo;
     }
 }

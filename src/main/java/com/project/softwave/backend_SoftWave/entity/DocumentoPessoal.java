@@ -7,15 +7,15 @@ public class DocumentoPessoal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
+
     private String documento;
+
     private String conteudo;
 
-//    TODO IMPLEMENTAR ESSE CAMPO NO FUTURO
-//    @ManyToOne
-//    @JoinColumn(name = "fk_cliente_id", referencedColumnName = "id")
-//    private Usuario fkCliente;
-
+    @ManyToOne
+    private Usuario usuario;
 
     public Integer getId() {
         return id;
@@ -41,4 +41,11 @@ public class DocumentoPessoal {
         this.conteudo = conteudo;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }

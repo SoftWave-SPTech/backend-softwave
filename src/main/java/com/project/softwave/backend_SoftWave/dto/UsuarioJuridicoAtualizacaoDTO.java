@@ -31,9 +31,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
     @Schema(description = "Razão social da empresa", example = "XPTO LTDA")
     private String razaoSocial;
 
-    @Schema(description = "CNPJ da empresa", example = "15529313000109")
-    @CNPJ
-    private String cnpj;
 
     @NotNull
     @Schema(description = "CEP do endereço", example = "03471047")
@@ -69,7 +66,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         UsuarioJuridico usuarioJuridico = new UsuarioJuridico();
         usuarioJuridico.setId(dto.getId());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setLogradouro(dto.getLogradouro());
         usuarioJuridico.setBairro(dto.getBairro());
@@ -91,7 +87,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setId(usuarioJuridico.getId());
         dto.setNomeFantasia(usuarioJuridico.getNomeFantasia());
         dto.setRazaoSocial(usuarioJuridico.getRazaoSocial());
-        dto.setCnpj(usuarioJuridico.getCnpj());
         dto.setEmail(usuarioJuridico.getEmail());
         dto.setCep(usuarioJuridico.getCep());
         dto.setLogradouro(usuarioJuridico.getLogradouro());
@@ -113,7 +108,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
 
         advogadoJuridico.setId(dto.getId());
         advogadoJuridico.setEmail(dto.getEmail());
-        advogadoJuridico.setCnpj(dto.getCnpj());
         advogadoJuridico.setCep(dto.getCep());
         advogadoJuridico.setLogradouro(dto.getLogradouro());
         advogadoJuridico.setBairro(dto.getBairro());
@@ -141,7 +135,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setCidade(advogadoJuridico.getCidade());
         dto.setTelefone(advogadoJuridico.getTelefone());
        // dto.setFoto(advogadoJuridico.getFoto());
-        dto.setCnpj(advogadoJuridico.getCnpj());
         dto.setNomeFantasia(advogadoJuridico.getNomeFantasia());
         dto.setRazaoSocial(advogadoJuridico.getRazaoSocial());
         dto.setComplemento(advogadoJuridico.getComplemento());
@@ -239,11 +232,4 @@ public class UsuarioJuridicoAtualizacaoDTO {
         this.razaoSocial = razaoSocial;
     }
 
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
 }

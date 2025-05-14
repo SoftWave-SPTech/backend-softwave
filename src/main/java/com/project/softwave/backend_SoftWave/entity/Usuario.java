@@ -1,28 +1,59 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Usuario {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_usuario",
+        discriminatorType = DiscriminatorType.STRING)
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
 
-
+    @Column(nullable = false)
     private String senha;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private Role role;
+
     private String cep;
+
     private String logradouro;
+
     private String bairro;
+
     private String cidade;
+
     private String complemento;
+
     private String telefone;
+
     //private String foto;
+
+    @ManyToMany
+    @JoinTable(
+            name = "usuarios_processos",
+            joinColumns = @JoinColumn(name = "advogado_id"),
+            inverseJoinColumns = @JoinColumn(name = "processo_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"advogado_id", "processo_id"})
+    )
+    private List<Processo> processos = new ArrayList<>();
+
+    @ManyToMany
+    private List<Reuniao> reunioes;
 
     public Usuario() {
     }

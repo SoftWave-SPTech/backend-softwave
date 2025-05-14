@@ -14,7 +14,7 @@ public class Processo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer id;
-    //            "processo": "1192602-55.2024.8.26.0100",
+//            "processo": "1192602-55.2024.8.26.0100",
     private String numeroProcesso;
 //            "classe": "Despejo por Falta de Pagamento Cumulado Com Cobrança",
     private String classe;
@@ -40,9 +40,6 @@ public class Processo {
     private Double normalizadoValorAcao;
 //            "autor": null,
     private String autor;
-//            "advogado": null,
-    //TODO CONECTAR AOS ADVOGADOS CADASTRADOS
-    private String advogado;
 //            "exectdo": null,
     private String executado;
 //            "reqte": "Jarbas Alessandro Rocha Marqueze Advogado:  Felipe Lauriano Rocha Marqueze",
@@ -51,40 +48,11 @@ public class Processo {
     private String requerido;
 //            "indiciado": null,
     private String indiciado;
-
-    @ManyToMany
-    @JoinTable(name = "processo_advogado_fisico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
-    private List<AdvogadoFisico> advogadosFisicos;
-
-    @ManyToMany
-    @JoinTable(name = "processo_advogado_juridico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
-    private List<AdvogadoJuridico> advogadosJuridicos;
-
-    @ManyToMany
-    @JoinTable(name = "processo_cliente_fisico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<UsuarioFisico> clientesFisicos;
-
-    @ManyToMany
-    @JoinTable(name = "processo_cliente_juridico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<UsuarioJuridico> clientesJuridicos;
-
-    @OneToMany
-    private List<ComentarioProcesso> comentarios;
-
-    @OneToMany
-    private List<Tarefa> tarefas;
-
-    @OneToMany
-    private List<RegistroFinanceiro> registros;
-
+//             descrição descrita pelo advogado no cadastro
+    private String descricao;
+    //            "advogado": null,
+    //TODO CONECTAR AOS ADVOGADOS CADASTRADOS
+    private String advogado;
 
     public Integer getId() {
         return id;
@@ -236,6 +204,14 @@ public class Processo {
 
     public void setIndiciado(String indiciado) {
         this.indiciado = indiciado;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     @Override
