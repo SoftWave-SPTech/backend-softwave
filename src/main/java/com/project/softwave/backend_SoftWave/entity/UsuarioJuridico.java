@@ -1,7 +1,5 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
-import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -10,7 +8,9 @@ import java.util.List;
 @DiscriminatorValue("usuario_juridico")
 public class UsuarioJuridico extends Usuario{
 
+    @Column(unique = true, nullable = false)
     private String cnpj;
+
     private String nomeFantasia;
     private String razaoSocial;
 

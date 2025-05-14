@@ -10,6 +10,7 @@ import java.util.List;
 @DiscriminatorValue("advogado_juridico")
 public class AdvogadoJuridico  extends UsuarioJuridico {
 
+    @Column(unique = true, nullable = false)
     private Integer oab;
 
     public AdvogadoJuridico() {

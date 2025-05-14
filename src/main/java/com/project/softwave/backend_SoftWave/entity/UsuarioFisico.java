@@ -1,17 +1,16 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoDTO;
 import jakarta.persistence.*;
-
-import java.util.List;
 
 @Entity
 @DiscriminatorValue("usuario_fisico")
 public class UsuarioFisico extends Usuario{
 
     private String nome;
+
+    @Column(unique = true, nullable = false)
     private String cpf;
+
     private String rg;
 
     public UsuarioFisico() {

@@ -1,6 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.*;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridico.UsuarioJuridicoRequestDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridico.UsuarioJuridicoResponseDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,33 +11,43 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/usuarios-juridicos")
 public class UsuarioJuridicoController {
 
     @Autowired
     private UsuarioJuridicoService usuarioJuridicoService;
 
-
-    @Operation(summary = "Cadastro dos usuários jurídicos", method = "POST")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Cadastro do usuário jurídico realizado com sucesso"),
-            @ApiResponse(responseCode = "409", description = "Email ou CNPJ já cadastrado"),
-            @ApiResponse(responseCode = "400", description = "Dados inválidos")
-    })
-
+//    @PostMapping
+//    @SecurityRequirement(name = "Bearer")
+//    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO request){
+//        UsuarioJuridico usuarioJuridico = UsuarioJuridicoDTO.toEntity(request);
+//        UsuarioJuridico usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridico);
+//        return ResponseEntity.status(201).body(UsuarioJuridicoDTO.toResponseDto(usuarioNovo));
+//    }
+        @Operation(summary = "Cadastro dos usuários jurídicos", method = "POST")
+        @ApiResponses(value = {
+                @ApiResponse(responseCode = "201", description = "Cadastro do usuário jurídico realizado com sucesso"),
+                @ApiResponse(responseCode = "409", description = "Email ou CNPJ já cadastrado"),
+                @ApiResponse(responseCode = "400", description = "Dados inválidos")
+        })
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioJuridicoDTO> cadastrar(@Valid @RequestBody UsuarioJuridicoDTO request){
-        UsuarioJuridico usuarioJuridico = UsuarioJuridicoDTO.toEntity(request);
-        UsuarioJuridico usuarioNovo = usuarioJuridicoService.cadastrar(usuarioJuridico);
-        return ResponseEntity.status(201).body(UsuarioJuridicoDTO.toResponseDto(usuarioNovo));
+    public ResponseEntity<UsuarioJuridicoResponseDTO> cadastrar(
+            @Valid @RequestBody UsuarioJuridicoRequestDTO request) {
+
+        UsuarioJuridico usuarioJuridico = UsuarioJuridicoRequestDTO.toEntity(request);
+        UsuarioJuridico usuarioSalvo = usuarioJuridicoService.cadastrar(usuarioJuridico);
+        UsuarioJuridicoResponseDTO response = UsuarioJuridicoResponseDTO.fromEntity(usuarioSalvo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 
@@ -77,11 +89,11 @@ public class UsuarioJuridicoController {
     })
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<UsuarioJuridicoDTO>> listar(){
+    public ResponseEntity<List<UsuarioJuridicoResponseDTO>> listar(){
         List<UsuarioJuridico> usuariosJuridicos = usuarioJuridicoService.listar();
 
-        List<UsuarioJuridicoDTO> usuarioJuridicoDtos = usuariosJuridicos.stream()
-                .map(UsuarioJuridicoDTO::toResponseDto)
+        List<UsuarioJuridicoResponseDTO> usuarioJuridicoDtos = usuariosJuridicos.stream()
+                .map(UsuarioJuridicoResponseDTO::fromEntity)
                 .toList();
 
         return ResponseEntity.status(200).body(usuarioJuridicoDtos);
@@ -94,9 +106,9 @@ public class UsuarioJuridicoController {
     })
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioJuridicoDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioJuridicoResponseDTO> buscarPorId(@PathVariable Integer id) {
         UsuarioJuridico usuario = usuarioJuridicoService.buscarPorId(id);
-        return ResponseEntity.ok(UsuarioJuridicoDTO.toResponseDto(usuario));
+        return ResponseEntity.ok(UsuarioJuridicoResponseDTO.fromEntity(usuario));
     }
 
 }

@@ -6,7 +6,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -18,8 +21,10 @@ public class Usuario {
 
     private Integer id;
 
+    @Column(nullable = false)
     private String senha;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private Role role;
@@ -39,7 +44,13 @@ public class Usuario {
     //private String foto;
 
     @ManyToMany
-    private List<Processo> processos;
+    @JoinTable(
+            name = "usuarios_processos",
+            joinColumns = @JoinColumn(name = "advogado_id"),
+            inverseJoinColumns = @JoinColumn(name = "processo_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"advogado_id", "processo_id"})
+    )
+    private List<Processo> processos = new ArrayList<>();
 
     @ManyToMany
     private List<Reuniao> reunioes;
