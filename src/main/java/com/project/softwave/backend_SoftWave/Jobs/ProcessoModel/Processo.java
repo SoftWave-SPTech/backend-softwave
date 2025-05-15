@@ -54,6 +54,9 @@ public class Processo {
     //TODO CONECTAR AOS ADVOGADOS CADASTRADOS
     private String advogado;
 
+    @ManyToMany(mappedBy = "processos")
+    private List<Usuario> usuarios;
+
     public Integer getId() {
         return id;
     }
@@ -214,6 +217,15 @@ public class Processo {
         this.descricao = descricao;
     }
 
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+
+
     @Override
     public String toString() {
         return "Processo{" +
@@ -231,11 +243,13 @@ public class Processo {
                 ", valorAcao='" + valorAcao + '\'' +
                 ", normalizadoValorAcao=" + normalizadoValorAcao +
                 ", autor='" + autor + '\'' +
-                ", advogado='" + advogado + '\'' +
                 ", executado='" + executado + '\'' +
                 ", requerente='" + requerente + '\'' +
                 ", requerido='" + requerido + '\'' +
                 ", indiciado='" + indiciado + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", advogado='" + advogado + '\'' +
+                ", usuarios=" + usuarios +
                 '}';
     }
 }

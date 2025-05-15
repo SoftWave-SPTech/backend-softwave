@@ -2,8 +2,6 @@ package com.project.softwave.backend_SoftWave.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @DiscriminatorValue("usuario_juridico")
 public class UsuarioJuridico extends Usuario {

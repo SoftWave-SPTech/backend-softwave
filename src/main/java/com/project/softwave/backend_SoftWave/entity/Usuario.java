@@ -2,14 +2,8 @@ package com.project.softwave.backend_SoftWave.entity;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -20,6 +14,15 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Integer id;
+
+    private Integer oab;
+
+    private String nome;
+
+    private String nomeFantasia;
+
+    @Column(name = "tipo_usuario", insertable = false, updatable = false)
+    private String tipoUsuario;
 
     @Column(nullable = false)
     private String senha;
@@ -83,6 +86,14 @@ public class Usuario {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getOab() {
+        return oab;
+    }
+
+    public void setOab(Integer oab) {
+        this.oab = oab;
     }
 
     public void setSenha(String senha) {
@@ -167,5 +178,45 @@ public class Usuario {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getNomeFantasia() {
+        return nomeFantasia;
+    }
+
+    public void setNomeFantasia(String nomeFantasia) {
+        this.nomeFantasia = nomeFantasia;
+    }
+
+    public String getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(String tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
+
+    public List<Processo> getProcessos() {
+        return processos;
+    }
+
+    public void setProcessos(List<Processo> processos) {
+        this.processos = processos;
+    }
+
+    public List<Reuniao> getReunioes() {
+        return reunioes;
+    }
+
+    public void setReunioes(List<Reuniao> reunioes) {
+        this.reunioes = reunioes;
     }
 }
