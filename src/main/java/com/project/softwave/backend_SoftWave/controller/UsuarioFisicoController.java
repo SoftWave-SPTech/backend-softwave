@@ -1,11 +1,13 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.*;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
+import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -24,6 +27,9 @@ public class UsuarioFisicoController {
 
     @Autowired
     private UsuarioFisicoService usuarioFisicoService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Operation(summary = "Cadastro dos usuários físicos", method = "POST")
     @ApiResponses(value = {
@@ -98,5 +104,29 @@ public class UsuarioFisicoController {
     public ResponseEntity<UsuarioFisicoDTO> buscarPorId(@PathVariable Integer id) {
         UsuarioFisico usuario = usuarioFisicoService.buscarPorId(id);
         return ResponseEntity.ok(UsuarioFisicoDTO.toResponseDto(usuario));
+    }
+
+    @Operation(summary = "Atualizar a foto de perfil dos usuários", method = "PUT")
+    @PutMapping("foto-perfil/")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> atualizarFotoPerfil(
+            @Valid @RequestBody UsuarioFotoPerfilDTO usuarioFotoPerfilDTO
+    ) throws IOException {
+
+        String fotoPerfilUrl = usuarioService.atualizarFotoPerfil(usuarioFotoPerfilDTO);
+
+        return ResponseEntity.status(200).body(fotoPerfilUrl);
+    }
+
+    @Operation(summary = "Deletar a foto de perfil dos usuários", method = "DELETE")
+    @DeleteMapping("foto-perfil/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> deletarFotoPerfil(
+            @PathVariable Integer id
+    ) throws IOException {
+
+        usuarioService.deletarFotoPerfil(id);
+
+        return ResponseEntity.status(200).build();
     }
 }

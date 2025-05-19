@@ -8,14 +8,22 @@ public class DocumentoPessoal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String documento;
-    private String conteudo;
+    private String nomeArquivo;
+    private String urlArquivo;
 
 //    TODO IMPLEMENTAR ESSE CAMPO NO FUTURO
 //    @ManyToOne
 //    @JoinColumn(name = "fk_cliente_id", referencedColumnName = "id")
 //    private Usuario fkCliente;
 
+
+    public DocumentoPessoal() {
+    }
+
+    public DocumentoPessoal(String nomeArquivo, String urlArquivo) {
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+    }
 
     public Integer getId() {
         return id;
@@ -25,20 +33,19 @@ public class DocumentoPessoal {
         this.id = id;
     }
 
-    public String getDocumento() {
-        return documento;
+    public String getUrlArquivo() {
+        return urlArquivo;
     }
 
-    public void setDocumento(String documento) {
-        this.documento = documento;
+    public String getNomeArquivo() {
+        return nomeArquivo;
     }
 
-    public String getConteudo() {
-        return conteudo;
+    public void setNomeArquivo(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
     }
 
-    public void setConteudo(String conteudo) {
-        this.conteudo = conteudo;
+    public void setUrlArquivo(String urlArquivo) {
+        this.urlArquivo = urlArquivo;
     }
-
 }

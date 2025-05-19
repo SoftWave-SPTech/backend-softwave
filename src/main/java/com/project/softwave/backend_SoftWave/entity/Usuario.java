@@ -22,7 +22,7 @@ public abstract class Usuario {
     private String cidade;
     private String complemento;
     private String telefone;
-    //private String foto;
+    private String foto;
 
     public Usuario() {
     }
@@ -114,13 +114,9 @@ public abstract class Usuario {
         this.telefone = telefone;
     }
 
-//    public String getFoto() {
-//        return foto;
-//    }
-//
-//    public void setFoto(String foto) {
-//        this.foto = foto;
-//    }
+    public String getFoto() {return foto; }
+
+    public void setFoto(String foto) {this.foto = foto; }
 
     public String getComplemento() {
         return complemento;

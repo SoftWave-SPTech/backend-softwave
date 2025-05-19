@@ -1,33 +1,29 @@
 package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.entity.DocumentoPessoal;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class DocumentoPessoalDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Integer id;
 
     @NotBlank
-    private String documento;
+    private String nomeArquivo;
 
     @NotBlank
-    private String conteudo;
+    private String urlArquivo;
 
     @NotNull
-    private Integer fkCliente;
+//    private Integer fkCliente;
 
     public static DocumentoPessoal toEntity(DocumentoPessoalDTO dto) {
         if (dto == null) {
             return null;
         }
         DocumentoPessoal documento = new DocumentoPessoal();
-        documento.setDocumento(dto.getDocumento());
-        documento.setConteudo(dto.getConteudo());
+        documento.setNomeArquivo(dto.getNomeArquivo());
+        documento.setUrlArquivo(dto.getUrlArquivo());
 //        documento.setFkCliente(dto.getFkCliente());
         return documento;
     }
@@ -38,8 +34,8 @@ public class DocumentoPessoalDTO {
         }
         DocumentoPessoalDTO dto = new DocumentoPessoalDTO();
         dto.setId(documento.getId());
-        dto.setDocumento(documento.getDocumento());
-        dto.setConteudo(documento.getConteudo());
+        dto.setNomeArquivo(documento.getNomeArquivo());
+        dto.setUrlArquivo(documento.getUrlArquivo());
 //        dto.setFkCliente(documento.getFkCliente());
         return dto;
     }
@@ -53,27 +49,28 @@ public class DocumentoPessoalDTO {
         this.id = id;
     }
 
-    public String getDocumento() {
-        return documento;
+    public @NotBlank String getUrlArquivo() {
+        return urlArquivo;
     }
 
-    public void setDocumento(String documento) {
-        this.documento = documento;
+    public void setUrlArquivo(@NotBlank String urlArquivo) {
+        this.urlArquivo = urlArquivo;
     }
 
-    public String getConteudo() {
-        return conteudo;
+    public @NotBlank String getNomeArquivo() {
+        return nomeArquivo;
     }
 
-    public void setConteudo(String conteudo) {
-        this.conteudo = conteudo;
+    public void setNomeArquivo(@NotBlank String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
     }
 
-    public Integer getFkCliente() {
-        return fkCliente;
-    }
-
-    public void setFkCliente(Integer fkCliente) {
-        this.fkCliente = fkCliente;
-    }
+    //
+//    public Integer getFkCliente() {
+//        return fkCliente;
+//    }
+//
+//    public void setFkCliente(Integer fkCliente) {
+//        this.fkCliente = fkCliente;
+//    }
 }

@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface DocumentoPessoalRepository extends JpaRepository<DocumentoPessoal, Integer> {
 
-    List<DocumentoPessoal> findByDocumentoContainingIgnoreCase(String documento);
+    List<DocumentoPessoal> findByNomeArquivoContainingIgnoreCase(String nome);
 }

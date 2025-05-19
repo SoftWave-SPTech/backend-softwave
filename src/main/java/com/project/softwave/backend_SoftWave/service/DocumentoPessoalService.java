@@ -1,12 +1,19 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalCadastroDto;
 import com.project.softwave.backend_SoftWave.entity.DocumentoPessoal;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -14,6 +21,9 @@ public class DocumentoPessoalService {
 
     @Autowired
     private DocumentoPessoalRepository repository;
+
+    @Value("${file.PASTA_DOCUMENTOS_PESSOAIS}")
+    private  String PASTA_DOCUMENTOS_PESSOAIS;
 
     public List<DocumentoPessoal> listarDocumentos() {
         return repository.findAll();
@@ -25,32 +35,37 @@ public class DocumentoPessoalService {
         );
     }
 
-    public DocumentoPessoal cadastrarDocumento(DocumentoPessoal documento) {
-        List<DocumentoPessoal> documentosExistentes = repository.findByDocumentoContainingIgnoreCase(documento.getDocumento());
-
-        if (!documentosExistentes.isEmpty()) {
-            throw new EntidadeConflitoException("Já existe um documento com esse nome.");
+    public String cadastrarDocumento(DocumentoPessoalCadastroDto documento) throws IOException {
+        File diretorio = new File(PASTA_DOCUMENTOS_PESSOAIS);
+        if (!diretorio.exists()) {
+            diretorio.mkdirs();
         }
 
-        return repository.save(documento);
+        String nomeOriginalArquivo = documento.getDocumentoPessoal().getOriginalFilename();
+        Path caminhoCompletoDocumento = Paths.get(PASTA_DOCUMENTOS_PESSOAIS, nomeOriginalArquivo);
+        Files.write(caminhoCompletoDocumento, documento.getDocumentoPessoal().getBytes());
+
+        DocumentoPessoal documentoPessoalParaSalvar = new DocumentoPessoal(documento.getNomeArquivo(), caminhoCompletoDocumento.toString());
+        repository.save(documentoPessoalParaSalvar);
+
+        return caminhoCompletoDocumento.toString();
     }
 
-    public DocumentoPessoal atualizarDocumento(DocumentoPessoal documentoAtualizado, Integer id) {
-        boolean existeDocumento = repository.existsById(id);
-        if (!existeDocumento) {
-            throw new EntidadeNaoEncontradaException("Documento com ID %d não encontrado".formatted(id));
-        }
+//    public DocumentoPessoal atualizarDocumento(DocumentoPessoal documentoAtualizado, Integer id) {
+//        boolean existeDocumento = repository.existsById(id);
+//        if (!existeDocumento) {
+//            throw new EntidadeNaoEncontradaException("Documento com ID %d não encontrado".formatted(id));
+//        }
+//
+//        documentoAtualizado.setId(id);
+//        return repository.save(documentoAtualizado);
+//    }
 
-        documentoAtualizado.setId(id);
-        return repository.save(documentoAtualizado);
-    }
+    public void deletarDocumento(Integer id) throws IOException {
+        DocumentoPessoal documentoPessoal = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Documento não encontrado"));
 
-    public void deletarDocumento(Integer id) {
-        boolean existeDocumento = repository.existsById(id);
-        if (!existeDocumento) {
-            throw new EntidadeNaoEncontradaException("Documento com ID %d não encontrado".formatted(id));
-        }
-
+        Files.deleteIfExists(Paths.get(documentoPessoal.getUrlArquivo()));
         repository.deleteById(id);
     }
 }
