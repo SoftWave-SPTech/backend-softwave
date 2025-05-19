@@ -42,6 +42,8 @@ public class Usuario {
 
     private String complemento;
 
+    private String numero;
+
     private String telefone;
 
     //private String foto;
@@ -194,6 +196,14 @@ public class Usuario {
 
     public void setNomeFantasia(String nomeFantasia) {
         this.nomeFantasia = nomeFantasia;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
     public String getTipoUsuario() {

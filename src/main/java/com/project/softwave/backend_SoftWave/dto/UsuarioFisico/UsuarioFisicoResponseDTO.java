@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.dto.UsuarioFisico;
 
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "DTO de resposta com dados de usuários físicos")
 public class UsuarioFisicoResponseDTO {
@@ -39,6 +40,10 @@ public class UsuarioFisicoResponseDTO {
     @Schema(description = "Complemento do endereço, se houver", example = "Apto 12, Bloco A")
     private String complemento;
 
+    @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
     public static UsuarioFisicoResponseDTO toResponseDto(UsuarioFisico usuarioFisico) {
         UsuarioFisicoResponseDTO Dto = new UsuarioFisicoResponseDTO();
         Dto.setId(usuarioFisico.getId());
@@ -52,11 +57,18 @@ public class UsuarioFisicoResponseDTO {
         Dto.setTelefone(usuarioFisico.getTelefone());
         Dto.setCep(usuarioFisico.getCep());
         Dto.setComplemento(usuarioFisico.getComplemento());
-
+        Dto.setNumero(usuarioFisico.getNumero());
         return Dto;
     }
 
     // Getters e Setters
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
 
     public Integer getId() {
         return id;

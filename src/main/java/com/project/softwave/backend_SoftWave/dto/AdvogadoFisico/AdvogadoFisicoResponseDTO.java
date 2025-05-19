@@ -39,6 +39,9 @@ public class AdvogadoFisicoResponseDTO {
     @Schema(description = "Complemento do endereço", example = "Apto 102, Bloco B")
     private String complemento;
 
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
     @Schema(description = "Telefone de contato", example = "(11) 98765-4321")
     private String telefone;
 
@@ -59,6 +62,7 @@ public class AdvogadoFisicoResponseDTO {
         dto.setTelefone(advogado.getTelefone());
         dto.setBairro(advogado.getBairro());
         dto.setComplemento(advogado.getComplemento());
+        dto.setNumero(advogado.getNumero());
         return dto;
     }
 
@@ -71,6 +75,14 @@ public class AdvogadoFisicoResponseDTO {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
     public Integer getOab() {

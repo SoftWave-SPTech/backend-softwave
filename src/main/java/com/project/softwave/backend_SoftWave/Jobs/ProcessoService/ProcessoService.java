@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoService;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDTO;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
@@ -49,4 +50,17 @@ public class ProcessoService {
         usuario.getProcessos().remove(processo);
         usuarioRepository.save(usuario);
     }
+
+    public Processo buscarPorNumeroProcesso(String numeroProcesso) {
+        return processoRepository.findProcessoByNumeroProcesso(numeroProcesso)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+    }
+
+    public void atualizarProcessoComUsuarios(Processo processoAtual, CadastroProcessoDTO novoProcesso) {
+        VincularUsuariosProcessoDTO novoVinculo = new VincularUsuariosProcessoDTO(processoAtual.getId(), novoProcesso.getUsuarios());
+        vincularUsuariosAoProcesso(novoVinculo);
+        processoAtual.setDescricao(novoProcesso.getDescricao());
+        processoRepository.save(processoAtual);
+    }
+
 }

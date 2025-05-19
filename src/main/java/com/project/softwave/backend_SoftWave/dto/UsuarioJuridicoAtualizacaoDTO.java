@@ -55,9 +55,14 @@ public class UsuarioJuridicoAtualizacaoDTO {
     @Schema(description = "Complemento do endereço", example = "Sala 5, Edifício Central")
     private String complemento;
 
+    @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
+    @Schema(description = "Representante", example = "João Carlos")
+    private String representante;
+
    // private String foto;
-
-
 
     public static UsuarioJuridico toEntity (UsuarioJuridicoAtualizacaoDTO dto) {
         if (dto == null) {
@@ -75,6 +80,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setComplemento(dto.getComplemento());
+        usuarioJuridico.setNumero(dto.getNumero());
+        usuarioJuridico.setRepresentante(dto.getRepresentante());
 
         return usuarioJuridico;
     }
@@ -95,6 +102,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setTelefone(usuarioJuridico.getTelefone());
       //  dto.setFoto(usuarioJuridico.getFoto());
         dto.setComplemento(usuarioJuridico.getComplemento());
+        dto.setNumero(usuarioJuridico.getNumero());
+        dto.setRepresentante(usuarioJuridico.getRepresentante());
 
         return dto;
     }
@@ -117,6 +126,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         advogadoJuridico.setNomeFantasia(dto.getNomeFantasia());
         advogadoJuridico.setRazaoSocial(dto.getRazaoSocial());
         advogadoJuridico.setComplemento(dto.getComplemento());
+        advogadoJuridico.setNumero(dto.getNumero());
+        advogadoJuridico.setRepresentante(dto.getRepresentante());
 
         return advogadoJuridico;
     }
@@ -138,10 +149,10 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setNomeFantasia(advogadoJuridico.getNomeFantasia());
         dto.setRazaoSocial(advogadoJuridico.getRazaoSocial());
         dto.setComplemento(advogadoJuridico.getComplemento());
+        dto.setNumero(advogadoJuridico.getNumero());
+        dto.setRepresentante(advogadoJuridico.getRepresentante());
         return dto;
     }
-
-
 
     public Integer getId() {
         return id;
@@ -150,6 +161,15 @@ public class UsuarioJuridicoAtualizacaoDTO {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
 
     public String getComplemento() {
         return complemento;
@@ -232,4 +252,11 @@ public class UsuarioJuridicoAtualizacaoDTO {
         this.razaoSocial = razaoSocial;
     }
 
+    public String getRepresentante() {
+        return representante;
+    }
+
+    public void setRepresentante(String representante) {
+        this.representante = representante;
+    }
 }

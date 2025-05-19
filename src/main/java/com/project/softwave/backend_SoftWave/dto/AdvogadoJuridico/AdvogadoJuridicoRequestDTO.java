@@ -53,9 +53,15 @@ public class AdvogadoJuridicoRequestDTO {
     @Schema(description = "Complemento do endereço", example = "Sala 801, Torre Oeste")
     private String complemento;
 
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
     @NotBlank
     @Schema(description = "Telefone comercial de contato", example = "(11) 97654-3210")
     private String telefone;
+
+    @Schema(description = "Representante", example = "João Carlos")
+    private String representante;
 
     public static AdvogadoJuridico toEntity(AdvogadoJuridicoRequestDTO dto) {
         if(dto == null) {
@@ -73,7 +79,9 @@ public class AdvogadoJuridicoRequestDTO {
         usuarioJuridico.setTelefone(dto.getTelefone());
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setComplemento(dto.getComplemento());
+        usuarioJuridico.setNumero(dto.getNumero());
         usuarioJuridico.setOab(dto.getOab());
+        usuarioJuridico.setRepresentante(dto.getRepresentante());
 
         return usuarioJuridico;
     }
@@ -86,6 +94,14 @@ public class AdvogadoJuridicoRequestDTO {
 
     public void setOab(Integer oab) {
         this.oab = oab;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
     public String getEmail() {
@@ -174,5 +190,13 @@ public class AdvogadoJuridicoRequestDTO {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getRepresentante() {
+        return representante;
+    }
+
+    public void setRepresentante(String representante) {
+        this.representante = representante;
     }
 }

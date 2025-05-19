@@ -50,9 +50,6 @@ public class Processo {
     private String indiciado;
 //             descrição descrita pelo advogado no cadastro
     private String descricao;
-    //            "advogado": null,
-    //TODO CONECTAR AOS ADVOGADOS CADASTRADOS
-    private String advogado;
 
     @ManyToMany(mappedBy = "processos")
     private List<Usuario> usuarios;
@@ -169,14 +166,6 @@ public class Processo {
         this.autor = autor;
     }
 
-    public String getAdvogado() {
-        return advogado;
-    }
-
-    public void setAdvogado(String advogado) {
-        this.advogado = advogado;
-    }
-
     public String getExecutado() {
         return executado;
     }
@@ -225,7 +214,6 @@ public class Processo {
         this.usuarios = usuarios;
     }
 
-
     @Override
     public String toString() {
         return "Processo{" +
@@ -248,7 +236,6 @@ public class Processo {
                 ", requerido='" + requerido + '\'' +
                 ", indiciado='" + indiciado + '\'' +
                 ", descricao='" + descricao + '\'' +
-                ", advogado='" + advogado + '\'' +
                 ", usuarios=" + usuarios +
                 '}';
     }

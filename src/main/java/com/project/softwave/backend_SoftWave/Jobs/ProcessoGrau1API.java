@@ -347,17 +347,17 @@ public class ProcessoGrau1API {
         novoProcesso.setRequerido(requerido);
         String requerente = processo.optString("reqte", "Não informado");
         novoProcesso.setRequerente(requerente);
-        String advogado = processo.optString("advogado", "Não informado");
-        if (advogado.equals("Não informado")){
-            if (requerente.contains("Advogado:") || requerente.contains("Advogada:")) {
-                advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
-            }else if (requerido.contains("Advogado:") || requerente.contains("Advogada:")) {
-                advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
-            }else {
-                advogado = "Não informado";
-            }
-        }
-        novoProcesso.setAdvogado(advogado);
+//        String advogado = processo.optString("advogado", "Não informado");
+//        if (advogado.equals("Não informado")){
+//            if (requerente.contains("Advogado:") || requerente.contains("Advogada:")) {
+//                advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
+//            }else if (requerido.contains("Advogado:") || requerente.contains("Advogada:")) {
+//                advogado = requerente.replaceAll(".*Advogado:\\s*", "").trim();
+//            }else {
+//                advogado = "Não informado";
+//            }
+//        }
+//        novoProcesso.setAdvogado(advogado);
         String executado = processo.optString("executado", "Não informado");
         novoProcesso.setExecutado(executado);
         String indiciado = processo.optString("indiciado", "Não indiciado");

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.br.CPF;
 
 @Schema(description = "DTO para cadastro de advogado físico")
-public class AdvogadoFisicoRequestDTO {
+public class AdvogadoFisicoRequestDTO{
 
     @NotNull
     @Schema(description = "Número da OAB", example = "123456")
@@ -54,6 +54,10 @@ public class AdvogadoFisicoRequestDTO {
     private String complemento;
 
     @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
+    @NotBlank
     @Schema(description = "Telefone de contato", example = "(11) 98765-4321")
     private String telefone;
 
@@ -74,10 +78,20 @@ public class AdvogadoFisicoRequestDTO {
         advogadoFisico.setLogradouro(dto.getLogradouro());
         advogadoFisico.setCep(dto.getCep());
         advogadoFisico.setComplemento(dto.getComplemento());
+        advogadoFisico.setNumero(dto.getNumero());
         return advogadoFisico;
     }
 
+
+
     // Getters e Setters omitidos por brevidade (adicione-os conforme necessário)
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
 
     public Integer getOab() {
         return oab;
@@ -98,6 +112,8 @@ public class AdvogadoFisicoRequestDTO {
     public String getEmail() {
         return email;
     }
+
+
 
     public void setEmail(String email) {
         this.email = email;
