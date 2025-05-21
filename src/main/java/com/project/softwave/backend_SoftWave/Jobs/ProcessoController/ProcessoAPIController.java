@@ -26,7 +26,7 @@ public class ProcessoAPIController {
             processoGrau1API.getApiParams();
             return ResponseEntity.status(200).body(HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(420).body(HttpStatus.METHOD_FAILURE);
+            return ResponseEntity.status(500).body(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
