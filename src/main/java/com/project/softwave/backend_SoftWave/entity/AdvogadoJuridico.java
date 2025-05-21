@@ -16,18 +16,18 @@ public class AdvogadoJuridico extends UsuarioJuridico {
     public AdvogadoJuridico() {
     }
 
-    public AdvogadoJuridico(String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
-        super(cnpj, nomeFantasia, razaoSocial);
+    public AdvogadoJuridico(String cnpj, String nomeFantasia, String razaoSocial, String representante, Integer oab) {
+        super(cnpj, nomeFantasia, razaoSocial, representante);
         this.oab = oab;
     }
 
-    public AdvogadoJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
-        super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, cnpj, nomeFantasia, razaoSocial);
+    public AdvogadoJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, String representante, Integer oab) {
+        super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone, cnpj, nomeFantasia, razaoSocial, representante);
         this.oab = oab;
     }
 
-    public AdvogadoJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, Integer oab) {
-        super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, cnpj, nomeFantasia, razaoSocial);
+    public AdvogadoJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, String representante, Integer oab) {
+        super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone, cnpj, nomeFantasia, razaoSocial, representante);
         this.oab = oab;
     }
 

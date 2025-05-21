@@ -2,8 +2,6 @@ package com.project.softwave.backend_SoftWave.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @DiscriminatorValue("usuario_juridico")
 public class UsuarioJuridico extends Usuario {
@@ -13,25 +11,29 @@ public class UsuarioJuridico extends Usuario {
 
     private String nomeFantasia;
     private String razaoSocial;
+    private String representante;
 
-    public UsuarioJuridico(String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(String cnpj, String nomeFantasia, String razaoSocial, String representante) {
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+        this.representante = representante;
     }
 
-    public UsuarioJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, String representante) {
         super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+        this.representante = representante;
     }
 
-    public UsuarioJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, String representante) {
         super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+        this.representante = representante;
     }
 
     public UsuarioJuridico() {
@@ -61,5 +63,11 @@ public class UsuarioJuridico extends Usuario {
         this.razaoSocial = razaoSocial;
     }
 
+    public String getRepresentante() {
+        return representante;
+    }
 
+    public void setRepresentante(String representante) {
+        this.representante = representante;
+    }
 }

@@ -53,6 +53,10 @@ public class UsuarioFisicoRequestDTO {
     @Schema(description = "Complemento do endereço, se houver", example = "Apto 12, Bloco A")
     private String complemento;
 
+    @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
     public static UsuarioFisico toEntity(UsuarioFisicoRequestDTO dto) {
         if (dto == null) {
             return null;
@@ -69,10 +73,18 @@ public class UsuarioFisicoRequestDTO {
         entity.setTelefone(dto.getTelefone());
         entity.setCep(dto.getCep());
         entity.setComplemento(dto.getComplemento());
+        entity.setNumero(dto.getNumero());
         return entity;
     }
 
     // Getters e Setters
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
 
     public String getNome() {
         return nome;

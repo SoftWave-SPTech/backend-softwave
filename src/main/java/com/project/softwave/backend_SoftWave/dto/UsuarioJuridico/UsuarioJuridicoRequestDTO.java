@@ -51,6 +51,13 @@ public class UsuarioJuridicoRequestDTO {
     @Schema(description = "Complemento do endereço", example = "Sala 3, Edifício Central")
     private String complemento;
 
+    @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
+    @Schema(description = "Representante", example = "João Carlos")
+    private String representante;
+
     public static UsuarioJuridico toEntity(UsuarioJuridicoRequestDTO dto) {
         UsuarioJuridico entity = new UsuarioJuridico();
         entity.setNomeFantasia(dto.getNomeFantasia());
@@ -64,10 +71,20 @@ public class UsuarioJuridicoRequestDTO {
         entity.setCidade(dto.getCidade());
         entity.setTelefone(dto.getTelefone());
         entity.setComplemento(dto.getComplemento());
+        entity.setNumero(dto.getNumero());
+        entity.setRepresentante(dto.getRepresentante());
         return entity;
     }
 
     // Getters e Setters
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
     public String getNomeFantasia() { return nomeFantasia; }
     public void setNomeFantasia(String nomeFantasia) { this.nomeFantasia = nomeFantasia; }
 
@@ -100,4 +117,12 @@ public class UsuarioJuridicoRequestDTO {
 
     public String getComplemento() { return complemento; }
     public void setComplemento(String complemento) { this.complemento = complemento; }
+
+    public String getRepresentante() {
+        return representante;
+    }
+
+    public void setRepresentante(String representante) {
+        this.representante = representante;
+    }
 }

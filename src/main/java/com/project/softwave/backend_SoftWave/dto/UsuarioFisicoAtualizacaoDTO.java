@@ -45,13 +45,14 @@ public class UsuarioFisicoAtualizacaoDTO {
     private String complemento;
 
     @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
+    @NotBlank
     @Schema(description = "Telefone de contato", example = "(11) 91234-5678")
     private String telefone;
 
-
    // private String foto;
-
-
 
     public static UsuarioFisico toEntity (UsuarioFisicoAtualizacaoDTO dto) {
         if (dto == null) {
@@ -66,6 +67,7 @@ public class UsuarioFisicoAtualizacaoDTO {
         usuarioFisico.setBairro(dto.getBairro());
         usuarioFisico.setCidade(dto.getCidade());
         usuarioFisico.setTelefone(dto.getTelefone());
+        usuarioFisico.setNumero(dto.getNumero());
       //  usuarioFisico.setFoto(dto.getFoto());
         usuarioFisico.setComplemento(dto.getComplemento());
 
@@ -87,6 +89,7 @@ public class UsuarioFisicoAtualizacaoDTO {
         dto.setTelefone(usuarioFisico.getTelefone());
     //    dto.setFoto(usuarioFisico.getFoto());
         dto.setComplemento(usuarioFisico.getComplemento());
+        dto.setNumero(usuarioFisico.getNumero());
         return dto;
     }
 
@@ -105,6 +108,7 @@ public class UsuarioFisicoAtualizacaoDTO {
         advogadoFisico.setTelefone(dto.getTelefone());
      //   advogadoFisico.setFoto(dto.getFoto());
         advogadoFisico.setComplemento(dto.getComplemento());
+        advogadoFisico.setNumero(dto.getNumero());
         return advogadoFisico;
     }
 
@@ -123,9 +127,18 @@ public class UsuarioFisicoAtualizacaoDTO {
         dto.setTelefone(advogadoFisico.getTelefone());
      //   dto.setFoto(advogadoFisico.getFoto());
         dto.setComplemento(advogadoFisico.getComplemento());
+        dto.setNumero(advogadoFisico.getNumero());
         return dto;
     }
 
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
 
     public Integer getId() {
         return id;

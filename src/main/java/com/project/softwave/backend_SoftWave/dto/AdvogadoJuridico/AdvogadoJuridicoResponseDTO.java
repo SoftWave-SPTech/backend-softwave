@@ -40,8 +40,14 @@ public class AdvogadoJuridicoResponseDTO {
     @Schema(description = "Complemento do endereço", example = "Sala 801, Torre Oeste")
     private String complemento;
 
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
     @Schema(description = "Telefone comercial de contato", example = "(11) 97654-3210")
     private String telefone;
+
+    @Schema(description = "Representante", example = "João Carlos")
+    private String representante;
 
     public static AdvogadoJuridicoResponseDTO toResponseDto(AdvogadoJuridico usuarioJuridico) {
         AdvogadoJuridicoResponseDTO responseDto = new AdvogadoJuridicoResponseDTO();
@@ -57,7 +63,9 @@ public class AdvogadoJuridicoResponseDTO {
         responseDto.setTelefone(usuarioJuridico.getTelefone());
         responseDto.setCep(usuarioJuridico.getCep());
         responseDto.setComplemento(usuarioJuridico.getComplemento());
+        responseDto.setNumero(usuarioJuridico.getNumero());
         responseDto.setOab(usuarioJuridico.getOab());
+        responseDto.setRepresentante(usuarioJuridico.getRepresentante());
 
         return responseDto;
     }
@@ -70,6 +78,14 @@ public class AdvogadoJuridicoResponseDTO {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
     }
 
     public Integer getOab() {
@@ -158,5 +174,13 @@ public class AdvogadoJuridicoResponseDTO {
 
     public void setTelefone(String telefone) {
         this.telefone = telefone;
+    }
+
+    public String getRepresentante() {
+        return representante;
+    }
+
+    public void setRepresentante(String representante) {
+        this.representante = representante;
     }
 }
