@@ -236,7 +236,7 @@ public class Processo {
                 ", requerido='" + requerido + '\'' +
                 ", indiciado='" + indiciado + '\'' +
                 ", descricao='" + descricao + '\'' +
-                ", usuarios=" + usuarios +
+                ", usuariosSize=" + (usuarios != null ? usuarios.size() : "null") +
                 '}';
     }
 }
