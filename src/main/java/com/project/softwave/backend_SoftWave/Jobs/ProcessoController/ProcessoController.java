@@ -35,7 +35,7 @@ public class ProcessoController {
         return ResponseEntity.ok("Usuários vinculados com sucesso ao processo.");
     }
 
-    @Operation(summary = "Remoção de usuario do processo", method = "POST")
+    @Operation(summary = "Remoção de usuario do processo", method = "DELETE")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário removido do processo com sucesso."),
     })
