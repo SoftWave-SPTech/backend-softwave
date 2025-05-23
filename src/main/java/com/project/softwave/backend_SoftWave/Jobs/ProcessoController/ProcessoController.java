@@ -61,5 +61,9 @@ public class ProcessoController {
 
     }
 
-    //Atualizar Processo
+    //TODO Atualizar Processo
+
+    //TODO visualizar Processo Por ID
+//    @GetMapping
+//    public ResponseEntity<>
 }

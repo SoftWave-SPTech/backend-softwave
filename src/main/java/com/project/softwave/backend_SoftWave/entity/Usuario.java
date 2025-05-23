@@ -15,6 +15,7 @@ public class Usuario {
 
     private Integer id;
 
+    @Column(unique = true)
     private Integer oab;
 
     private String nome;
@@ -53,7 +54,7 @@ public class Usuario {
             name = "usuarios_processos",
             joinColumns = @JoinColumn(name = "advogado_id"),
             inverseJoinColumns = @JoinColumn(name = "processo_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"advogado_id", "processo_id"})
+            uniqueConstraints = @UniqueConstraint(columnNames = {"usuarios_id", "processo_id"})
     )
     private List<Processo> processos = new ArrayList<>();
 

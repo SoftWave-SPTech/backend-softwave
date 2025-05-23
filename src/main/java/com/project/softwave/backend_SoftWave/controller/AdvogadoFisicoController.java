@@ -52,6 +52,12 @@ import java.util.List;
             return ResponseEntity.ok(lista);
         }
 
+        @GetMapping("/listar")
+        public ResponseEntity<List<AdvogadoFisico>> listarAdvogados() {
+            List<AdvogadoFisico> advogados = service.listar();
+            return ResponseEntity.ok(advogados);
+        }
+
         @Operation(summary = "Buscar advogado físico por ID", method = "GET")
         @ApiResponses(value = {
                 @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
