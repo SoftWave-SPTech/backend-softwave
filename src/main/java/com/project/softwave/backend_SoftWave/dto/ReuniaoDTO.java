@@ -14,10 +14,6 @@ public class ReuniaoDTO {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Integer id;
 
-        private Integer idAdvogado;
-
-        private Integer idCliente;
-
         @NotNull
         private LocalDateTime dataHoraInicio;
 
@@ -47,8 +43,6 @@ public class ReuniaoDTO {
 
         Reuniao reuniao = new Reuniao();
 
-        reuniao.setIdAdvogado(dto.getIdAdvogado());
-        reuniao.setIdCliente(dto.getIdCliente());
         reuniao.setDataHoraInicio(dto.getDataHoraInicio());
         reuniao.setDataHoraFim(dto.getDataHoraFim());
         reuniao.setDuracao(dto.getDuracao());
@@ -66,8 +60,6 @@ public class ReuniaoDTO {
 
         ReuniaoDTO responseDto = new ReuniaoDTO();
         responseDto.setId(reuniao.getId());
-        responseDto.setIdAdvogado(reuniao.getIdAdvogado());
-        responseDto.setIdCliente(reuniao.getIdCliente());
         responseDto.setDataHoraInicio(reuniao.getDataHoraInicio());
         responseDto.setDataHoraFim(reuniao.getDataHoraFim());
         responseDto.setDuracao(reuniao.getDuracao());
@@ -81,10 +73,8 @@ public class ReuniaoDTO {
     }
 
     
-    public ReuniaoDTO(Integer id, Integer idAdvogado, Integer idCliente, LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim, Double duracao, String plataforma, StatusReuniao statusReuniao, Boolean confirmacaoCliente, Boolean confirmacaoAdvogado, String notasAdvogado) {
+    public ReuniaoDTO(Integer id, LocalDateTime dataHoraInicio, LocalDateTime dataHoraFim, Double duracao, String plataforma, StatusReuniao statusReuniao, Boolean confirmacaoCliente, Boolean confirmacaoAdvogado, String notasAdvogado) {
         this.id = id;
-        this.idAdvogado = idAdvogado;
-        this.idCliente = idCliente;
         this.dataHoraInicio = dataHoraInicio;
         this.dataHoraFim = dataHoraFim;
         this.duracao = duracao;
@@ -176,20 +166,5 @@ public class ReuniaoDTO {
             return id;
         }
 
-        public Integer getIdAdvogado() {
-            return idAdvogado;
-        }
-
-        public void setIdAdvogado(Integer idAdvogado) {
-            this.idAdvogado = idAdvogado;
-        }
-
-        public Integer getIdCliente() {
-            return idCliente;
-        }
-
-        public void setIdCliente(Integer idCliente) {
-            this.idCliente = idCliente;
-        }
     }
 

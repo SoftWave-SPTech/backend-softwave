@@ -18,24 +18,13 @@ public class Reuniao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-
-    private Integer idAdvogado;
-
-    private Integer idCliente;
-
-
     private LocalDateTime dataHoraInicio;
-
 
     private LocalDateTime dataHoraFim;
 
-
     private Double duracao;
 
-
-
     private StatusReuniao statusReuniao;
-
 
     private String plataforma;
 
@@ -43,32 +32,7 @@ public class Reuniao {
 
     private Boolean confirmacaoAdvogado;
 
-
     private String notasAdvogado;
-
-    @ManyToMany
-    @JoinTable(name = "reuniao_cliente_fisico",
-            joinColumns = @JoinColumn(name = "reuniao_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<UsuarioFisico> clientesFisicos;
-
-    @ManyToMany
-    @JoinTable(name = "reuniao_cliente_juridico",
-            joinColumns = @JoinColumn(name = "reuniao_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<UsuarioJuridico> clientesJuridicos;
-
-    @ManyToMany
-    @JoinTable(name = "reuniao_advogado_fisico",
-            joinColumns = @JoinColumn(name = "reuniao_id"),
-            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
-    private List<AdvogadoFisico> advogadosFisicos;
-
-    @ManyToMany
-    @JoinTable(name = "reuniao_advogado_juridico",
-            joinColumns = @JoinColumn(name = "reuniao_id"),
-            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
-    private List<AdvogadoJuridico> advogadosJuridicos;
 
     public Integer getId(Integer id) {
         return this.id;
@@ -146,20 +110,20 @@ public class Reuniao {
         return id;
     }
 
-    public Integer getIdAdvogado() {
-        return idAdvogado;
-    }
-
-    public void setIdAdvogado(Integer idAdvogado) {
-        this.idAdvogado = idAdvogado;
-    }
-
-    public Integer getIdCliente() {
-        return idCliente;
-    }
-
-    public void setIdCliente(Integer idCliente) {
-        this.idCliente = idCliente;
-    }
+    //    public Integer getIdAdvogado() {
+//        return idAdvogado;
+//    }
+//
+//    public void setIdAdvogado(Integer idAdvogado) {
+//        this.idAdvogado = idAdvogado;
+//    }
+//
+//    public Integer getIdCliente() {
+//        return idCliente;
+//    }
+//
+//    public void setIdCliente(Integer idCliente) {
+//        this.idCliente = idCliente;
+//    }
 
 }

@@ -2,7 +2,7 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 public class HistoricoClasses {
 //            "data": "10/04/2024",
 //            "tipo": "Evolução",

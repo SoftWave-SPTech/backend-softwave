@@ -1,7 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 
-import com.project.softwave.backend_SoftWave.dto.AdvogadoFisicoDTO;
+import com.project.softwave.backend_SoftWave.dto.AdvogadoFisico.AdvogadoFisicoRequestDTO;
+import com.project.softwave.backend_SoftWave.dto.AdvogadoFisico.AdvogadoFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
@@ -37,10 +38,10 @@ import java.util.List;
         })
         @PostMapping
         @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<AdvogadoFisicoDTO> cadastrar(@Valid @RequestBody AdvogadoFisicoDTO request) {
-            AdvogadoFisico advogado = AdvogadoFisicoDTO.toEntity(request);
+        public ResponseEntity<AdvogadoFisicoResponseDTO> cadastrar(@Valid @RequestBody AdvogadoFisicoRequestDTO request) {
+            AdvogadoFisico advogado = AdvogadoFisicoRequestDTO.toEntity(request);
             AdvogadoFisico cadastrado = service.cadastrar(advogado);
-            return ResponseEntity.status(201).body(AdvogadoFisicoDTO.toResponseDTO(cadastrado));
+            return ResponseEntity.status(201).body(AdvogadoFisicoResponseDTO.toResponseDTO(cadastrado));
         }
 
         @Operation(summary = "Listar todos os advogados físicos cadastrados", method = "GET")
@@ -50,9 +51,9 @@ import java.util.List;
         })
         @GetMapping
         @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<List<AdvogadoFisicoDTO>> listar() {
-            List<AdvogadoFisicoDTO> lista = service.listar().stream()
-                    .map(AdvogadoFisicoDTO::toResponseDTO)
+        public ResponseEntity<List<AdvogadoFisicoResponseDTO>> listar() {
+            List<AdvogadoFisicoResponseDTO> lista = service.listar().stream()
+                    .map(AdvogadoFisicoResponseDTO::toResponseDTO)
                     .toList();
             return ResponseEntity.ok(lista);
         }
@@ -64,9 +65,9 @@ import java.util.List;
         })
         @GetMapping("/{id}")
         @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<AdvogadoFisicoDTO> buscarPorId(@PathVariable Integer id) {
+        public ResponseEntity<AdvogadoFisicoResponseDTO> buscarPorId(@PathVariable Integer id) {
             AdvogadoFisico advogado = service.buscarPorId(id);
-            return ResponseEntity.ok(AdvogadoFisicoDTO.toResponseDTO(advogado));
+            return ResponseEntity.ok(AdvogadoFisicoResponseDTO.toResponseDTO(advogado));
         }
 
         @Operation(summary = "Buscar advogado físico por número da OAB", method = "GET")
@@ -76,9 +77,9 @@ import java.util.List;
         })
         @GetMapping("/oab/{oab}")
         @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<AdvogadoFisicoDTO> buscarPorOab(@PathVariable Integer oab) {
+        public ResponseEntity<AdvogadoFisicoResponseDTO> buscarPorOab(@PathVariable Integer oab) {
             AdvogadoFisico advogado = service.buscarPorOab(oab);
-            return ResponseEntity.ok(AdvogadoFisicoDTO.toResponseDTO(advogado));
+            return ResponseEntity.ok(AdvogadoFisicoResponseDTO.toResponseDTO(advogado));
         }
 
         @Operation(summary = "Atualizar informações de um advogado físico", method = "PUT")

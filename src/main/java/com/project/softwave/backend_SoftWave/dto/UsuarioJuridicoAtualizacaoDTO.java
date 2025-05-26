@@ -31,9 +31,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
     @Schema(description = "Razão social da empresa", example = "XPTO LTDA")
     private String razaoSocial;
 
-    @Schema(description = "CNPJ da empresa", example = "15529313000109")
-    @CNPJ
-    private String cnpj;
 
     @NotNull
     @Schema(description = "CEP do endereço", example = "03471047")
@@ -58,9 +55,14 @@ public class UsuarioJuridicoAtualizacaoDTO {
     @Schema(description = "Complemento do endereço", example = "Sala 5, Edifício Central")
     private String complemento;
 
+    @NotBlank
+    @Schema(description = "Número do endereço", example = "123")
+    private String numero;
+
+    @Schema(description = "Representante", example = "João Carlos")
+    private String representante;
+
    // private String foto;
-
-
 
     public static UsuarioJuridico toEntity (UsuarioJuridicoAtualizacaoDTO dto) {
         if (dto == null) {
@@ -69,7 +71,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         UsuarioJuridico usuarioJuridico = new UsuarioJuridico();
         usuarioJuridico.setId(dto.getId());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setLogradouro(dto.getLogradouro());
         usuarioJuridico.setBairro(dto.getBairro());
@@ -79,6 +80,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setComplemento(dto.getComplemento());
+        usuarioJuridico.setNumero(dto.getNumero());
+        usuarioJuridico.setRepresentante(dto.getRepresentante());
 
         return usuarioJuridico;
     }
@@ -91,7 +94,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setId(usuarioJuridico.getId());
         dto.setNomeFantasia(usuarioJuridico.getNomeFantasia());
         dto.setRazaoSocial(usuarioJuridico.getRazaoSocial());
-        dto.setCnpj(usuarioJuridico.getCnpj());
         dto.setEmail(usuarioJuridico.getEmail());
         dto.setCep(usuarioJuridico.getCep());
         dto.setLogradouro(usuarioJuridico.getLogradouro());
@@ -100,6 +102,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setTelefone(usuarioJuridico.getTelefone());
       //  dto.setFoto(usuarioJuridico.getFoto());
         dto.setComplemento(usuarioJuridico.getComplemento());
+        dto.setNumero(usuarioJuridico.getNumero());
+        dto.setRepresentante(usuarioJuridico.getRepresentante());
 
         return dto;
     }
@@ -113,7 +117,6 @@ public class UsuarioJuridicoAtualizacaoDTO {
 
         advogadoJuridico.setId(dto.getId());
         advogadoJuridico.setEmail(dto.getEmail());
-        advogadoJuridico.setCnpj(dto.getCnpj());
         advogadoJuridico.setCep(dto.getCep());
         advogadoJuridico.setLogradouro(dto.getLogradouro());
         advogadoJuridico.setBairro(dto.getBairro());
@@ -123,6 +126,8 @@ public class UsuarioJuridicoAtualizacaoDTO {
         advogadoJuridico.setNomeFantasia(dto.getNomeFantasia());
         advogadoJuridico.setRazaoSocial(dto.getRazaoSocial());
         advogadoJuridico.setComplemento(dto.getComplemento());
+        advogadoJuridico.setNumero(dto.getNumero());
+        advogadoJuridico.setRepresentante(dto.getRepresentante());
 
         return advogadoJuridico;
     }
@@ -141,14 +146,13 @@ public class UsuarioJuridicoAtualizacaoDTO {
         dto.setCidade(advogadoJuridico.getCidade());
         dto.setTelefone(advogadoJuridico.getTelefone());
        // dto.setFoto(advogadoJuridico.getFoto());
-        dto.setCnpj(advogadoJuridico.getCnpj());
         dto.setNomeFantasia(advogadoJuridico.getNomeFantasia());
         dto.setRazaoSocial(advogadoJuridico.getRazaoSocial());
         dto.setComplemento(advogadoJuridico.getComplemento());
+        dto.setNumero(advogadoJuridico.getNumero());
+        dto.setRepresentante(advogadoJuridico.getRepresentante());
         return dto;
     }
-
-
 
     public Integer getId() {
         return id;
@@ -157,6 +161,15 @@ public class UsuarioJuridicoAtualizacaoDTO {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
 
     public String getComplemento() {
         return complemento;
@@ -239,11 +252,11 @@ public class UsuarioJuridicoAtualizacaoDTO {
         this.razaoSocial = razaoSocial;
     }
 
-    public String getCnpj() {
-        return cnpj;
+    public String getRepresentante() {
+        return representante;
     }
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void setRepresentante(String representante) {
+        this.representante = representante;
     }
 }

@@ -1,13 +1,9 @@
 package com.project.softwave.backend_SoftWave.controller;
 
-import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridicoDTO;
-import com.project.softwave.backend_SoftWave.dto.TarefaDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico.AdvogadoJuridicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
-import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.service.AdvogadoJuridicoService;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico.AdvogadoJuridicoRequestDTO;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,10 +37,10 @@ public class AdvogadoJuridicoController {
     })
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<AdvogadoJuridicoDTO> cadastrar(@Valid @RequestBody AdvogadoJuridicoDTO request) {
-        AdvogadoJuridico advogado = AdvogadoJuridicoDTO.toEntity(request);
+    public ResponseEntity<AdvogadoJuridicoResponseDTO> cadastrar(@Valid @RequestBody AdvogadoJuridicoRequestDTO request) {
+        AdvogadoJuridico advogado = AdvogadoJuridicoRequestDTO.toEntity(request);
         AdvogadoJuridico salvo = service.cadastrar(advogado);
-        return ResponseEntity.status(201).body(AdvogadoJuridicoDTO.toResponseDTO(salvo));
+        return ResponseEntity.status(201).body(AdvogadoJuridicoResponseDTO.toResponseDto(salvo));
     }
 
     @Operation(summary = "Listar todos os advogados jurídicos", method = "GET")
@@ -53,10 +50,10 @@ public class AdvogadoJuridicoController {
     })
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<AdvogadoJuridicoDTO>> listar() {
+    public ResponseEntity<List<AdvogadoJuridicoResponseDTO>> listar() {
         List<AdvogadoJuridico> advogados = service.listar();
-        List<AdvogadoJuridicoDTO> dtos = advogados.stream()
-                .map(AdvogadoJuridicoDTO::toResponseDTO)
+        List<AdvogadoJuridicoResponseDTO> dtos = advogados.stream()
+                .map(AdvogadoJuridicoResponseDTO::toResponseDto)
                 .toList();
         return ResponseEntity.ok(dtos);
     }
@@ -68,9 +65,9 @@ public class AdvogadoJuridicoController {
     })
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<AdvogadoJuridicoDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<AdvogadoJuridicoResponseDTO> buscarPorId(@PathVariable Integer id) {
         AdvogadoJuridico advogado = service.buscarPorId(id);
-        return ResponseEntity.ok(AdvogadoJuridicoDTO.toResponseDTO(advogado));
+        return ResponseEntity.ok(AdvogadoJuridicoResponseDTO.toResponseDto(advogado));
     }
 
     @Operation(summary = "Buscar advogado jurídico por OAB", method = "GET")
@@ -80,9 +77,9 @@ public class AdvogadoJuridicoController {
     })
     @GetMapping("/oab/{oab}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<AdvogadoJuridicoDTO> buscarPorOab(@PathVariable Integer oab) {
+    public ResponseEntity<AdvogadoJuridicoResponseDTO> buscarPorOab(@PathVariable Integer oab) {
         AdvogadoJuridico advogado = service.buscarPorOab(oab);
-        return ResponseEntity.ok(AdvogadoJuridicoDTO.toResponseDTO(advogado));
+        return ResponseEntity.ok(AdvogadoJuridicoResponseDTO.toResponseDto(advogado));
     }
 
     @Operation(summary = "Atualizar advogado jurídico", method = "PUT")

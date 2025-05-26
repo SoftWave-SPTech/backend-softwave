@@ -1,28 +1,58 @@
 package com.project.softwave.backend_SoftWave.entity;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Usuario {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_usuario",
+        discriminatorType = DiscriminatorType.STRING)
+public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "tipo_usuario", insertable = false, updatable = false)
+    private String tipoUsuario;
 
+    @Column(nullable = false)
     private String senha;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+//    @Enumerated(EnumType.STRING)
     private Role role;
+
     private String cep;
+
     private String logradouro;
+
     private String bairro;
+
     private String cidade;
+
     private String complemento;
+
+    private String numero;
+
     private String telefone;
+
     private String foto;
+
+    @ManyToMany
+    @JoinTable(
+            name = "usuarios_processos",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "processo_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"usuario_id", "processo_id"})
+    )
+    private List<Processo> processos = new ArrayList<>();
+
+    @ManyToMany
+    private List<Reuniao> reunioes;
 
     public Usuario() {
     }
@@ -132,5 +162,37 @@ public abstract class Usuario {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getTipoUsuario() {
+        return tipoUsuario;
+    }
+
+    public void setTipoUsuario(String tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
+
+    public List<Processo> getProcessos() {
+        return processos;
+    }
+
+    public void setProcessos(List<Processo> processos) {
+        this.processos = processos;
+    }
+
+    public List<Reuniao> getReunioes() {
+        return reunioes;
+    }
+
+    public void setReunioes(List<Reuniao> reunioes) {
+        this.reunioes = reunioes;
     }
 }

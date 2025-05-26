@@ -2,10 +2,9 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.*;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
-import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
-import com.project.softwave.backend_SoftWave.entity.Tarefa;
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoRequestDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
-import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,11 +38,10 @@ public class UsuarioFisicoController {
     })
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioFisicoDTO> cadastrar(@Valid @RequestBody UsuarioFisicoDTO request){
-        UsuarioFisico usuarioFisico = UsuarioFisicoDTO.toEntity(request);
+    public ResponseEntity<UsuarioFisicoResponseDTO> cadastrar(@Valid @RequestBody UsuarioFisicoRequestDTO request){
+        UsuarioFisico usuarioFisico = UsuarioFisicoRequestDTO.toEntity(request);
         UsuarioFisico usuarioNovo = usuarioFisicoService.cadastrar(usuarioFisico);
-
-        return ResponseEntity.status(201).body(UsuarioFisicoDTO.toResponseDto(usuarioNovo));
+        return ResponseEntity.status(201).body(UsuarioFisicoResponseDTO.toResponseDto(usuarioNovo));
     }
 
     @Operation(summary = "Exclusão de um usuário físico", method = "DELETE")
@@ -84,11 +82,11 @@ public class UsuarioFisicoController {
     })
     @GetMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<UsuarioFisicoDTO>> listar(){
+    public ResponseEntity<List<UsuarioFisicoResponseDTO>> listar(){
         List<UsuarioFisico> usuariosFisicos = usuarioFisicoService.listar();
 
-        List<UsuarioFisicoDTO> usuarioFisicoDtos = usuariosFisicos.stream()
-                .map(UsuarioFisicoDTO::toResponseDto)
+        List<UsuarioFisicoResponseDTO> usuarioFisicoDtos = usuariosFisicos.stream()
+                .map(UsuarioFisicoResponseDTO::toResponseDto)
                 .toList();
 
         return ResponseEntity.status(200).body(usuarioFisicoDtos);
@@ -101,9 +99,9 @@ public class UsuarioFisicoController {
     })
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UsuarioFisicoDTO> buscarPorId(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioFisicoResponseDTO> buscarPorId(@PathVariable Integer id) {
         UsuarioFisico usuario = usuarioFisicoService.buscarPorId(id);
-        return ResponseEntity.ok(UsuarioFisicoDTO.toResponseDto(usuario));
+        return ResponseEntity.ok(UsuarioFisicoResponseDTO.toResponseDto(usuario));
     }
 
     @Operation(summary = "Atualizar a foto de perfil dos usuários", method = "PUT")
