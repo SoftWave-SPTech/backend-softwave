@@ -24,31 +24,31 @@ public class PesquisaController {
     }
 
     @GetMapping("/pesquisa/{termo}")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorTermo(String termo) {
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorTermo(@PathVariable String termo) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.pesquisarPorTermo(termo);
         return ResponseEntity.ok(clientes);
     }
 
     @GetMapping("/filtro-setor/{setor}")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorSetor(String setor) {
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorSetor(@PathVariable String setor) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorSetor(setor);
         return ResponseEntity.ok(clientes);
     }
 
     @GetMapping("/filtro-vara/{vara}")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorVara(String vara) {
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorVara(@PathVariable String vara) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorVara(vara);
         return ResponseEntity.ok(clientes);
     }
 
     @GetMapping("/filtro-assunto/{assunto}")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorAssunto(String assunto) {
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorAssunto(@PathVariable String assunto) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorAssunto(assunto);
         return ResponseEntity.ok(clientes);
     }
 
     @GetMapping("/filtro-foro/{foro}")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorForo(String foro) {
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorForo(@PathVariable String foro) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorForo(foro);
         return ResponseEntity.ok(clientes);
     }
