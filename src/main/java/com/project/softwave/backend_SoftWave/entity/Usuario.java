@@ -15,12 +15,6 @@ public class Usuario {
 
     private Integer id;
 
-    private Integer oab;
-
-    private String nome;
-
-    private String nomeFantasia;
-
     @Column(name = "tipo_usuario", insertable = false, updatable = false)
     private String tipoUsuario;
 
@@ -30,6 +24,7 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String email;
 
+//    @Enumerated(EnumType.STRING)
     private Role role;
 
     private String cep;
@@ -51,9 +46,9 @@ public class Usuario {
     @ManyToMany
     @JoinTable(
             name = "usuarios_processos",
-            joinColumns = @JoinColumn(name = "advogado_id"),
+            joinColumns = @JoinColumn(name = "usuario_id"),
             inverseJoinColumns = @JoinColumn(name = "processo_id"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"advogado_id", "processo_id"})
+            uniqueConstraints = @UniqueConstraint(columnNames = {"usuario_id", "processo_id"})
     )
     private List<Processo> processos = new ArrayList<>();
 
@@ -88,14 +83,6 @@ public class Usuario {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getOab() {
-        return oab;
-    }
-
-    public void setOab(Integer oab) {
-        this.oab = oab;
     }
 
     public void setSenha(String senha) {
@@ -180,22 +167,6 @@ public class Usuario {
 
     public void setRole(Role role) {
         this.role = role;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getNomeFantasia() {
-        return nomeFantasia;
-    }
-
-    public void setNomeFantasia(String nomeFantasia) {
-        this.nomeFantasia = nomeFantasia;
     }
 
     public String getNumero() {

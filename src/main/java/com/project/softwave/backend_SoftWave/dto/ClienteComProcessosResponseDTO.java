@@ -1,7 +1,11 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
+import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClienteComProcessosResponseDTO {
@@ -14,7 +18,9 @@ public class ClienteComProcessosResponseDTO {
     private String tipoUsuario;
     private List<ProcessoSimplesDTO> processos;
 
-    public ClienteComProcessosResponseDTO(Integer id, String nome,String nomeFantasia, String email, String telefone, String tipoUsuario, List<ProcessoSimplesDTO> list) {
+    public ClienteComProcessosResponseDTO() {
+    }
+    public ClienteComProcessosResponseDTO(Integer id, String nome, String nomeFantasia, String email, String telefone, String tipoUsuario, List<ProcessoSimplesDTO> list) {
         this.id = id;
         this.nome = nome;
         this.nomeFantasia = nomeFantasia;
@@ -25,17 +31,29 @@ public class ClienteComProcessosResponseDTO {
     }
 
     public static ClienteComProcessosResponseDTO toClienteComProcessosResponseDTO(Usuario usuario) {
-        return new ClienteComProcessosResponseDTO(
-                usuario.getId(),
-                usuario.getNome(),
-                usuario.getNomeFantasia(),
-                usuario.getEmail(),
-                usuario.getTelefone(),
-                usuario.getTipoUsuario(),
-                usuario.getProcessos().stream()
-                        .map(p -> new ProcessoSimplesDTO(p.getId(), p.getNumeroProcesso()))
-                        .toList()
-        );
+        ClienteComProcessosResponseDTO dto = new ClienteComProcessosResponseDTO();
+        dto.setId(usuario.getId());
+        dto.setEmail(usuario.getEmail());
+        dto.setTelefone(usuario.getTelefone());
+        dto.setTipoUsuario(usuario.getClass().getSimpleName());
+        List<Processo> processosList = new ArrayList<>();
+        processosList.addAll(usuario.getProcessos());
+        List<ProcessoSimplesDTO> processosDTO = new ArrayList<>();
+        for (Processo processo : processosList) {
+            processosDTO.add(ProcessoSimplesDTO.toProcessoSimplesDTO(processo));
+        }
+        dto.setProcessos(processosDTO);
+        // Preenche os campos específicos de cada tipo
+        if (usuario instanceof UsuarioFisico) {
+            UsuarioFisico fisico = (UsuarioFisico) usuario;
+            dto.setNome(fisico.getNome());
+            dto.setNomeFantasia(null);
+        } else if (usuario instanceof UsuarioJuridico) {
+            UsuarioJuridico juridico = (UsuarioJuridico) usuario;
+            dto.setNome(null);
+            dto.setNomeFantasia(juridico.getNomeFantasia());
+        }
+        return dto;
     }
 
     public Integer getId() {

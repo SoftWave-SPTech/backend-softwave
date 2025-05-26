@@ -1,5 +1,7 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+
 public class ProcessoSimplesDTO {
 
     private Integer id;
@@ -10,6 +12,9 @@ public class ProcessoSimplesDTO {
         this.numeroProcesso = numeroProcesso;
     }
 
+    public static ProcessoSimplesDTO toProcessoSimplesDTO(Processo processo){
+        return new ProcessoSimplesDTO(processo.getId(), processo.getNumeroProcesso());
+    }
     public Integer getId() {
         return id;
     }
