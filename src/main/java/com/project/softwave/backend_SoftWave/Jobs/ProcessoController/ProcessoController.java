@@ -64,12 +64,13 @@ public class ProcessoController {
 
     @GetMapping("/usuario-id/{id}")
     public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorIdUsuario(@PathVariable Integer id) {
-        Processo processo = processoService.listarProcessoPorIdUsuario(id);
-        if (processo == null) {
+        try {
+            Processo processo = processoService.listarProcessoPorIdUsuario(id);
+            ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
+            return ResponseEntity.ok(processoDTO);
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
-        ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
-        return ResponseEntity.ok(processoDTO);
     }
 
     //Atualizar Processo
