@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDT
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
+import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,6 +60,16 @@ public class ProcessoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar o processo: " + e.getMessage());
         }
 
+    }
+
+    @GetMapping("/usuario-id/{id}")
+    public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorIdUsuario(@PathVariable Integer id) {
+        Processo processo = processoService.listarProcessoPorIdUsuario(id);
+        if (processo == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
+        return ResponseEntity.ok(processoDTO);
     }
 
     //Atualizar Processo

@@ -10,7 +10,9 @@ public class UsuarioJuridico extends Usuario {
     private String cnpj;
 
     private String nomeFantasia;
+
     private String razaoSocial;
+
     private String representante;
 
     public UsuarioJuridico(String cnpj, String nomeFantasia, String razaoSocial, String representante) {

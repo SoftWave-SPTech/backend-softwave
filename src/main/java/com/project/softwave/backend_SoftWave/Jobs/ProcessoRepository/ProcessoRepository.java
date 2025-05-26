@@ -15,13 +15,15 @@ public interface ProcessoRepository extends JpaRepository<Processo, Integer> {
     boolean existsByNumeroProcesso(String numeroProcesso);
     Optional<Processo> findProcessoByNumeroProcesso(String numeroProcesso);
 
-    @Transactional
-    @Query("""
-    SELECT p FROM Processo p
-    JOIN p.usuarios u
-    WHERE LOWER(p.numeroProcesso) LIKE LOWER(CONCAT('%', :termo, '%'))
-       OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :termo, '%'))
-""")
-    List<Processo> pesquisarPorUsuarioOuNumero(@Param("termo") String termo);
+//    List<Processo> findByUsuario(Usuario usuario);
+
+//    @Transactional
+//    @Query("""
+//    SELECT p FROM Processo p
+//    JOIN p.usuarios u
+//    WHERE LOWER(p.numeroProcesso) LIKE LOWER(CONCAT('%', :termo, '%'))
+//       OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :termo, '%'))
+//""")
+//    List<Processo> pesquisarPorUsuarioOuNumero(@Param("termo") String termo);
 
 }
