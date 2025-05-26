@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.Tarefa;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import com.project.softwave.backend_SoftWave.service.FotoPerfilService;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +31,9 @@ public class UsuarioFisicoController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
 
     @Operation(summary = "Cadastro dos usuários físicos", method = "POST")
     @ApiResponses(value = {
@@ -113,7 +117,7 @@ public class UsuarioFisicoController {
             @Valid @RequestBody UsuarioFotoPerfilDTO usuarioFotoPerfilDTO
     ) throws IOException {
 
-        String fotoPerfilUrl = usuarioService.atualizarFotoPerfil(usuarioFotoPerfilDTO);
+        String fotoPerfilUrl = fotoPerfilService.atualizarFotoPerfil(usuarioFotoPerfilDTO);
 
         return ResponseEntity.status(200).body(fotoPerfilUrl);
     }
@@ -125,7 +129,7 @@ public class UsuarioFisicoController {
             @PathVariable Integer id
     ) throws IOException {
 
-        usuarioService.deletarFotoPerfil(id);
+        fotoPerfilService.deletarFotoPerfil(id);
 
         return ResponseEntity.status(200).build();
     }

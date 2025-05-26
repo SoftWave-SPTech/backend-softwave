@@ -3,6 +3,7 @@ package com.project.softwave.backend_SoftWave.controller;
 import com.project.softwave.backend_SoftWave.dto.*;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import com.project.softwave.backend_SoftWave.service.FotoPerfilService;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,6 +29,9 @@ public class UsuarioJuridicoController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
 
 
     @Operation(summary = "Cadastro dos usuários jurídicos", method = "POST")

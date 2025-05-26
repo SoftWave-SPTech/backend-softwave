@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
-@RequestMapping
+@RequestMapping("documentos-processos")
 public class DocumentoProcessoController {
 
     @Autowired
