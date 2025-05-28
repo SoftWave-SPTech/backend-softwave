@@ -2,6 +2,8 @@ package com.project.softwave.backend_SoftWave.entity;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,17 @@ public class Usuario {
 
     //private String foto;
 
+    private Boolean ativo;
+
+    private String tokenRecuperacaoSenha;
+    private String tokenPrimeiroAcesso;
+
+    private LocalDateTime dataCriacaoTokenRecuperacaoSenha;
+    private LocalDateTime dataCriacaoTokenPrimeiroAcesso;
+
+    private LocalDateTime dataExpiracaoTokenRecuperacaoSenha;
+    private LocalDateTime dataExpiracaoTokenPrimeiroAcesso;
+
     @ManyToMany
     @JoinTable(
             name = "usuarios_processos",
@@ -79,6 +92,30 @@ public class Usuario {
         this.cidade = cidade;
         this.complemento = complemento;
         this.telefone = telefone;
+    }
+
+    public Usuario(Integer id, String tipoUsuario, String senha, String email, Role role, String cep, String logradouro, String bairro, String cidade, String complemento, String numero, String telefone, Boolean ativo, String tokenRecuperacaoSenha, String tokenPrimeiroAcesso, LocalDateTime dataCriacaoTokenRecuperacaoSenha, LocalDateTime dataCriacaoTokenPrimeiroAcesso, LocalDateTime dataExpiracaoTokenRecuperacaoSenha, LocalDateTime dataExpiracaoTokenPrimeiroAcesso, List<Processo> processos, List<Reuniao> reunioes) {
+        this.id = id;
+        this.tipoUsuario = tipoUsuario;
+        this.senha = senha;
+        this.email = email;
+        this.role = role;
+        this.cep = cep;
+        this.logradouro = logradouro;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.complemento = complemento;
+        this.numero = numero;
+        this.telefone = telefone;
+        this.ativo = ativo;
+        this.tokenRecuperacaoSenha = tokenRecuperacaoSenha;
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
+        this.dataCriacaoTokenRecuperacaoSenha = dataCriacaoTokenRecuperacaoSenha;
+        this.dataCriacaoTokenPrimeiroAcesso = dataCriacaoTokenPrimeiroAcesso;
+        this.dataExpiracaoTokenRecuperacaoSenha = dataExpiracaoTokenRecuperacaoSenha;
+        this.dataExpiracaoTokenPrimeiroAcesso = dataExpiracaoTokenPrimeiroAcesso;
+        this.processos = processos;
+        this.reunioes = reunioes;
     }
 
     public void setId(Integer id) {
@@ -199,5 +236,61 @@ public class Usuario {
 
     public void setReunioes(List<Reuniao> reunioes) {
         this.reunioes = reunioes;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public String getTokenRecuperacaoSenha() {
+        return tokenRecuperacaoSenha;
+    }
+
+    public void setTokenRecuperacaoSenha(String tokenRecuperacaoSenha) {
+        this.tokenRecuperacaoSenha = tokenRecuperacaoSenha;
+    }
+
+    public String getTokenPrimeiroAcesso() {
+        return tokenPrimeiroAcesso;
+    }
+
+    public void setTokenPrimeiroAcesso(String tokenPrimeiroAcesso) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
+    }
+
+    public LocalDateTime getDataCriacaoTokenRecuperacaoSenha() {
+        return dataCriacaoTokenRecuperacaoSenha;
+    }
+
+    public void setDataCriacaoTokenRecuperacaoSenha(LocalDateTime dataCriacaoTokenRecuperacaoSenha) {
+        this.dataCriacaoTokenRecuperacaoSenha = dataCriacaoTokenRecuperacaoSenha;
+    }
+
+    public LocalDateTime getDataCriacaoTokenPrimeiroAcesso() {
+        return dataCriacaoTokenPrimeiroAcesso;
+    }
+
+    public void setDataCriacaoTokenPrimeiroAcesso(LocalDateTime dataCriacaoTokenPrimeiroAcesso) {
+        this.dataCriacaoTokenPrimeiroAcesso = dataCriacaoTokenPrimeiroAcesso;
+    }
+
+    public LocalDateTime getDataExpiracaoTokenRecuperacaoSenha() {
+        return dataExpiracaoTokenRecuperacaoSenha;
+    }
+
+    public void setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime dataExpiracaoTokenRecuperacaoSenha) {
+        this.dataExpiracaoTokenRecuperacaoSenha = dataExpiracaoTokenRecuperacaoSenha;
+    }
+
+    public LocalDateTime getDataExpiracaoTokenPrimeiroAcesso() {
+        return dataExpiracaoTokenPrimeiroAcesso;
+    }
+
+    public void setDataExpiracaoTokenPrimeiroAcesso(LocalDateTime dataExpiracaoTokenPrimeiroAcesso) {
+        this.dataExpiracaoTokenPrimeiroAcesso = dataExpiracaoTokenPrimeiroAcesso;
     }
 }
