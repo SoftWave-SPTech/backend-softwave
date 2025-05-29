@@ -70,6 +70,25 @@ public class AdvogadoJuridicoResponseDTO {
         return responseDto;
     }
 
+    public static AdvogadoJuridico toEntity(AdvogadoJuridicoResponseDTO response) {
+        AdvogadoJuridico advogadoJuridico = new AdvogadoJuridico();
+        advogadoJuridico.setId(response.getId());
+        advogadoJuridico.setNomeFantasia(response.getNomeFantasia());
+        advogadoJuridico.setEmail(response.getEmail());
+        advogadoJuridico.setRazaoSocial(response.getRazaoSocial());
+        advogadoJuridico.setCnpj(response.getCnpj());
+        advogadoJuridico.setLogradouro(response.getLogradouro());
+        advogadoJuridico.setBairro(response.getBairro());
+        advogadoJuridico.setCidade(response.getCidade());
+        advogadoJuridico.setTelefone(response.getTelefone());
+        advogadoJuridico.setCep(response.getCep());
+        advogadoJuridico.setComplemento(response.getComplemento());
+        advogadoJuridico.setNumero(response.getNumero());
+        advogadoJuridico.setOab(response.getOab());
+        advogadoJuridico.setRepresentante(response.getRepresentante());
+        return advogadoJuridico;
+    }
+
     // Getters e Setters omitidos por brevidade (adicione-os conforme necessário)
 
     public Integer getId() {
