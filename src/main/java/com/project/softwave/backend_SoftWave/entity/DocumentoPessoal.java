@@ -13,7 +13,7 @@ public class DocumentoPessoal {
     private String urlArquivo;
 
     @ManyToOne
-    private Usuario usuario;
+    private Usuario fkUsuario;
 
     public DocumentoPessoal() {
     }
@@ -21,6 +21,19 @@ public class DocumentoPessoal {
     public DocumentoPessoal(String nomeArquivo, String urlArquivo) {
         this.nomeArquivo = nomeArquivo;
         this.urlArquivo = urlArquivo;
+    }
+
+    public DocumentoPessoal(String nomeArquivo, String urlArquivo, Usuario fkUsuario) {
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkUsuario = fkUsuario;
+    }
+
+    public DocumentoPessoal(Integer id, String nomeArquivo, String urlArquivo, Usuario fkUsuario) {
+        this.id = id;
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkUsuario = fkUsuario;
     }
 
     public Integer getId() {
@@ -47,11 +60,11 @@ public class DocumentoPessoal {
         this.urlArquivo = urlArquivo;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Usuario getFkUsuario() {
+        return fkUsuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setFkUsuario(Usuario fkUsuario) {
+        this.fkUsuario = fkUsuario;
     }
 }

@@ -2,9 +2,11 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalCadastroDto;
 import com.project.softwave.backend_SoftWave.entity.DocumentoPessoal;
+import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,9 @@ public class DocumentoPessoalService {
 
     @Autowired
     private DocumentoPessoalRepository repository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Value("${file.PASTA_DOCUMENTOS_PESSOAIS}")
     private  String PASTA_DOCUMENTOS_PESSOAIS;
@@ -39,13 +44,17 @@ public class DocumentoPessoalService {
         File diretorio = new File(PASTA_DOCUMENTOS_PESSOAIS);
         if (!diretorio.exists()) {
             diretorio.mkdirs();
+
         }
 
         String nomeOriginalArquivo = documento.getDocumentoPessoal().getOriginalFilename();
         Path caminhoCompletoDocumento = Paths.get(PASTA_DOCUMENTOS_PESSOAIS, nomeOriginalArquivo);
         Files.write(caminhoCompletoDocumento, documento.getDocumentoPessoal().getBytes());
 
-        DocumentoPessoal documentoPessoalParaSalvar = new DocumentoPessoal(documento.getNomeArquivo(), caminhoCompletoDocumento.toString());
+        Usuario usuario = usuarioRepository.findById(documento.getIdUsuario())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuario Não Encontrado"));
+
+        DocumentoPessoal documentoPessoalParaSalvar = new DocumentoPessoal(documento.getNomeArquivo(), caminhoCompletoDocumento.toString(), usuario);
         repository.save(documentoPessoalParaSalvar);
 
         return caminhoCompletoDocumento.toString();
@@ -67,6 +76,14 @@ public class DocumentoPessoalService {
 
         Files.deleteIfExists(Paths.get(documentoPessoal.getUrlArquivo()));
         repository.deleteById(id);
+    }
+
+    public List<DocumentoPessoal> buscarDocumentosUsuario(Integer id){
+        if (usuarioRepository.findById(id).isPresent()) {
+            return repository.findByFkUsuarioId(id);
+        }else{
+            throw new EntidadeNaoEncontradaException("Usuário não encontrado");
+        }
     }
 }
 

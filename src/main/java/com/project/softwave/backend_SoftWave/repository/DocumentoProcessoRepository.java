@@ -10,4 +10,5 @@ import java.util.List;
 public interface DocumentoProcessoRepository extends JpaRepository<DocumentosProcesso, Integer> {
 
     List<DocumentosProcesso> findByNomeArquivoContainingIgnoreCase(String nome);
+    List<DocumentosProcesso> findByFkProcessoId(Integer idProcesso);
 }

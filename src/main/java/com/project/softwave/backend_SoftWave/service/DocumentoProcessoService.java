@@ -1,5 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.dto.DocumentoProcessoCadastroDto;
 import com.project.softwave.backend_SoftWave.entity.DocumentosProcesso;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
@@ -22,6 +24,9 @@ public class DocumentoProcessoService {
     @Autowired
     private DocumentoProcessoRepository repository;
 
+    @Autowired
+    private ProcessoRepository processoRepository;
+
     @Value("${file.PASTA_DOCUMENTOS_PROCESSOS}")
     private String PASTA_DOCUMENTOS_PROCESSOS;
 
@@ -33,17 +38,23 @@ public class DocumentoProcessoService {
         );
     }
 
-    public String cadastrarDocumento(DocumentoProcessoCadastroDto documento) throws IOException {
-        File diretorio = new File(PASTA_DOCUMENTOS_PROCESSOS);
-        if (!diretorio.exists()) {
+    public String cadastrarDocumento(DocumentoProcessoCadastroDto documento) throws IOException {File diretorio = new File(PASTA_DOCUMENTOS_PROCESSOS);
+       if (!diretorio.exists()) {
             diretorio.mkdirs();
-        }
+       }
 
         String nomeOriginalArquivo = documento.getDocumentoProcesso().getOriginalFilename();
-        Path caminhoCompletoDocumento = Paths.get(PASTA_DOCUMENTOS_PROCESSOS, nomeOriginalArquivo);
+        Path caminhoCompletoDocumento = Paths.get(diretorio.toString(), nomeOriginalArquivo);
         Files.write(caminhoCompletoDocumento, documento.getDocumentoProcesso().getBytes());
 
-        DocumentosProcesso documentoParaSalvar = new DocumentosProcesso(documento.getNomeArquivo(),caminhoCompletoDocumento.toString());
+        Processo processo = processoRepository.findById(documento.getIdProcesso())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+
+        DocumentosProcesso documentoParaSalvar = new DocumentosProcesso(
+                documento.getNomeArquivo(),
+                caminhoCompletoDocumento.toString(),
+                processo
+        );
         repository.save(documentoParaSalvar);
 
         return caminhoCompletoDocumento.toString();
@@ -55,5 +66,13 @@ public class DocumentoProcessoService {
 
         Files.deleteIfExists(Paths.get(documentoProcesso.getUrlArquivo()));
         repository.deleteById(id);
+    }
+
+    public List<DocumentosProcesso> buscarDocumentosProcesso(Integer id){
+        if(processoRepository.findById(id).isPresent()){
+            return repository.findByFkProcessoId(id);
+        }else {
+            throw new EntidadeNaoEncontradaException("Processo não encontrado");
+        }
     }
 }

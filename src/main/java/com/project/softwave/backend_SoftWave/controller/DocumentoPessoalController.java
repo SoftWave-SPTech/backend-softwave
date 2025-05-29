@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,8 +32,18 @@ public class DocumentoPessoalController {
     })
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> cadastrarDocumento(@Valid @RequestBody DocumentoPessoalCadastroDto request) throws IOException {
-        String documentoSalvo = service.cadastrarDocumento(request);
+    public ResponseEntity<String> cadastrarDocumento(
+            @RequestParam("nomeArquivo") String nomeArquivo,
+            @RequestParam("documentoPessoal") MultipartFile documentoPessoal,
+            @RequestParam("idUsuario") Integer idUsuario
+    ) throws IOException {
+
+        DocumentoPessoalCadastroDto dto = new DocumentoPessoalCadastroDto(
+                nomeArquivo,
+                documentoPessoal,
+                idUsuario
+        );
+        String documentoSalvo = service.cadastrarDocumento(dto);
         return ResponseEntity.status(201).body(documentoSalvo);
     }
 
@@ -62,6 +73,23 @@ public class DocumentoPessoalController {
     public ResponseEntity<DocumentoPessoalDTO> buscarPorId(@PathVariable Integer id) {
         DocumentoPessoal documento = service.buscarPorId(id);
         return ResponseEntity.status(200).body(DocumentoPessoalDTO.toResponseDto(documento));
+    }
+
+    @Operation(summary = "Busca por ID do usuário seus documentos", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca por ID do usuario seus documentos pessoais realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Documentos pessoais não encontrado"),
+            @ApiResponse(responseCode = "204", description = "Não há documentos pessoais cadastrado para esse usuário")
+    })
+    @GetMapping("usuario/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<DocumentoPessoalDTO>> buscarDocumentosUsuario(@PathVariable Integer id) {
+        List<DocumentoPessoal> documentos = service.buscarDocumentosUsuario(id);
+
+        List<DocumentoPessoalDTO> documentoPessoalDTOS = documentos.stream()
+                .map(DocumentoPessoalDTO::toResponseDto).toList();
+
+        return ResponseEntity.status(200).body(documentoPessoalDTOS);
     }
 
 //    @Operation(summary = "Atualização das informações dos documentos pessoais", method = "PUT")

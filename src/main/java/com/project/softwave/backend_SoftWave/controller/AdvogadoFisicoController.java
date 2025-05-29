@@ -114,29 +114,7 @@ import java.util.List;
             return ResponseEntity.noContent().build();
         }
 
-        @Operation(summary = "Atualizar a foto de perfil dos usuários", method = "PUT")
-        @PutMapping("foto-perfil/")
-        @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<String> atualizarFotoPerfil(
-                @Valid @RequestBody UsuarioFotoPerfilDTO usuarioFotoPerfilDTO
-        ) throws IOException {
 
-            String fotoPerfilUrl = fotoPerfilService.atualizarFotoPerfil(usuarioFotoPerfilDTO);
-
-            return ResponseEntity.status(200).body(fotoPerfilUrl);
-        }
-
-        @Operation(summary = "Deletar a foto de perfil dos usuários", method = "DELETE")
-        @DeleteMapping("foto-perfil/{id}")
-        @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<String> deletarFotoPerfil(
-                @PathVariable Integer id
-        ) throws IOException {
-
-            fotoPerfilService.deletarFotoPerfil(id);
-
-            return ResponseEntity.status(200).build();
-        }
     }
 
 

@@ -1,7 +1,6 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,10 +36,10 @@ public class FotoPerfilService {
     @Value("${file.PASTA_FOTOS_PERFIS}")
     private String PASTA_FOTOS_PERFIS;
 
-    public String atualizarFotoPerfil(UsuarioFotoPerfilDTO usuarioFotoPerfilDTO) throws IOException {
+    public String atualizarFotoPerfil(Integer id, MultipartFile fotoPerfil) throws IOException {
 
 
-        Optional<Usuario> usuarioOpt = usuarioRepository.findById(usuarioFotoPerfilDTO.getId());
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
             throw new EntidadeNaoEncontradaException("Usuário não encontrado");
         }
@@ -59,15 +59,15 @@ public class FotoPerfilService {
         }
 
         // Salva a nova foto
-        String novoNomeArquivo = "perfil_" + usuarioFotoPerfilDTO.getId()+ "_" + usuarioFotoPerfilDTO.getFotoPerfil().getOriginalFilename();
+        String novoNomeArquivo = "perfil_" + id + "_" + fotoPerfil.getOriginalFilename();
         Path caminhoFoto = Paths.get(PASTA_FOTOS_PERFIS, novoNomeArquivo);
-        Files.write(caminhoFoto, usuarioFotoPerfilDTO.getFotoPerfil().getBytes());
+        Files.write(caminhoFoto, fotoPerfil.getBytes());
 
         // Atualiza a URL no banco de dados
         usuario.setFoto(caminhoFoto.toString());
         usuarioRepository.save(usuario);
 
-        return usuario.getFoto();
+        return "http://localhost:8080/" + usuario.getFoto();
     }
 
     public void deletarFotoPerfil(Integer id) throws IOException{
@@ -77,5 +77,12 @@ public class FotoPerfilService {
         Files.deleteIfExists(Paths.get(usuario.getFoto()));
         usuario.setFoto(null);
         usuarioRepository.save(usuario);
+    }
+
+    public String buscarPorId(Integer id){
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+
+        return usuario.getFoto();
     }
 }

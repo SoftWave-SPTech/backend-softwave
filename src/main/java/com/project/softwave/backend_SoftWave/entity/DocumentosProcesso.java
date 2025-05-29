@@ -1,9 +1,7 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import jakarta.persistence.*;
 
 @Entity
 public class DocumentosProcesso {
@@ -13,11 +11,35 @@ public class DocumentosProcesso {
     private String nomeArquivo;
     private String urlArquivo;
 
+    @ManyToOne
+    private Processo fkProcesso;
+
     public DocumentosProcesso() {}
 
     public DocumentosProcesso(String nomeArquivo, String urlArquivo) {
         this.nomeArquivo = nomeArquivo;
         this.urlArquivo = urlArquivo;
+    }
+
+    public DocumentosProcesso(String nomeArquivo, String urlArquivo, Processo fkProcesso) {
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkProcesso = fkProcesso;
+    }
+
+    public DocumentosProcesso(Integer id, String nomeArquivo, String urlArquivo, Processo fkProcesso) {
+        this.id = id;
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkProcesso = fkProcesso;
+    }
+
+    public Processo getFkProcesso() {
+        return fkProcesso;
+    }
+
+    public void setFkProcesso(Processo fkProcesso) {
+        this.fkProcesso = fkProcesso;
     }
 
     public Integer getId() {return id;}

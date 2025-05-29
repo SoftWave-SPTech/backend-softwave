@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class DocumentoPessoalCadastroDto {
     private String nomeArquivo;
     private MultipartFile documentoPessoal;
+    private Integer idUsuario;
 
     public DocumentoPessoalCadastroDto() {
     }
@@ -12,6 +13,20 @@ public class DocumentoPessoalCadastroDto {
     public DocumentoPessoalCadastroDto(String nomeArquivo, MultipartFile documentoPessoal) {
         this.nomeArquivo = nomeArquivo;
         this.documentoPessoal = documentoPessoal;
+    }
+
+    public DocumentoPessoalCadastroDto(String nomeArquivo, MultipartFile documentoPessoal, Integer idUsuario) {
+        this.nomeArquivo = nomeArquivo;
+        this.documentoPessoal = documentoPessoal;
+        this.idUsuario = idUsuario;
+    }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
     public String getNomeArquivo() {
