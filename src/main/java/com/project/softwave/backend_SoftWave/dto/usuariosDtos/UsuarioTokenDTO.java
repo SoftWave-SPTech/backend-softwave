@@ -1,6 +1,8 @@
 package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
 import com.project.softwave.backend_SoftWave.entity.Usuario;
+import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 
 public class UsuarioTokenDTO {
 
@@ -9,6 +11,7 @@ public class UsuarioTokenDTO {
     private String token;
     private String tipoUsuario;
     private String role;
+    private String nome;
 
     public UsuarioTokenDTO() {
 
@@ -54,16 +57,25 @@ public class UsuarioTokenDTO {
         this.role = role;
     }
 
-    public UsuarioTokenDTO(Integer id,String email, String token, String tipoUsuario, String role) {
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public UsuarioTokenDTO(Integer id,String email, String token, String tipoUsuario, String role, String nome) {
         this.id = id;
         this.email = email;
         this.token = token;
         this.tipoUsuario = tipoUsuario;
         this.role = role;
+        this.nome = nome;
     }
 
-    public static UsuarioTokenDTO toDTO(Usuario usuario, String token, String role) {
-        return new UsuarioTokenDTO(usuario.getId(), usuario.getEmail(),token, usuario.getClass().getSimpleName(), role);
+    public static UsuarioTokenDTO toDTO(Usuario usuario, String token, String role, String nome) {
+        return new UsuarioTokenDTO(usuario.getId(), usuario.getEmail(),token, usuario.getClass().getSimpleName(), role, nome);
     }
 
 //    public static UsuarioTokenDTO toDTO(Usuario usuario, String token) {

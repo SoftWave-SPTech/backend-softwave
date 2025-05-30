@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioSenhaDto;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioTokenDTO;
 import com.project.softwave.backend_SoftWave.entity.*;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -19,8 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
@@ -36,6 +39,9 @@ public class UsuarioService {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private EmailService emailService;
 
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
@@ -56,7 +62,14 @@ public class UsuarioService {
                 .map(GrantedAuthority::getAuthority)
                 .orElse("ROLE_USER");
 
-        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role);
+        String nome = "";
+        if (usuarioAutenticado instanceof UsuarioFisico){
+             nome = ((UsuarioFisico) usuarioAutenticado).getNome();
+        }else {
+             nome = ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
+        }
+
+        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome);
     }
 
     public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
@@ -95,4 +108,39 @@ public class UsuarioService {
         usuarioRepository.updateSenhaByEmail(senhaCriptografada, email);
     }
 
+    @Transactional
+    public void solicitarResetSenha(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+
+        String token = UUID.randomUUID().toString();
+        usuario.setTokenRecuperacaoSenha(token);
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusHours(2));
+        usuarioRepository.save(usuario);
+
+        emailService.enviarEmailResetSenha(usuario.getEmail(), token);
+    }
+
+    @Transactional
+    public void resetarSenha(String token, String novaSenha, String novaSenhaConfirma) {
+        Usuario usuario = usuarioRepository.findByTokenRecuperacaoSenha(token)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Token inválido"));
+
+        if (novaSenha == null || novaSenhaConfirma == null) {
+            throw new ResponseStatusException(400, "Senha e confirmação de senha não podem ser nulas", null);
+        }
+
+        if (!novaSenha.equals(novaSenhaConfirma)) {
+            throw new ResponseStatusException(400, "As senhas não coincidem", null);
+        }
+
+        if (LocalDateTime.now().isAfter(usuario.getDataExpiracaoTokenRecuperacaoSenha())) {
+            throw new EntidadeNaoEncontradaException("Token expirado");
+        }
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuario.setTokenRecuperacaoSenha(null);
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(null);
+        usuarioRepository.save(usuario);
+    }
 }

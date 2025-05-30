@@ -1,9 +1,15 @@
 package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+
 public class UsuarioSenhaDto {
 
+    @Email
     private String email;
 
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+            message = "Senha deve conter maiúsculas, minúsculas, números e caracteres especiais")
     private String senha;
 
     private String confirmaSenha;
