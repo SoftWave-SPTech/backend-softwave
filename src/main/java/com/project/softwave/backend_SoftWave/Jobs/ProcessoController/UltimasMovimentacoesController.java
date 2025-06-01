@@ -3,6 +3,10 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoController;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.UltimasMovimentacoesService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,26 +23,45 @@ public class UltimasMovimentacoesController {
     @Autowired
     private UltimasMovimentacoesService ultimasMovimentacoesService;
 
+    @Operation(summary = "Listagem das movimentações ordenadas por data mais recente", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listagem realizada com sucesso"),
+    })
     @GetMapping("/ordenadas")
     public ResponseEntity<List<UltimasMovimentacoes>> listarMovimentacoesOrdenadasPorData() {
         List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.listarMovimentacoesOrdenadasPorData();
         return ResponseEntity.status(200).body(movimentacoes);
     }
 
+    @Operation(summary = "Busca das movimentações por ID ", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+    })
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UltimasMovimentacoes> buscarPorId (@PathVariable Integer id){
             UltimasMovimentacoes movimentacao = ultimasMovimentacoesService.buscarPorId(id);
             return ResponseEntity.status(200).body(movimentacao);
     }
 
 
+    @Operation(summary = "Busca das movimentações de um processo pelo ID ", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
+    })
     @GetMapping("/processo/{processoId}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UltimasMovimentacoes>> buscarPorIdProcesso (@PathVariable Integer processoId){
             List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.buscarPorIdProcesso(processoId);
             return ResponseEntity.status(200).body(movimentacoes);
     }
 
+    @Operation(summary = "Busca das movimentações ordenadas por data mais recente pelo ID do processo", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listagem realizada com sucesso"),
+    })
     @GetMapping("/processo/{processoId}/ordenadas")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UltimasMovimentacoes>> listarMovimentacoesPorIdProcessoOrdenadasPorData(
             @PathVariable Integer processoId) {
         List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.listarMovimentacoesPorIdProcessoOrdenadasPorData(processoId);

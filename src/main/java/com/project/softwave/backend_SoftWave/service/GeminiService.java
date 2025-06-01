@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovimentacoesRepository;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
+import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,33 +32,35 @@ public class GeminiService {
         this.ultimasMovimentacoesRepository = ultimasMovimentacoesRepository;
     }
 
-    public void gerarAnalises() {
-        List<UltimasMovimentacoes> movimentacoesList = ultimasMovimentacoesRepository.findAll();
+    public void gerarAnalisePorId(Integer movimentacaoId) {
+        ultimasMovimentacoesRepository.findById(movimentacaoId).ifPresentOrElse(movimentacao -> {
 
-        for (UltimasMovimentacoes ultimasMovimentacoes : movimentacoesList) {
-
-            boolean jaTemAnalise = analiseRepository.findByMovimentacoesId(ultimasMovimentacoes.getId()).isPresent();
+            boolean jaTemAnalise = analiseRepository.findByMovimentacoesId(movimentacao.getId()).isPresent();
 
             if (jaTemAnalise) {
-                continue;
+                throw new EntidadeConflitoException("Análise já existente para a movimentação: " + movimentacaoId);
             }
 
             String prompt = "Explique de forma simples a seguinte movimentação processual:\n\n"
-                    + ultimasMovimentacoes.getMovimento() + "\n\n"
+                    + movimentacao.getMovimento() + "\n\n"
                     + "Use uma linguagem clara para leigos em juridiquês e destaque os eventos mais importantes.";
 
             try {
                 String resposta = chamarGemini(prompt);
                 resposta = resposta.replace("*", "").trim();
+
                 AnaliseProcesso analise = new AnaliseProcesso();
-                analise.setMovimentacoes(ultimasMovimentacoes);
+                analise.setMovimentacoes(movimentacao);
                 analise.setResumoIA(resposta);
                 analiseRepository.save(analise);
 
             } catch (Exception e) {
-                System.err.println("Erro ao processar movimentação " + ultimasMovimentacoes.getId() + ": " + e.getMessage());
+                throw new DadosInvalidosException("Erro ao gerar análise da movimentação " + movimentacaoId);
             }
-        }
+
+        }, () -> {
+            throw new EntidadeNaoEncontradaException("Movimentação com ID " + movimentacaoId + " não encontrada.");
+        });
     }
 
     private String chamarGemini(String prompt) throws Exception {
