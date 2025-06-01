@@ -36,7 +36,11 @@ public class UltimasMovimentacoesService {
     }
 
     public List<UltimasMovimentacoes> listarMovimentacoesPorIdProcessoOrdenadasPorData(Integer processoId) {
-        return ultimasMovimentacoesRepository.findByProcessoIdOrderByDataDesc(processoId);
+        List<UltimasMovimentacoes> movimentacoesOrdenadas = ultimasMovimentacoesRepository.findByProcessoIdOrderByDataDesc(processoId);
+        if (movimentacoesOrdenadas.isEmpty()) {
+            throw new EntidadeNaoEncontradaException("Nenhuma movimentação encontrada para o processo com ID " + processoId);
+        }
+        return movimentacoesOrdenadas;
     }
 
 }
