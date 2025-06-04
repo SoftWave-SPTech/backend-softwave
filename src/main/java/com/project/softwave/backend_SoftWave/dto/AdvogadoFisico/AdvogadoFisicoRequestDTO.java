@@ -63,6 +63,25 @@ public class AdvogadoFisicoRequestDTO{
     @Schema(description = "Telefone de contato", example = "(11) 98765-4321")
     private String telefone;
 
+    public AdvogadoFisicoRequestDTO() {
+    }
+
+    public AdvogadoFisicoRequestDTO(Integer oab, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String numero, String telefone) {
+        this.oab = oab;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.cpf = cpf;
+        this.rg = rg;
+        this.cep = cep;
+        this.logradouro = logradouro;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.complemento = complemento;
+        this.numero = numero;
+        this.telefone = telefone;
+    }
+
     public static AdvogadoFisico toEntity(AdvogadoFisicoRequestDTO dto) {
         if (dto == null) {
             return null;

@@ -89,4 +89,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("SELECT u FROM Usuario u WHERE TYPE(u) IN (AdvogadoFisico, AdvogadoJuridico)")
     List<Usuario> findAdvogados();
 
+    Optional<Usuario> findByTokenRecuperacaoSenha(String token);
 }
