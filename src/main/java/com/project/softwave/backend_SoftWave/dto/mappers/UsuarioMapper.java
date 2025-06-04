@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto.mappers;
 
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
 import com.project.softwave.backend_SoftWave.entity.*;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
@@ -36,4 +37,13 @@ public class UsuarioMapper {
         }
         throw new IllegalArgumentException("Tipo de usuário não reconhecido");
     }
+
+//    public Usuario usuarioFotoPerfilDtoToUsuario(UsuarioFotoPerfilDTO usuarioFotoPerfilDTO){
+//        return null;
+//    }
+
+//    public UsuarioFotoPerfilDTO usuarioToUsuarioFotoPerfilDto(Usuario usuario){
+//        return null;
+//    }
+
 }

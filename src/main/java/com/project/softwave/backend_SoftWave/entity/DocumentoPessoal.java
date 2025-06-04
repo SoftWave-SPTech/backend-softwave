@@ -9,13 +9,32 @@ public class DocumentoPessoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private Integer id;
-
-    private String documento;
-
-    private String conteudo;
+    private String nomeArquivo;
+    private String urlArquivo;
 
     @ManyToOne
-    private Usuario usuario;
+    private Usuario fkUsuario;
+
+    public DocumentoPessoal() {
+    }
+
+    public DocumentoPessoal(String nomeArquivo, String urlArquivo) {
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+    }
+
+    public DocumentoPessoal(String nomeArquivo, String urlArquivo, Usuario fkUsuario) {
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkUsuario = fkUsuario;
+    }
+
+    public DocumentoPessoal(Integer id, String nomeArquivo, String urlArquivo, Usuario fkUsuario) {
+        this.id = id;
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkUsuario = fkUsuario;
+    }
 
     public Integer getId() {
         return id;
@@ -25,27 +44,27 @@ public class DocumentoPessoal {
         this.id = id;
     }
 
-    public String getDocumento() {
-        return documento;
+    public String getUrlArquivo() {
+        return urlArquivo;
     }
 
-    public void setDocumento(String documento) {
-        this.documento = documento;
+    public String getNomeArquivo() {
+        return nomeArquivo;
     }
 
-    public String getConteudo() {
-        return conteudo;
+    public void setNomeArquivo(String nomeArquivo) {
+        this.nomeArquivo = nomeArquivo;
     }
 
-    public void setConteudo(String conteudo) {
-        this.conteudo = conteudo;
+    public void setUrlArquivo(String urlArquivo) {
+        this.urlArquivo = urlArquivo;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Usuario getFkUsuario() {
+        return fkUsuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setFkUsuario(Usuario fkUsuario) {
+        this.fkUsuario = fkUsuario;
     }
 }

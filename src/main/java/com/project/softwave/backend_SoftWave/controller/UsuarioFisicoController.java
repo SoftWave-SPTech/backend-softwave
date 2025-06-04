@@ -1,10 +1,13 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.*;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoRequestDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.service.FotoPerfilService;
 import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
+import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -23,6 +27,12 @@ public class UsuarioFisicoController {
 
     @Autowired
     private UsuarioFisicoService usuarioFisicoService;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
 
     @Operation(summary = "Cadastro dos usuários físicos", method = "POST")
     @ApiResponses(value = {
@@ -97,4 +107,5 @@ public class UsuarioFisicoController {
         UsuarioFisico usuario = usuarioFisicoService.buscarPorId(id);
         return ResponseEntity.ok(UsuarioFisicoResponseDTO.toResponseDto(usuario));
     }
+
 }

@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.br.CPF;
 
 @Schema(description = "DTO para cadastro de advogado físico")
 public class AdvogadoFisicoRequestDTO{
 
     @NotNull
+    @Positive
     @Schema(description = "Número da OAB", example = "123456")
     private Integer oab;
 

@@ -14,7 +14,6 @@ import java.util.List;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Integer id;
 
     @Column(name = "tipo_usuario", insertable = false, updatable = false)
@@ -43,7 +42,7 @@ public class Usuario {
 
     private String telefone;
 
-    //private String foto;
+    private String foto;
 
     private Boolean ativo;
 
@@ -182,13 +181,9 @@ public class Usuario {
         this.telefone = telefone;
     }
 
-//    public String getFoto() {
-//        return foto;
-//    }
-//
-//    public void setFoto(String foto) {
-//        this.foto = foto;
-//    }
+    public String getFoto() {return foto; }
+
+    public void setFoto(String foto) {this.foto = foto; }
 
     public String getComplemento() {
         return complemento;

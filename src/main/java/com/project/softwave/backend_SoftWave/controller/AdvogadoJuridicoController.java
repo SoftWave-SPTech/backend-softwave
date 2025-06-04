@@ -2,8 +2,11 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico.AdvogadoJuridicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.service.AdvogadoJuridicoService;
+import com.project.softwave.backend_SoftWave.service.FotoPerfilService;
+import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico.AdvogadoJuridicoRequestDTO;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,6 +26,12 @@ public class AdvogadoJuridicoController {
 
     @Autowired
     private AdvogadoJuridicoService service;
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
 
     @Operation(summary = "Cadastro de advogado jurídico", method = "POST")
     @ApiResponses(value = {
@@ -103,4 +113,5 @@ public class AdvogadoJuridicoController {
         service.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
 }

@@ -5,12 +5,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 @Schema(description = "DTO para cadastro de advogado jurídico")
 public class AdvogadoJuridicoRequestDTO {
 
     @NotNull
+    @Positive
     @Schema(description = "Número da OAB do advogado responsável", example = "56789")
     private Integer oab;
 
@@ -53,6 +55,7 @@ public class AdvogadoJuridicoRequestDTO {
     @Schema(description = "Complemento do endereço", example = "Sala 801, Torre Oeste")
     private String complemento;
 
+    @NotBlank
     @Schema(description = "Número do endereço", example = "123")
     private String numero;
 
@@ -60,6 +63,7 @@ public class AdvogadoJuridicoRequestDTO {
     @Schema(description = "Telefone comercial de contato", example = "(11) 97654-3210")
     private String telefone;
 
+    @NotBlank
     @Schema(description = "Representante", example = "João Carlos")
     private String representante;
 
