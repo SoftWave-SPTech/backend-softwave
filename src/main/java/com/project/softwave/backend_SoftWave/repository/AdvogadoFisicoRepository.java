@@ -16,5 +16,5 @@ public interface AdvogadoFisicoRepository extends JpaRepository<AdvogadoFisico, 
 
     Optional<AdvogadoFisico> findByOab(Integer oab);
 
-    Optional<Object> findByEmailEqualsOrCpfEqualsOrRgEquals(String email, String cpf, String rg);
+    Optional<AdvogadoFisico> findByEmailEqualsOrCpfEqualsOrRgEquals(String email, String cpf, String rg);
 }
