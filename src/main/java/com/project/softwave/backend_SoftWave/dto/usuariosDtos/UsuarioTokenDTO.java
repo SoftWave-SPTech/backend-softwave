@@ -12,6 +12,7 @@ public class UsuarioTokenDTO {
     private String tipoUsuario;
     private String role;
     private String nome;
+    private String foto;
 
     public UsuarioTokenDTO() {
 
@@ -65,17 +66,18 @@ public class UsuarioTokenDTO {
         this.nome = nome;
     }
 
-    public UsuarioTokenDTO(Integer id,String email, String token, String tipoUsuario, String role, String nome) {
+    public UsuarioTokenDTO(Integer id,String email, String token, String tipoUsuario, String role, String nome, String foto) {
         this.id = id;
         this.email = email;
         this.token = token;
         this.tipoUsuario = tipoUsuario;
         this.role = role;
         this.nome = nome;
+        this.foto = foto;
     }
 
-    public static UsuarioTokenDTO toDTO(Usuario usuario, String token, String role, String nome) {
-        return new UsuarioTokenDTO(usuario.getId(), usuario.getEmail(),token, usuario.getClass().getSimpleName(), role, nome);
+    public static UsuarioTokenDTO toDTO(Usuario usuario, String token, String role, String nome, String foto) {
+        return new UsuarioTokenDTO(usuario.getId(), usuario.getEmail(),token, usuario.getClass().getSimpleName(), role, nome, foto);
     }
 
 //    public static UsuarioTokenDTO toDTO(Usuario usuario, String token) {
@@ -87,4 +89,13 @@ public class UsuarioTokenDTO {
 //
 //        return usuarioTokenDto;
 //    }
+
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
 }
