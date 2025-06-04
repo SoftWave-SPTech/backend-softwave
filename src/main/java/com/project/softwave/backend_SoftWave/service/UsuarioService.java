@@ -76,7 +76,7 @@ public class UsuarioService {
              nome = ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
         }
 
-        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome);
+        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
     }
 
     public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
