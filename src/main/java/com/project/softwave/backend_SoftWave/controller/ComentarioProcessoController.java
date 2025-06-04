@@ -25,10 +25,22 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "201", description = "Criação de comentário sobre o processo realizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    @PostMapping
+    @PostMapping("/processo")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<ComentarioProcessoDTO> criarComentario(@Valid @RequestBody ComentarioProcessoDTO dto) {
-        ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentario(dto);
+    public ResponseEntity<ComentarioProcessoDTO> criarComentarioProcesso(@Valid @RequestBody ComentarioProcessoDTO dto) {
+        ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentarioProcesso(dto);
+        return ResponseEntity.status(201).body(novoComentario);
+    }
+
+    @Operation(summary = "Criação de comentário sobre o processo", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Criação de comentário sobre o processo realizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    @PostMapping("/movimentacao")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ComentarioProcessoDTO> criarComentarioMovimentacao(@Valid @RequestBody ComentarioProcessoDTO dto) {
+        ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentarioUltimaMovimentacao(dto);
         return ResponseEntity.status(201).body(novoComentario);
     }
 
@@ -93,5 +105,29 @@ public class ComentarioProcessoController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @Operation(summary = "Listagem de comentarios por id movimentação", method = "DELETE")
+    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "204", description = "Exclusão de comentário do processo realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Comentário do processo não encontrado")
+    })
+    @GetMapping("/buscar-por-ultima-movimentacao/{ultimaMovimentacaoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ComentarioProcessoDTO>> listarComentariosPorUltimaMovimentacaoId(@Valid @PathVariable Integer ultimaMovimentacaoId) {
+        List<ComentarioProcessoDTO> comentarios = comentarioProcessoService.listarComentariosPorUltimaMovimentacaoId(ultimaMovimentacaoId);
+        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
+    }
+
+    @Operation(summary = "Listagem de comentarios por id processo", method = "DELETE")
+    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "204", description = "Exclusão de comentário do processo realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Comentário do processo não encontrado")
+    })
+    @GetMapping("/buscar-por-proceso/{processoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ComentarioProcessoDTO>> listarComentariosPorProcessoId(@Valid @PathVariable Long processoId) {
+        List<ComentarioProcessoDTO> comentarios = comentarioProcessoService.listarComentariosPorProcessoId(processoId);
+        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
     }
 }

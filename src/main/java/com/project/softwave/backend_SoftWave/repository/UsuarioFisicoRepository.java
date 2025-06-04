@@ -16,4 +16,6 @@ public interface UsuarioFisicoRepository extends JpaRepository<UsuarioFisico, In
     Optional<UsuarioFisico> findByEmailEqualsOrCpfEquals(String email, String cpf);
 
     Boolean existsByEmailEqualsOrCpfEqualsAndIdNot(String email, String cpf, Integer id);
+
+    Optional<Object> findByEmailEqualsOrCpfEqualsOrRgEquals(String email, String cpf, String rg);
 }

@@ -11,6 +11,7 @@ public class UsuarioFisico extends Usuario{
     @Column(unique = true)
     private String cpf;
 
+    @Column(unique = true)
     private String rg;
 
     public UsuarioFisico() {

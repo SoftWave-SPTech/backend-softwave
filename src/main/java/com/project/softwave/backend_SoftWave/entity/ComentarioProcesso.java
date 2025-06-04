@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.entity;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,9 @@ public class ComentarioProcesso {
     private LocalDateTime dataCriacao;
 
     @ManyToOne
+    private UltimasMovimentacoes ultimaMovimentacao;
+
+    @ManyToOne
     private Processo processo;
 
     public Long getId() {
@@ -26,7 +30,6 @@ public class ComentarioProcesso {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getComentario() {
         return comentario;
@@ -42,6 +45,14 @@ public class ComentarioProcesso {
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public UltimasMovimentacoes getUltimaMovimentacao() {
+        return ultimaMovimentacao;
+    }
+
+    public void setUltimaMovimentacao(UltimasMovimentacoes ultimaMovimentacao) {
+        this.ultimaMovimentacao = ultimaMovimentacao;
     }
 
     public Processo getProcesso() {
