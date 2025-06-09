@@ -10,6 +10,7 @@ import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaExce
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class UsuarioService {
 
     @Autowired
@@ -120,8 +122,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
 
-        String token = UUID.randomUUID().toString();
+       String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
+        usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
         usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusHours(2));
         usuarioRepository.save(usuario);
 
