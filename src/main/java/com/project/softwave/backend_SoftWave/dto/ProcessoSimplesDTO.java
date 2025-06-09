@@ -6,6 +6,7 @@ public class ProcessoSimplesDTO {
 
     private Integer id;
     private String numeroProcesso;
+    //TODO adicionar as informações dos processos importantes para visualização dos processos
 
     public ProcessoSimplesDTO(Integer id, String numeroProcesso) {
         this.id = id;
