@@ -190,4 +190,14 @@ public class UsuarioService {
             return 0;
         }
     }
+
+    public Integer quantidadeClientes(){
+        Integer qtdUsuarios = usuarioRepository.quantidadeClientes();
+
+        if (qtdUsuarios > 0){
+            return qtdUsuarios;
+        }else{
+            return 0;
+        }
+    }
 }

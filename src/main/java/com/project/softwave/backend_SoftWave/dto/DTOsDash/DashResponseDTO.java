@@ -6,8 +6,9 @@ public class DashResponseDTO {
 
     private String valorTotalProcessos;
     private Integer quantidadeAdvogados;
-    private List<QtdClienteInativoAndAtivo> ClientesInativosAndAtivos;
-    private SetorComMaisProcessosDTO setorComMaisProcessos;
+    private Integer quantidadeClientes;
+    private List<QtdClienteInativoAndAtivo> clientesInativosAndAtivos;
+//    private SetorComMaisProcessosDTO setorComMaisProcessos;
     private List<QtdPorSetorDTO> qtdProcessosPorSetor;
     private Integer quantidadeProcessosTotais;
 
@@ -17,21 +18,17 @@ public class DashResponseDTO {
     public DashResponseDTO(
             String valorTotalProcessos,
             Integer quantidadeAdvogados,
+            Integer quantidadeClientes,
             List<QtdClienteInativoAndAtivo> clientesInativosAndAtivos,
-            SetorComMaisProcessosDTO setorComMaisProcessos,
             List<QtdPorSetorDTO> qtdProcessosPorSetor,
             Integer quantidadeProcessosTotais
     ) {
         this.valorTotalProcessos = valorTotalProcessos;
         this.quantidadeAdvogados = quantidadeAdvogados;
-        ClientesInativosAndAtivos = clientesInativosAndAtivos;
-        this.setorComMaisProcessos = setorComMaisProcessos;
+        this.quantidadeClientes = quantidadeClientes;
+        this.clientesInativosAndAtivos = clientesInativosAndAtivos;
         this.qtdProcessosPorSetor = qtdProcessosPorSetor;
         this.quantidadeProcessosTotais = quantidadeProcessosTotais;
-    }
-
-    public SetorComMaisProcessosDTO getSetorComMaisProcessos() {
-        return setorComMaisProcessos;
     }
 
     public String getValorTotalProcessos() {
@@ -50,19 +47,21 @@ public class DashResponseDTO {
         this.quantidadeAdvogados = quantidadeAdvogados;
     }
 
+    public Integer getQuantidadeClientes() {
+        return quantidadeClientes;
+    }
+
+    public void setQuantidadeClientes(Integer quantidadeClientes) {
+        this.quantidadeClientes = quantidadeClientes;
+    }
+
     public List<QtdClienteInativoAndAtivo> getClientesInativosAndAtivos() {
-        return ClientesInativosAndAtivos;
+        return clientesInativosAndAtivos;
     }
 
     public void setClientesInativosAndAtivos(List<QtdClienteInativoAndAtivo> clientesInativosAndAtivos) {
-        ClientesInativosAndAtivos = clientesInativosAndAtivos;
+        this.clientesInativosAndAtivos = clientesInativosAndAtivos;
     }
-
-    public void setSetorComMaisProcessos(SetorComMaisProcessosDTO setorComMaisProcessos) {
-        this.setorComMaisProcessos = setorComMaisProcessos;
-    }
-
-
 
     public List<QtdPorSetorDTO> getQtdProcessosPorSetor() {
         return qtdProcessosPorSetor;

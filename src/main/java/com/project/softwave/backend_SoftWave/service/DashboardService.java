@@ -20,8 +20,9 @@ public class DashboardService {
         dadosDash.setClientesInativosAndAtivos(usuarioService.quantidadeClienteInativoAndInativo());
         dadosDash.setQtdProcessosPorSetor(processoService.qtdProcessosPorSetor());
         dadosDash.setQuantidadeAdvogados(usuarioService.quantidadeAdvogados());
+        dadosDash.setQuantidadeClientes(usuarioService.quantidadeClientes());
         dadosDash.setQuantidadeProcessosTotais(processoService.quantidadeProcessos());
-        dadosDash.setSetorComMaisProcessos(processoService.setorComMaisProcessos());
+//        dadosDash.setSetorComMaisProcessos(processoService.setorComMaisProcessos());
         dadosDash.setValorTotalProcessos(processoService.valorTotalProcessos());
 
         return dadosDash;

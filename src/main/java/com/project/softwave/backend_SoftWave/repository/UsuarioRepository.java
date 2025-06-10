@@ -92,5 +92,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("SELECT COUNT(u) FROM Usuario u WHERE TYPE(u) IN (AdvogadoFisico, AdvogadoJuridico)")
     Integer quantidadeAdvogados();
 
+    @Query("SELECT COUNT(u) FROM Usuario u WHERE TYPE(u) IN (UsuarioFisico, UsuarioJuridico)")
+    Integer quantidadeClientes();
+
     Optional<Usuario> findByTokenRecuperacaoSenha(String token);
 }
