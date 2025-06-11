@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
+import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdClienteInativoAndAtivo;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioSenhaDto;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.io.IOException;
@@ -152,5 +154,53 @@ public class UsuarioService {
         usuario.setTokenRecuperacaoSenha(null);
         usuario.setDataExpiracaoTokenRecuperacaoSenha(null);
         usuarioRepository.save(usuario);
+    }
+
+    public List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo(){
+
+        List<Usuario> all = usuarioRepository.findAll();
+        List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo = new ArrayList<>();
+        Integer ativos = 0;
+        Integer inativos = 0;
+        QtdClienteInativoAndAtivo clientesAtivos = new QtdClienteInativoAndAtivo("Clientes Ativos");
+        QtdClienteInativoAndAtivo clientesInativos = new QtdClienteInativoAndAtivo("Clientes Inativos");
+
+        if(!all.isEmpty()){
+            for(Usuario usuarioDaVez : all){
+                if (usuarioDaVez.getSenha().length() <= 8 && usuarioDaVez.getSenha().length() > 0){
+                    inativos++;
+                }else if(usuarioDaVez.getSenha().length() > 8){
+                    ativos++;
+                }
+            }
+        }
+
+        clientesAtivos.setQtdClienteAtivoOrInativo(ativos);
+        clientesInativos.setQtdClienteAtivoOrInativo(inativos);
+
+        quantidadeClienteInativoAndInativo.add(clientesInativos);
+        quantidadeClienteInativoAndInativo.add(clientesAtivos);
+
+        return quantidadeClienteInativoAndInativo;
+    }
+
+    public Integer quantidadeAdvogados(){
+        Integer qtdAdvogados = usuarioRepository.quantidadeAdvogados();
+
+        if (qtdAdvogados > 0){
+            return qtdAdvogados;
+        }else{
+            return 0;
+        }
+    }
+
+    public Integer quantidadeClientes(){
+        Integer qtdUsuarios = usuarioRepository.quantidadeClientes();
+
+        if (qtdUsuarios > 0){
+            return qtdUsuarios;
+        }else{
+            return 0;
+        }
     }
 }
