@@ -25,7 +25,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE Usuario u SET u.senha = :senha WHERE u.email = :email")
+    @Query("UPDATE Usuario u SET u.senha = :senha, u.ativo = true WHERE u.email = :email")
     void updateSenhaByEmail(String senha, String email);
 
     @Transactional
@@ -88,6 +88,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     // Busca todos os advogados (físicos e jurídicos)
     @Query("SELECT u FROM Usuario u WHERE TYPE(u) IN (AdvogadoFisico, AdvogadoJuridico)")
     List<Usuario> findAdvogados();
+
+    @Query("SELECT COUNT(u) FROM Usuario u WHERE TYPE(u) IN (AdvogadoFisico, AdvogadoJuridico)")
+    Integer quantidadeAdvogados();
+
+    @Query("SELECT COUNT(u) FROM Usuario u WHERE TYPE(u) IN (UsuarioFisico, UsuarioJuridico)")
+    Integer quantidadeClientes();
 
     Optional<Usuario> findByTokenRecuperacaoSenha(String token);
 }
