@@ -16,25 +16,28 @@ public class ComentarioProcessoResponseDTO {
     private String fotoUsuario;
 
     public static ComentarioProcessoResponseDTO toResponseDTO(ComentarioProcesso comentarioProcesso) {
-            if(comentarioProcesso.getUsuario() instanceof AdvogadoFisico || comentarioProcesso.getUsuario() instanceof UsuarioFisico) {
-                String nome = ((UsuarioFisico) comentarioProcesso.getUsuario()).getNome();
-                return new ComentarioProcessoResponseDTO(
-                        comentarioProcesso.getId().intValue(),
-                        comentarioProcesso.getComentario(),
-                        comentarioProcesso.getDataCriacao().toString(),
-                        nome,
-                        comentarioProcesso.getUsuario().getFoto()
-                );
-            }else {
-                String nome = ((UsuarioJuridico) comentarioProcesso.getUsuario()).getRepresentante();
-                return new ComentarioProcessoResponseDTO(
-                        comentarioProcesso.getId().intValue(),
-                        comentarioProcesso.getComentario(),
-                        comentarioProcesso.getDataCriacao().toString(),
-                        nome,
-                        comentarioProcesso.getUsuario().getFoto()
-                );
-            }
+        if (comentarioProcesso.getUsuario() == null) {
+            return null; // or handle this case as needed
+        }
+        if (comentarioProcesso.getUsuario() instanceof AdvogadoFisico || comentarioProcesso.getUsuario() instanceof UsuarioFisico) {
+            String nome = ((UsuarioFisico) comentarioProcesso.getUsuario()).getNome();
+            return new ComentarioProcessoResponseDTO(
+                    comentarioProcesso.getId().intValue(),
+                    comentarioProcesso.getComentario(),
+                    comentarioProcesso.getDataCriacao().toString(),
+                    nome,
+                    comentarioProcesso.getUsuario().getFoto()
+            );
+        } else {
+            String nome = ((UsuarioJuridico) comentarioProcesso.getUsuario()).getRepresentante();
+            return new ComentarioProcessoResponseDTO(
+                    comentarioProcesso.getId().intValue(),
+                    comentarioProcesso.getComentario(),
+                    comentarioProcesso.getDataCriacao().toString(),
+                    nome,
+                    comentarioProcesso.getUsuario().getFoto()
+            );
+        }
     }
 
     public ComentarioProcessoResponseDTO(){}
