@@ -15,26 +15,26 @@ public class AuthController {
     private UsuarioService usuarioService;
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioTokenDTO> login(@RequestBody UsuarioLoginDto usuarioLoginDto) {
+    public ResponseEntity<UsuarioTokenDTO> login(@Valid @RequestBody UsuarioLoginDto usuarioLoginDto) {
         UsuarioTokenDTO usuarioTokenDto = this.usuarioService.autenticar(usuarioLoginDto);
         return ResponseEntity.status(200).body(usuarioTokenDto);
     }
 
     @PostMapping("/primeiro-acesso")
-    public ResponseEntity<UsuarioLoginDto> primeiroAcesso(@RequestBody UsuarioLoginDto usuarioLoginDto) {
+    public ResponseEntity<UsuarioLoginDto> primeiroAcesso(@Valid @RequestBody UsuarioLoginDto usuarioLoginDto) {
         UsuarioLoginDto usuarioLogado = this.usuarioService.primeiroAcesso(usuarioLoginDto);
         return ResponseEntity.status(200).body(usuarioLogado);
     }
 
     @PatchMapping("/cadastrar-senha")
-    public ResponseEntity<UsuarioTokenDTO> cadastrarSenha(@RequestBody UsuarioSenhaDto usuarioSenhaDto) {
+    public ResponseEntity<UsuarioTokenDTO> cadastrarSenha(@Valid @RequestBody UsuarioSenhaDto usuarioSenhaDto) {
         this.usuarioService.cadastrarSenha(usuarioSenhaDto);
         return ResponseEntity.status(200).build();
     }
 
     @PostMapping("/solicitar-reset-senha")
     public ResponseEntity<String> solicitarResetSenha(
-            @Valid @RequestBody String email) {
+            @Valid @RequestParam String email) {
         usuarioService.solicitarResetSenha(email);
         return ResponseEntity.ok().body("Email enviado ?");
     }

@@ -28,6 +28,7 @@ public class UsuarioFisicoService {
             throw new EntidadeConflitoException("Email, CPF ou RG já existe");
         }
         usuarioFisico.setRole(Role.ROLE_USUARIO);
+        usuarioFisico.setAtivo(false);
         UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
         return usuarioFisicoCadastrado;
     }

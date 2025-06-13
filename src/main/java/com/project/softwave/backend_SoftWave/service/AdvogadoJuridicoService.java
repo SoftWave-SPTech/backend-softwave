@@ -28,6 +28,7 @@ public class AdvogadoJuridicoService {
             throw new EntidadeConflitoException("Email ou CNPJ já existe");
         }
         advogadoJuridico.setRole(Role.ROLE_ADVOGADO);
+        advogadoJuridico.setAtivo(false);
         return advogadoJuridicoRepository.save(advogadoJuridico);
     }
 

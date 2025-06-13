@@ -35,6 +35,7 @@ public class AdvogadoFisicoService {
             throw new EntidadeConflitoException("Email, CPF ou RG já existe");
         }
             advogadoFisico.setRole(Role.ROLE_ADVOGADO);
+            advogadoFisico.setAtivo(false);
             return   advogadoFisicoRepository.save(advogadoFisico);
     }
 

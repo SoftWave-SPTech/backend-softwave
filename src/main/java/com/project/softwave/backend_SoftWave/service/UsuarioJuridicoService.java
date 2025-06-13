@@ -26,6 +26,7 @@ public class UsuarioJuridicoService {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
             usuarioJuridico.setRole(Role.ROLE_USUARIO);
+            usuarioJuridico.setAtivo(false);
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
             return usuarioJuridicoCadastrado;
     }
