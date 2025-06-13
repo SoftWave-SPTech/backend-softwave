@@ -59,6 +59,7 @@ public class UsuarioJuridicoService {
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setBairro(dto.getBairro());
         usuarioJuridico.setCidade(dto.getCidade());
+        usuarioJuridico.setNumero(dto.getNumero());
 
         return usuariosJuridicosRepository.save(usuarioJuridico);
     }

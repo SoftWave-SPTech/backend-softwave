@@ -12,6 +12,7 @@ public class ComentarioProcessoResponseDTO {
     private Integer id;
     private String comentario;
     private String dataComentario;
+    private Integer idUsuario;
     private String nomeUsuario;
     private String fotoUsuario;
 
@@ -23,7 +24,8 @@ public class ComentarioProcessoResponseDTO {
                         comentarioProcesso.getComentario(),
                         comentarioProcesso.getDataCriacao().toString(),
                         nome,
-                        comentarioProcesso.getUsuario().getFoto()
+                        comentarioProcesso.getUsuario().getFoto(),
+                        comentarioProcesso.getUsuario().getId()
                 );
             }else {
                 String nome = ((UsuarioJuridico) comentarioProcesso.getUsuario()).getRepresentante();
@@ -32,19 +34,21 @@ public class ComentarioProcessoResponseDTO {
                         comentarioProcesso.getComentario(),
                         comentarioProcesso.getDataCriacao().toString(),
                         nome,
-                        comentarioProcesso.getUsuario().getFoto()
+                        comentarioProcesso.getUsuario().getFoto(),
+                        comentarioProcesso.getUsuario().getId()
                 );
             }
     }
 
     public ComentarioProcessoResponseDTO(){}
 
-    public ComentarioProcessoResponseDTO(Integer id, String comentario, String dataComentario, String nomeUsuario, String fotoUsuario) {
+    public ComentarioProcessoResponseDTO(Integer id, String comentario, String dataComentario, String nomeUsuario, String fotoUsuario, Integer idUsuario) {
         this.id = id;
         this.comentario = comentario;
         this.dataComentario = dataComentario;
         this.nomeUsuario = nomeUsuario;
         this.fotoUsuario = fotoUsuario;
+        this.idUsuario = idUsuario;
     }
 
     public Integer getId() {
@@ -85,5 +89,13 @@ public class ComentarioProcessoResponseDTO {
 
     public void setFotoUsuario(String fotoUsuario) {
         this.fotoUsuario = fotoUsuario;
+    }
+
+    public Integer getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }
