@@ -16,6 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/processos")
 public class ProcessoController {
@@ -63,15 +66,20 @@ public class ProcessoController {
     }
 
     @GetMapping("/usuario-id/{id}")
-    public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorIdUsuario(@PathVariable Integer id) {
+    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
         try {
-            Processo processo = processoService.listarProcessoPorIdUsuario(id);
-            ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
+            List<Processo> processo = processoService.listarProcessoPorIdUsuario(id);
+            List<ProcessoSimplesDTO> processoDTO = processo.stream()
+                    .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
+                    .collect(Collectors.toList());
+            if (processoDTO.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
             return ResponseEntity.ok(processoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    //Atualizar Processo
+
 }
