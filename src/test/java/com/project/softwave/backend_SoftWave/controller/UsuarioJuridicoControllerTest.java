@@ -28,6 +28,7 @@ class UsuarioJuridicoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @SuppressWarnings("removal")
     @MockBean
     private UsuarioJuridicoService usuarioJuridicoService;
 
