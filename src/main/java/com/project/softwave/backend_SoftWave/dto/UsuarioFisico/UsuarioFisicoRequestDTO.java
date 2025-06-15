@@ -22,7 +22,7 @@ public class UsuarioFisicoRequestDTO {
     @Schema(description = "Senha de acesso", example = "Maria123@")
     private String senha;
 
-    @CPF
+    @CPF(message= "O CPF informado não é válido")
     @Schema(description = "CPF do usuário", example = "43293406238")
     private String cpf;
 

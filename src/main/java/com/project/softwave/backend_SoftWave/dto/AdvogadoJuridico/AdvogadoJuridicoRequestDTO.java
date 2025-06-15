@@ -2,20 +2,18 @@ package com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 @Schema(description = "DTO para cadastro de advogado jurídico")
 public class AdvogadoJuridicoRequestDTO {
 
     @NotNull
-    @Positive
-    @Schema(description = "Número da OAB do advogado responsável", example = "567893")
-    private Integer oab;
-
+    @Size(min = 6, max = 6, message = "O número da OAB deve ter exatamente 6 dígitos")
+    @Pattern(regexp = "\\d+", message = "O número da OAB deve conter apenas números")
+    @Schema(description = "Número da OAB do advogado responsável", example = "567899")
+    private String oab;
+  
     @Email
     @Schema(description = "Email da empresa/advogado", example = "advocacia.exemplo@empresa.com")
     private String email;
@@ -32,7 +30,7 @@ public class AdvogadoJuridicoRequestDTO {
     @Schema(description = "Razão social da empresa", example = "Pereira e Associados Sociedade de Advogados LTDA")
     private String razaoSocial;
 
-    @CNPJ
+    @CNPJ(message = "O CNPJ informado não é válido")
     @Schema(description = "CNPJ da empresa", example = "96678175000121")
     private String cnpj;
 
@@ -84,7 +82,7 @@ public class AdvogadoJuridicoRequestDTO {
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setComplemento(dto.getComplemento());
         usuarioJuridico.setNumero(dto.getNumero());
-        usuarioJuridico.setOab(dto.getOab());
+        usuarioJuridico.setOab(Integer.parseInt(dto.getOab()));
         usuarioJuridico.setRepresentante(dto.getRepresentante());
 
         return usuarioJuridico;
@@ -92,11 +90,11 @@ public class AdvogadoJuridicoRequestDTO {
 
     // Getters e Setters omitidos por brevidade (adicione-os conforme necessário)
 
-    public Integer getOab() {
+    public String getOab() {
         return oab;
     }
 
-    public void setOab(Integer oab) {
+    public void setOab(String oab) {
         this.oab = oab;
     }
 
