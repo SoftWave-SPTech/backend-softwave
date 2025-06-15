@@ -11,9 +11,9 @@ public class AdvogadoJuridicoRequestDTO {
     @NotNull
     @Size(min = 6, max = 6, message = "O número da OAB deve ter exatamente 6 dígitos")
     @Pattern(regexp = "\\d+", message = "O número da OAB deve conter apenas números")
-    @Schema(description = "Número da OAB do advogado responsável", example = "56789")
+    @Schema(description = "Número da OAB do advogado responsável", example = "567899")
     private String oab;
-
+  
     @Email
     @Schema(description = "Email da empresa/advogado", example = "advocacia.exemplo@empresa.com")
     private String email;
