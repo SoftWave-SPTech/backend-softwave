@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.service.AdvogadoJuridicoService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +30,7 @@ class AdvogadoJuridicoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @SuppressWarnings("removal")
     @MockBean
     private AdvogadoJuridicoService service;
 
@@ -82,9 +84,9 @@ class AdvogadoJuridicoControllerTest {
     }
 
     @Test
-    void cadastrar_OABNegativa_DeveRetornar400() throws Exception {
+    void cadastrar_OABMenor6Digitos_DeveRetornar400() throws Exception {
         AdvogadoJuridicoRequestDTO request = criarRequestValido();
-        request.setOab(-123);
+        request.setOab("3123");
 
         mockMvc.perform(post("/advogados-juridicos")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -120,7 +122,7 @@ class AdvogadoJuridicoControllerTest {
     // Métodos auxiliares
     private AdvogadoJuridicoRequestDTO criarRequestValido() {
         AdvogadoJuridicoRequestDTO request = new AdvogadoJuridicoRequestDTO();
-        request.setOab(567839);
+        request.setOab("567839");
         request.setEmail("advocacia.exemplo@empresa.com");
         request.setSenha("SenhaForte@123");
         request.setNomeFantasia("Advocacia Pereira & Associados");

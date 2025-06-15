@@ -69,9 +69,10 @@ public class ProcessoService {
         processoRepository.save(processoAtual);
     }
 
-    public Processo listarProcessoPorIdUsuario(Integer id) {
-        return processoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo com ID " + id + " não encontrado."));
+    public List<Processo> listarProcessoPorIdUsuario(Integer id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"))
+                .getProcessos();
     }
 
     public Integer quantidadeProcessos(){
