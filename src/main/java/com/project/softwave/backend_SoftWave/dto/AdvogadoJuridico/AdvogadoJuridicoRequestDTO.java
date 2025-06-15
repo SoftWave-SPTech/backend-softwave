@@ -13,7 +13,7 @@ public class AdvogadoJuridicoRequestDTO {
 
     @NotNull
     @Positive
-    @Schema(description = "Número da OAB do advogado responsável", example = "56789")
+    @Schema(description = "Número da OAB do advogado responsável", example = "567893")
     private Integer oab;
 
     @Email
