@@ -1,8 +1,10 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioJuridico.UsuarioJuridicoRequestDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.service.UsuarioJuridicoService;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -164,6 +167,76 @@ class UsuarioJuridicoControllerTest {
                 .andExpect(jsonPath("$.representante").doesNotExist());
     }
 
+    @Test
+    void listar_ComUsuariosExistentes_DeveRetornar200() throws Exception {
+        List<UsuarioJuridico> usuarios = List.of(criarUsuarioValido());
+        when(usuarioJuridicoService.listar()).thenReturn(usuarios);
+
+        mockMvc.perform(get("/usuarios-juridicos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nomeFantasia").value("Empresa XPTO"))
+                .andExpect(jsonPath("$[0].email").value("empresa@xpto.com"))
+                .andExpect(jsonPath("$[0].cnpj").value("17330474000102"));
+    }
+
+    @Test
+    void listar_SemUsuarios_DeveRetornar204() throws Exception {
+        when(usuarioJuridicoService.listar())
+                .thenThrow(new EntidadeNaoEncontradaException("Nenhum usuário encontrado"));
+
+        mockMvc.perform(get("/usuarios-juridicos"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void atualizar_ComDadosValidos_DeveRetornar200() throws Exception {
+        UsuarioJuridicoAtualizacaoDTO dto = criarAtualizacaoValida();
+        UsuarioJuridico usuarioAtualizado = UsuarioJuridicoAtualizacaoDTO.toEntity(dto);
+        usuarioAtualizado.setId(1);
+
+        when(usuarioJuridicoService.atualizar(any(Integer.class), any(UsuarioJuridicoAtualizacaoDTO.class)))
+                .thenReturn(usuarioAtualizado);
+
+        mockMvc.perform(put("/usuarios-juridicos/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.nomeFantasia").value(dto.getNomeFantasia()))
+                .andExpect(jsonPath("$.email").value(dto.getEmail()));
+    }
+
+    @Test
+    void atualizar_ComIdInexistente_DeveRetornar404() throws Exception {
+        UsuarioJuridicoAtualizacaoDTO dto = criarAtualizacaoValida();
+
+        when(usuarioJuridicoService.atualizar(any(Integer.class), any(UsuarioJuridicoAtualizacaoDTO.class)))
+                .thenThrow(new EntidadeNaoEncontradaException("Usuário não encontrado com id: 999"));
+
+        mockMvc.perform(put("/usuarios-juridicos/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deletar_ComIdExistente_DeveRetornar200() throws Exception {
+        when(usuarioJuridicoService.deletar(any(Integer.class))).thenReturn(true);
+
+        mockMvc.perform(delete("/usuarios-juridicos/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deletar_ComIdInexistente_DeveRetornar404() throws Exception {
+        when(usuarioJuridicoService.deletar(any(Integer.class)))
+                .thenThrow(new EntidadeNaoEncontradaException("Usuário não encontrado"));
+
+        mockMvc.perform(delete("/usuarios-juridicos/999"))
+                .andExpect(status().isNotFound());
+    }
+
     private UsuarioJuridicoRequestDTO criarRequestValido() {
         UsuarioJuridicoRequestDTO requestDTO = new UsuarioJuridicoRequestDTO();
         requestDTO.setNomeFantasia("Empresa XPTO");
@@ -180,5 +253,41 @@ class UsuarioJuridicoControllerTest {
         requestDTO.setNumero("123");
         requestDTO.setRepresentante("João Carlos");
         return requestDTO;
+    }
+
+    private UsuarioJuridico criarUsuarioValido() {
+        UsuarioJuridico usuario = new UsuarioJuridico();
+        usuario.setId(1);
+        usuario.setNomeFantasia("Empresa XPTO");
+        usuario.setEmail("empresa@xpto.com");
+        usuario.setSenha("Senha123@");
+        usuario.setRazaoSocial("XPTO LTDA");
+        usuario.setCnpj("17330474000102");
+        usuario.setCep("03942030");
+        usuario.setLogradouro("Rua das Flores");
+        usuario.setBairro("Centro");
+        usuario.setCidade("São Paulo");
+        usuario.setComplemento("Sala 3, Edifício Central");
+        usuario.setNumero("123");
+        usuario.setTelefone("(11) 91234-5678");
+        usuario.setRepresentante("João Carlos");
+        return usuario;
+    }
+
+    private UsuarioJuridicoAtualizacaoDTO criarAtualizacaoValida() {
+        UsuarioJuridicoAtualizacaoDTO dto = new UsuarioJuridicoAtualizacaoDTO();
+        dto.setId(1);
+        dto.setNomeFantasia("Empresa XPTO Atualizada");
+        dto.setEmail("empresa.atualizada@xpto.com");
+        dto.setRazaoSocial("XPTO LTDA - Atualizada");
+        dto.setCep("03942030");
+        dto.setLogradouro("Rua das Flores");
+        dto.setBairro("Centro");
+        dto.setCidade("São Paulo");
+        dto.setComplemento("Sala 3, Edifício Central");
+        dto.setNumero("123");
+        dto.setTelefone("(11) 91234-5678");
+        dto.setRepresentante("João Carlos");
+        return dto;
     }
 }

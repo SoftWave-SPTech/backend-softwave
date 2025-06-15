@@ -58,7 +58,7 @@ public class UsuarioFisicoController {
     public ResponseEntity<Void> deletar(@Valid @PathVariable Integer id){
 
         if(usuarioFisicoService.deletar(id)){
-            return  ResponseEntity.status(200).build();
+            return  ResponseEntity.status(204).build();
         }
         return ResponseEntity.status(404).build();
     }

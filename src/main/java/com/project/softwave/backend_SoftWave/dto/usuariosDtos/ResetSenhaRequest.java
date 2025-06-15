@@ -24,6 +24,9 @@ public class ResetSenhaRequest {
     @NotBlank(message = "A confirmação da nova senha é obrigatória")
     private String novaSenhaConfirma;
 
+    public ResetSenhaRequest() {
+    }
+
     public ResetSenhaRequest(String token, String novaSenha, String novaSenhaConfirma) {
         this.token = token;
         this.novaSenha = novaSenha;
