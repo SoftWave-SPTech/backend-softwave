@@ -1,21 +1,34 @@
 package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
 import com.project.softwave.backend_SoftWave.entity.Usuario;
-import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
-import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+
+@Schema(description = "DTO para resposta de autenticação com token JWT")
 public class UsuarioTokenDTO {
 
-    private Integer id;
-    private String email;
+    @Schema(description = "Token JWT de autenticação", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...", required = true)
     private String token;
-    private String tipoUsuario;
-    private String role;
+
+    @Schema(description = "ID do usuário autenticado", example = "1", required = true)
+    private Integer id;
+
+    @Schema(description = "Nome do usuário autenticado", example = "João Silva", required = true)
     private String nome;
+
+    @Schema(description = "Email do usuário autenticado", example = "joao.silva@exemplo.com", required = true)
+    private String email;
+
+    @Schema(description = "Tipo de usuário (ADVOGADO ou CLIENTE)", example = "ADVOGADO", required = true)
+    private String tipoUsuario;
+
+    @Schema(description = "Role do usuário autenticado", example = "ROLE_USER", required = true)
+    private String role;
+
+    @Schema(description = "Foto do usuário autenticado", example = "https://example.com/photo.jpg")
     private String foto;
 
     public UsuarioTokenDTO() {
-
     }
 
     public Integer getId() {
@@ -79,17 +92,6 @@ public class UsuarioTokenDTO {
     public static UsuarioTokenDTO toDTO(Usuario usuario, String token, String role, String nome, String foto) {
         return new UsuarioTokenDTO(usuario.getId(), usuario.getEmail(),token, usuario.getClass().getSimpleName(), role, nome, foto);
     }
-
-//    public static UsuarioTokenDTO toDTO(Usuario usuario, String token) {
-//        UsuarioTokenDTO usuarioTokenDto = new UsuarioTokenDTO();
-//
-//        usuarioTokenDto.setUserId(usuario.getId());
-//        usuarioTokenDto.setEmail(usuario.getEmail());
-//        usuarioTokenDto.setToken(token);
-//
-//        return usuarioTokenDto;
-//    }
-
 
     public String getFoto() {
         return foto;

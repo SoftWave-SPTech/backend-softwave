@@ -19,11 +19,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Collections;
 import java.util.List;
-
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/processos")
@@ -70,8 +70,8 @@ public class ProcessoController {
         }
 
     }
-
-    @Operation(summary = "Buscar processo por ID", method = "GET")
+  
+  @Operation(summary = "Buscar processo por ID", method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
             @ApiResponse(responseCode = "404", description = "Processo não encontrado."),
@@ -86,6 +86,7 @@ public class ProcessoController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
+
 
     @Operation(summary = "Buscar processo por ID do Usuário", method = "GET")
     @ApiResponses(value = {
@@ -145,5 +146,4 @@ public class ProcessoController {
 
 
 
-    //Atualizar Processo
 }

@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoController;
 
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.UltimasMovimentacoesDTO;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.UltimasMovimentacoesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,9 +30,12 @@ public class UltimasMovimentacoesController {
             @ApiResponse(responseCode = "200", description = "Listagem realizada com sucesso"),
     })
     @GetMapping("/ordenadas")
-    public ResponseEntity<List<UltimasMovimentacoes>> listarMovimentacoesOrdenadasPorData() {
+    public ResponseEntity<List<UltimasMovimentacoesDTO>> listarMovimentacoesOrdenadasPorData() {
         List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.listarMovimentacoesOrdenadasPorData();
-        return ResponseEntity.status(200).body(movimentacoes);
+        List<UltimasMovimentacoesDTO> movimentacoesDTO = movimentacoes.stream()
+                .map(UltimasMovimentacoesDTO::toDTO)
+                .toList();
+        return ResponseEntity.status(200).body(movimentacoesDTO);
     }
 
     @Operation(summary = "Busca das movimentações por ID ", method = "GET")
@@ -39,9 +44,10 @@ public class UltimasMovimentacoesController {
     })
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<UltimasMovimentacoes> buscarPorId (@PathVariable Integer id){
+    public ResponseEntity<UltimasMovimentacoesDTO> buscarPorId (@PathVariable Integer id){
             UltimasMovimentacoes movimentacao = ultimasMovimentacoesService.buscarPorId(id);
-            return ResponseEntity.status(200).body(movimentacao);
+            UltimasMovimentacoesDTO dto = UltimasMovimentacoesDTO.toDTO(movimentacao);
+            return ResponseEntity.status(200).body(dto);
     }
 
 
@@ -51,9 +57,12 @@ public class UltimasMovimentacoesController {
     })
     @GetMapping("/processo/{processoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<UltimasMovimentacoes>> buscarPorIdProcesso (@PathVariable Integer processoId){
+    public ResponseEntity<List<UltimasMovimentacoesDTO>> buscarPorIdProcesso (@PathVariable Integer processoId){
             List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.buscarPorIdProcesso(processoId);
-            return ResponseEntity.status(200).body(movimentacoes);
+        List<UltimasMovimentacoesDTO> movimentacoesDTO = movimentacoes.stream()
+                .map(UltimasMovimentacoesDTO::toDTO)
+                .toList();
+            return ResponseEntity.status(200).body(movimentacoesDTO);
     }
 
     @Operation(summary = "Busca das movimentações ordenadas por data mais recente pelo ID do processo", method = "GET")
@@ -62,10 +71,13 @@ public class UltimasMovimentacoesController {
     })
     @GetMapping("/processo/{processoId}/ordenadas")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<UltimasMovimentacoes>> listarMovimentacoesPorIdProcessoOrdenadasPorData(
+    public ResponseEntity<List<UltimasMovimentacoesDTO>> listarMovimentacoesPorIdProcessoOrdenadasPorData(
             @PathVariable Integer processoId) {
         List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.listarMovimentacoesPorIdProcessoOrdenadasPorData(processoId);
-        return ResponseEntity.status(200).body(movimentacoes);
+        List<UltimasMovimentacoesDTO> movimentacoesDTO = movimentacoes.stream()
+                .map(UltimasMovimentacoesDTO::toDTO)
+                .toList();
+        return ResponseEntity.status(200).body(movimentacoesDTO);
     }
 
 }

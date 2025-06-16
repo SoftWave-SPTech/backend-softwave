@@ -27,6 +27,10 @@ public class UsuarioController {
     @Autowired
     private FotoPerfilService fotoPerfilService;
 
+    @Operation(
+            summary = "Listar todos os advogados",
+            description = "Retorna uma lista de advogados cadastrados no sistema."
+    )
     @GetMapping("/listar-advogados")
     public ResponseEntity<List<AdvogadosResponseDTO>> listarAdvogados() {
         List<AdvogadosResponseDTO> advogados = pesquisaService.listarAdvogados();
@@ -34,6 +38,10 @@ public class UsuarioController {
         return ResponseEntity.status(200).body(advogados);
     }
 
+    @Operation(
+            summary = "Listar todos os clientes",
+            description = "Retorna uma lista de clientes cadastrados no sistema."
+    )
     @GetMapping("/listar-clientes")
     public ResponseEntity<List<UsuariosResponseDTO>> listarClientes() {
         List<UsuariosResponseDTO> clientes = pesquisaService.listarClientes();
