@@ -16,4 +16,6 @@ public interface AnaliseProcessoRepository extends JpaRepository<AnaliseProcesso
     Optional<AnaliseProcesso> findByMovimentacoesId(Integer id);
 
 
+    Optional<AnaliseProcesso> findByMovimentacoes(UltimasMovimentacoes movimentacoes);
+
 }

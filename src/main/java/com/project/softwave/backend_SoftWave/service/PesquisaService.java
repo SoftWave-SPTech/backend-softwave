@@ -5,11 +5,15 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRep
 import com.project.softwave.backend_SoftWave.dto.ClienteComProcessosResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.AdvogadosResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuariosResponseDTO;
+import com.project.softwave.backend_SoftWave.entity.Usuario;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PesquisaService {
@@ -61,6 +65,38 @@ public class PesquisaService {
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
     }
+
+    public List<ClienteComProcessosResponseDTO> filtrarClientesPorDescricao(String descricao) {
+        return usuarioRepository.findClientesComProcessosPorDescricao(descricao)
+                .stream()
+                .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
+                .toList();
+    }
+
+    public List<ClienteComProcessosResponseDTO> buscarClientesPorAdvogado(Integer advogadoId) {
+        Usuario advogado = usuarioRepository.findById(advogadoId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado"));
+
+        // Pega todos os processos do advogado
+        List<Processo> processos = processoRepository.findByUsuariosContaining(advogado);
+
+        // Evita repetição de clientes
+        Set<Usuario> clientesUnicos = new HashSet<>();
+
+        for (Processo processo : processos) {
+            for (Usuario usuario : processo.getUsuarios()) {
+                if (!usuario.getId().equals(advogadoId)) {
+                    clientesUnicos.add(usuario);
+                }
+            }
+        }
+
+        return clientesUnicos.stream()
+                .map(cliente -> ClienteComProcessosResponseDTO.toClienteComProcessosVinculadosAdvogadoResponseDTO(cliente, advogadoId))
+                .toList();
+
+    }
+
 
     public List<AdvogadosResponseDTO> listarAdvogados() {
         return usuarioRepository.findAdvogados()

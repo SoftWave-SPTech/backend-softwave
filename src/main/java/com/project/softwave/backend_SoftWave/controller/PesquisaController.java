@@ -25,6 +25,12 @@ public class PesquisaController {
         return ResponseEntity.ok(clientes);
     }
 
+    @GetMapping("/clientes/com-processos/advogado/{id}")
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(@Valid @PathVariable Integer id) {
+        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesPorAdvogado(id);
+        return ResponseEntity.ok(clientes);
+    }
+
     @GetMapping("/pesquisa/{termo}")
     public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorTermo(@Valid @PathVariable String termo) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.pesquisarPorTermo(termo);
@@ -54,5 +60,14 @@ public class PesquisaController {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorForo(foro);
         return ResponseEntity.ok(clientes);
     }
+
+    @GetMapping("/filtro-descricao/{descricao}")
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorDescricao(@Valid @PathVariable String descricao) {
+        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorDescricao(descricao);
+        return ResponseEntity.ok(clientes);
+    }
+
+
+
 
 }

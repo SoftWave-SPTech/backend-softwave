@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +58,12 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
             "AND p.vara = :vara")
     List<Usuario> findClientesComProcessosPorVara(@Param("vara") String vara);
 
+    @Transactional
+    @Query("SELECT DISTINCT u FROM Usuario u JOIN FETCH u.processos p " +
+            "WHERE (u.tipoUsuario = 'usuario_fisico' OR u.tipoUsuario = 'usuario_juridico') " +
+            "AND p.descricao LIKE CONCAT('%', :descricao, '%')")
+    List<Usuario> findClientesComProcessosPorDescricao(@Param("descricao") String descricao);
+
 
     @Query(value = """
             SELECT DISTINCT u.*
@@ -96,4 +103,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Integer quantidadeClientes();
 
     Optional<Usuario> findByTokenRecuperacaoSenha(String token);
+
 }
