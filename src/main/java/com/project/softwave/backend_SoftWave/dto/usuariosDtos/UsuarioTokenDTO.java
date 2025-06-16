@@ -1,12 +1,8 @@
 package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 
 import com.project.softwave.backend_SoftWave.entity.Usuario;
-import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
-import com.project.softwave.backend_SoftWave.entity.UsuarioJuridico;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 @Schema(description = "DTO para resposta de autenticação com token JWT")
 public class UsuarioTokenDTO {

@@ -3,9 +3,6 @@ package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Schema(description = "DTO para solicitação de redefinição de senha")
 public class ResetSenhaRequest {
@@ -23,6 +20,9 @@ public class ResetSenhaRequest {
     @Schema(description = "Confirmação da nova senha", example = "NovaSenha@123", required = true)
     @NotBlank(message = "A confirmação da nova senha é obrigatória")
     private String novaSenhaConfirma;
+
+    public ResetSenhaRequest() {
+    }
 
     public ResetSenhaRequest(String token, String novaSenha, String novaSenhaConfirma) {
         this.token = token;

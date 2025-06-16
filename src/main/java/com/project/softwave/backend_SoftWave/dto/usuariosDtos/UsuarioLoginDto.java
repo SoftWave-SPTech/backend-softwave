@@ -3,9 +3,7 @@ package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 @Schema(description = "DTO para autenticação de usuário")
 public class UsuarioLoginDto {
