@@ -48,7 +48,7 @@ public class ProcessoGrau1API {
     public void getApiParams() throws IOException {
         HttpPost httppost = new HttpPost("https://api.infosimples.com/api/v2/consultas/tribunal/tjsp/primeiro-grau");
 //  "0000005-27.2025.8.26.0008";
-//  "+++++++++++++++++++";advogado.getOab();
+//  "509556";advogado.getOab();
 //  "hdVPC0gzW8u6f9cb6cvCC75d-G6Q1brCLjy_NWJG"//  "600";
 
         List<NameValuePair> params = new ArrayList<>(2);
