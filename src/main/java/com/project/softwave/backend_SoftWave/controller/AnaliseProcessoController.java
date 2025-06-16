@@ -25,10 +25,11 @@ public class AnaliseProcessoController {
     @Autowired
     private GeminiService geminiService;
 
-    @Operation(summary = "Geração das análise com IA de uma movimentação do processo", method = "POST")
+    @Operation(summary = "Geração das análise com IA de uma movimentação do processo por ID da Movimentação", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Análise gerada com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao gerar a análise")
+            @ApiResponse(responseCode = "500", description = "Erro interno ao gerar a análise"),
+            @ApiResponse(responseCode = "404", description = "Movimentação não encontrada"),
     })
     @PostMapping("/{id}")
     @SecurityRequirement(name = "Bearer")

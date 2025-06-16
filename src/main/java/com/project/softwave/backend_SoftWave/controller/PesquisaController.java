@@ -21,6 +21,16 @@ public class PesquisaController {
     @Autowired
     private PesquisaService pesquisaService;
 
+  @io.swagger.v3.oas.annotations.Operation(
+    summary = "Lista todos os clientes com processos pelo ID do advogado vinculado",
+    description = "Retorna uma lista de clientes que possuem processos cadastrados."
+)
+    @GetMapping("/com-processos/advogado/{id}")
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(@Valid @PathVariable Integer id) {
+        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesPorAdvogado(id);
+        return ResponseEntity.ok(clientes);
+    }
+
 @io.swagger.v3.oas.annotations.Operation(
     summary = "Lista todos os clientes com processos",
     description = "Retorna uma lista de clientes que possuem processos cadastrados."
@@ -105,5 +115,36 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorFo
     List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorForo(foro);
     return ResponseEntity.ok(clientes);
 }
+  
+
+  @Operation(
+    summary = "Filtra clientes por descrição do processo",
+    description = "Retorna uma lista de clientes filtrados pela descrição informada."
+)
+@Parameter(
+    name = "dercrição",
+    description = "Descrição para filtro",
+    required = true
+)
+    @GetMapping("/filtro-descricao/{descricao}")
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorDescricao(@Valid @PathVariable String descricao) {
+        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorDescricao(descricao);
+        return ResponseEntity.ok(clientes);
+    }
+
+    @Operation(
+    summary = "Filtra processos por status de cliente",
+    description = "Retorna uma lista de clientes filtrados pela descrição informada."
+)
+@Parameter(
+    name = "status",
+    description = "Status para filtro",
+    required = true
+)
+    @GetMapping("/filtro-status-cliente/{status}")
+    public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorStatus(@Valid @PathVariable String status) {
+        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorStatus(status);
+        return ResponseEntity.ok(clientes);
+    }
 
 }
