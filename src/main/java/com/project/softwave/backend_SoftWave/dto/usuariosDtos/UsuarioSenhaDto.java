@@ -3,10 +3,12 @@ package com.project.softwave.backend_SoftWave.dto.usuariosDtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
 
 @Schema(description = "DTO para cadastro e atualização de senha")
 public class UsuarioSenhaDto {
 
+    @Email(message = "Email inválido")
     @Schema(description = "Email do usuário", example = "usuario@exemplo.com")
     @NotBlank(message = "O email é obrigatório")
     private String email;
