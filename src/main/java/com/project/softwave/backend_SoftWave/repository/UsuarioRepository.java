@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.repository;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
+import com.project.softwave.backend_SoftWave.dto.ClienteComProcessosResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioDetalhesDto;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
@@ -43,7 +44,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Transactional
     @Query("SELECT DISTINCT u FROM Usuario u JOIN FETCH u.processos p " +
             "WHERE (u.tipoUsuario = 'usuario_fisico' OR u.tipoUsuario = 'usuario_juridico') " +
-            "AND p.foro = :assunto")
+            "AND p.foro LIKE CONCAT('%', :foro, '%')")
     List<Usuario> findClientesComProcessosPorForo(@Param("foro") String foro);
 
     @Transactional
@@ -103,5 +104,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Integer quantidadeClientes();
 
     Optional<Usuario> findByTokenRecuperacaoSenha(String token);
+
+    @Query(value = """
+    SELECT DISTINCT u.*
+    FROM usuario u
+    JOIN usuarios_processos up ON u.id = up.usuario_id
+    JOIN processo p ON p.id = up.processo_id
+    WHERE u.ativo = :status
+      AND (u.tipo_usuario = 'usuario_juridico' OR u.tipo_usuario = 'usuario_fisico')
+    """, nativeQuery = true)
+    List<Usuario> findClientesComProcessosPorStatus(@Param("status") String status);
+
+
 
 }

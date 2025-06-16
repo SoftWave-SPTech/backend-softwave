@@ -5,9 +5,13 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRep
 import com.project.softwave.backend_SoftWave.dto.ClienteComProcessosResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.AdvogadosResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuariosResponseDTO;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
+import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,24 +81,44 @@ public class PesquisaService {
         Usuario advogado = usuarioRepository.findById(advogadoId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado"));
 
-        // Pega todos os processos do advogado
+        // Pega todos os processos que o advogado está vinculado
         List<Processo> processos = processoRepository.findByUsuariosContaining(advogado);
 
-        // Evita repetição de clientes
+        // Conjunto para evitar duplicação de clientes
         Set<Usuario> clientesUnicos = new HashSet<>();
 
         for (Processo processo : processos) {
             for (Usuario usuario : processo.getUsuarios()) {
+                // Adiciona apenas se não for o próprio advogado
                 if (!usuario.getId().equals(advogadoId)) {
                     clientesUnicos.add(usuario);
                 }
             }
         }
-
+        // Remove advogados e mapeia para DTO
         return clientesUnicos.stream()
+                .filter(u -> !(u instanceof AdvogadoFisico || u instanceof AdvogadoJuridico))
                 .map(cliente -> ClienteComProcessosResponseDTO.toClienteComProcessosVinculadosAdvogadoResponseDTO(cliente, advogadoId))
                 .toList();
+    }
 
+
+
+    public List<ClienteComProcessosResponseDTO> filtrarClientesPorStatus(String statusDescritivo) {
+        String status;
+
+        if (statusDescritivo.equalsIgnoreCase("ativo") || statusDescritivo.equalsIgnoreCase("ativos")) {
+            status = "1";
+        } else if (statusDescritivo.equalsIgnoreCase("inativo") || statusDescritivo.equalsIgnoreCase("inativos")) {
+            status = "0";
+        } else {
+            return List.of(); // retorna lista vazia se o status for inválido
+        }
+
+        return usuarioRepository.findClientesComProcessosPorStatus(status)
+                .stream()
+                .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
+                .toList();
     }
 
 
@@ -111,4 +135,8 @@ public class PesquisaService {
                 .map(UsuariosResponseDTO::toUsuariosResponseDTO)
                 .toList();
     }
+
+
+
+
 }
