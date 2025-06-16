@@ -65,7 +65,7 @@ public class UsuarioService {
         Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
 
-        if (usuarioAutenticado.getAtivo() == false) {
+        if (!usuarioAutenticado.getAtivo()) {
             throw new ResponseStatusException(403, "Usuário inativo", null);
         }
 

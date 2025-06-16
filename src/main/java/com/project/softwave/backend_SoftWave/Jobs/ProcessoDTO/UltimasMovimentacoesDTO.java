@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import jakarta.validation.constraints.NotBlank;
 
 public class UltimasMovimentacoesDTO {
@@ -11,20 +12,28 @@ public class UltimasMovimentacoesDTO {
     @NotBlank(message = "O movimento não pode estar em branco")
     private String movimento;
 
+    private Integer idProcesso;
+
     public UltimasMovimentacoesDTO() {
     }
 
-    public UltimasMovimentacoesDTO(Integer id, String data, String movimento) {
+    public UltimasMovimentacoesDTO(Integer id, String data, String movimento, Integer idProcesso) {
         this.id = id;
         this.data = data;
         this.movimento = movimento;
+        this.idProcesso = idProcesso;
     }
 
-    public static UltimasMovimentacoesDTO toDTO(UltimasMovimentacoesDTO movimentacao) {
+    public static UltimasMovimentacoesDTO toDTO(UltimasMovimentacoes movimentacao) {
         if (movimentacao == null) {
             return null;
         }
-        return new UltimasMovimentacoesDTO(movimentacao.getId(), movimentacao.getData(), movimentacao.getMovimento());
+        return new UltimasMovimentacoesDTO(
+                movimentacao.getId(),
+                movimentacao.getData(),
+                movimentacao.getMovimento(),
+                movimentacao.getProcesso().getId()
+        );
     }
 
     public Integer getId() {
@@ -49,5 +58,13 @@ public class UltimasMovimentacoesDTO {
 
     public void setMovimento(String movimento) {
         this.movimento = movimento;
+    }
+
+    public Integer getIdProcesso() {
+        return idProcesso;
+    }
+
+    public void setIdProcesso(Integer idProcesso) {
+        this.idProcesso = idProcesso;
     }
 }
