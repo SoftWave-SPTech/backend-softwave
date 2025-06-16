@@ -122,7 +122,7 @@ public class ComentarioProcessoService {
                     .collect(Collectors.toList());
     }
 
-    public List<ComentarioProcessoDTO> listarComentariosPorProcessoId(@Valid Long processoId) {
+    public List<ComentarioProcessoDTO> listarComentariosPorProcessoId(@Valid Integer processoId) {
         return comentarioProcessoRepository.findByProcessoId(processoId)
                 .stream()
                 .map(comentario -> new ComentarioProcessoDTO(

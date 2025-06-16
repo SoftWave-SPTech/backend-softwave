@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import jakarta.validation.constraints.NotBlank;
 
 public class UltimasMovimentacoesDTO {
@@ -19,6 +20,18 @@ public class UltimasMovimentacoesDTO {
         this.data = data;
         this.movimento = movimento;
     }
+
+    public static UltimasMovimentacoesDTO fromEntity(UltimasMovimentacoes entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new UltimasMovimentacoesDTO(
+                entity.getId(),
+                entity.getData(),
+                entity.getMovimento()
+        );
+    }
+
 
     public static UltimasMovimentacoesDTO toDTO(UltimasMovimentacoesDTO movimentacao) {
         if (movimentacao == null) {

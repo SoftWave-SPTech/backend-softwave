@@ -29,6 +29,8 @@ public interface ProcessoRepository extends JpaRepository<Processo, Integer> {
     @Query("SELECT COUNT(p) FROM Processo p" )
     Integer quantidadeProcessos();
 
+    List<Processo> findByUsuariosId(Integer id);
+
 
 //    List<Processo> findByUsuario(Usuario usuario);
 

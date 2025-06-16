@@ -36,6 +36,7 @@ public class AdvogadoFisicoService {
         }
             advogadoFisico.setRole(Role.ROLE_ADVOGADO);
             advogadoFisico.setAtivo(false);
+            advogadoFisico.setStatusUsuario(true);
             return   advogadoFisicoRepository.save(advogadoFisico);
     }
 

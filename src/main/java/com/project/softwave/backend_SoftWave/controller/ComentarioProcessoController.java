@@ -126,7 +126,7 @@ public class ComentarioProcessoController {
     })
     @GetMapping("/buscar-por-proceso/{processoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ComentarioProcessoDTO>> listarComentariosPorProcessoId(@Valid @PathVariable Long processoId) {
+    public ResponseEntity<List<ComentarioProcessoDTO>> listarComentariosPorProcessoId(@Valid @PathVariable Integer processoId) {
         List<ComentarioProcessoDTO> comentarios = comentarioProcessoService.listarComentariosPorProcessoId(processoId);
         return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
     }

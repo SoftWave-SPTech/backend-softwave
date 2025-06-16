@@ -11,5 +11,7 @@ public interface ComentarioProcessoRepository extends JpaRepository<ComentarioPr
 
     List<ComentarioProcesso> findByUltimaMovimentacaoId(Integer ultimaMovimentacaoId);
 
-    List<ComentarioProcesso> findByProcessoId(Long processoId);
+    List<ComentarioProcesso> findByProcessoId(Integer processoId);
+
+    ComentarioProcesso findFirstByProcessoIdOrderByDataCriacaoDesc(Integer processoId);
 }

@@ -1,14 +1,15 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdClienteInativoAndAtivo;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioSenhaDto;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioTokenDTO;
+import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
+import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.*;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
+import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -53,6 +54,12 @@ public class UsuarioService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private ProcessoService processoService;
+
+    @Autowired
+    private DocumentoPessoalRepository documentoPessoalRepository;
 
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
@@ -202,5 +209,81 @@ public class UsuarioService {
         }else{
             return 0;
         }
+    }
+
+    public List<UsuarioProcessosDTO> listarUsuariosEProcessos(){
+
+        List<Usuario> todos = usuarioRepository.findAll();
+
+
+        List<UsuarioProcessosDTO> usuarios = todos.stream()
+                .map(UsuarioProcessosDTO::new)
+                .toList();
+
+        for (UsuarioProcessosDTO usuarioDaVez : usuarios){
+            usuarioDaVez.setProcesos(processoService.listarProcessoPorIdUsuario(usuarioDaVez.getId()));
+        }
+
+        return  usuarios;
+    }
+
+    public UsuarioDocumentosDTO buscarUsuarioComDocumentos(Integer idUsuario) {
+        // 🔍 Buscar o usuário no banco
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + idUsuario));
+
+        // 🔗 Buscar os documentos do usuário
+        List<DocumentoPessoal> documentos = documentoPessoalRepository.findByFkUsuarioId(idUsuario);
+
+        // 🔄 Mapear documentos para DTO
+        List<DocumentoPessoalDTO> documentosDTO = documentos.stream()
+                .map(doc -> new DocumentoPessoalDTO(doc.getId(), doc.getNomeArquivo(), doc.getUrlArquivo()))
+                .toList();
+
+        // 🧠 Montar o DTO do usuário
+        String nome;
+        String nomeFantasia = null;
+
+        if (usuario instanceof UsuarioFisico usuarioFisico) {
+            nome = usuarioFisico.getNome();
+        } else if (usuario instanceof UsuarioJuridico usuarioJuridico) {
+            nome = usuarioJuridico.getRepresentante();
+            nomeFantasia = usuarioJuridico.getNomeFantasia(); // opcional, se quiser trazer
+        } else {
+            nome = null;
+        }
+
+        return new UsuarioDocumentosDTO(
+                usuario.getId(),
+                nome,
+                nomeFantasia,
+                usuario.getAtivo(),
+                usuario.getTelefone(),
+                usuario.getEmail(),
+                usuario.getFoto(),
+                documentosDTO
+        );
+    }
+
+    public void atualizarRoleUsuario(Integer id, Integer role){
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+
+        if(role == 2){
+            usuario.setRole(Role.ROLE_ADMIN);
+        }else if(role == 1){
+            usuario.setRole(Role.ROLE_ADVOGADO);
+        }
+
+        usuarioRepository.save(usuario);
+    }
+
+    public void atualizarStatusUsuario(Integer id){
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+
+        usuario.setStatusUsuario(!usuario.getStatusUsuario());
+
+        usuarioRepository.save(usuario);
     }
 }

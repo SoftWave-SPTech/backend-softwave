@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDT
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
+import com.project.softwave.backend_SoftWave.dto.ProcessoCompletoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/processos")
@@ -63,15 +66,19 @@ public class ProcessoController {
     }
 
     @GetMapping("/usuario-id/{id}")
-    public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorIdUsuario(@PathVariable Integer id) {
+    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
         try {
-            Processo processo = processoService.listarProcessoPorIdUsuario(id);
-            ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
-            return ResponseEntity.ok(processoDTO);
+            List<ProcessoSimplesDTO> processosDoUsuario = processoService.listarProcessoPorIdUsuario(id);
+            return ResponseEntity.ok(processosDoUsuario);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
     //Atualizar Processo
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProcessoCompletoDTO> buscarProcessoPorId(@PathVariable Integer id){
+        return ResponseEntity.status(200).body(processoService.buscarProcessoPorId(id));
+    }
 }
