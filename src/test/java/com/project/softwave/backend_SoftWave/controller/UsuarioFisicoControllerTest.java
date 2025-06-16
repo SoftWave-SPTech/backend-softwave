@@ -42,6 +42,7 @@ class UsuarioFisicoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @SuppressWarnings("removal")
     @MockBean
     private UsuarioFisicoService usuarioFisicoService;
 

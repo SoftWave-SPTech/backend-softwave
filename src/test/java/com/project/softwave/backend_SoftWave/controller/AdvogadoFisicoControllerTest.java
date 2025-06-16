@@ -26,6 +26,7 @@ class AdvogadoFisicoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @SuppressWarnings("removal")
     @MockBean
     private AdvogadoFisicoService advogadoFisicoService;
 
@@ -121,9 +122,9 @@ class AdvogadoFisicoControllerTest {
     }
 
     @Test
-    void cadastrarAdvogado_ComOABNegativa_DeveRetornar400() throws Exception {
+    void cadastrarAdvogado_ComOABMaiorQue6Digitos_DeveRetornar400() throws Exception {
         AdvogadoFisicoRequestDTO requestDTO = criarRequestValido();
-        requestDTO.setOab(-123456);
+        requestDTO.setOab("1123456");
 
         mockMvc.perform(post("/advogados-fisicos")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -171,12 +172,12 @@ class AdvogadoFisicoControllerTest {
 
     private AdvogadoFisicoRequestDTO criarRequestValido() {
         AdvogadoFisicoRequestDTO requestDTO = new AdvogadoFisicoRequestDTO();
-        requestDTO.setOab(123456);
+        requestDTO.setOab("123456");
         requestDTO.setNome("João Carlos Mendes");
         requestDTO.setEmail("joao.mendes@advocacia.com");
         requestDTO.setSenha("SenhaSegura@2024");
         requestDTO.setCpf("90869258044");
-        requestDTO.setRg("12.345.678-9");
+        requestDTO.setRg("123456789");
         requestDTO.setCep("04567000");
         requestDTO.setLogradouro("Rua das Laranjeiras");
         requestDTO.setBairro("Jardim Paulista");

@@ -24,7 +24,7 @@ public class UsuarioJuridicoRequestDTO {
     private String razaoSocial;
 
     @Schema(description = "CNPJ da empresa", example = "17330474000102")
-    @CNPJ
+    @CNPJ(message = "O CNPJ informado não é válido")
     @NotBlank
     private String cnpj;
 
