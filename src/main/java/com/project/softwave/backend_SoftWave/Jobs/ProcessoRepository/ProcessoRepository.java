@@ -43,6 +43,9 @@ public interface ProcessoRepository extends JpaRepository<Processo, Integer> {
 
     List<Processo> findByUsuariosId(Integer id);
 
+    List<Processo> findAllByOrderByCreatedAtAsc();
+
+    List<Processo> findAllByOrderByUpdatedAtAsc();
 
 //    List<Processo> findByUsuario(Usuario usuario);
 

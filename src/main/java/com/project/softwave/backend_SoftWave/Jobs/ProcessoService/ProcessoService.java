@@ -243,6 +243,12 @@ public class ProcessoService {
         return dto;
     }
 
-
+    public List<Processo> listarProcessosOrdenadosPorDataCriacao() {
+        List<Processo> processos = processoRepository.findAllByOrderByCreatedAtAsc();
+        if (processos.isEmpty()) {
+            throw new EntidadeNaoEncontradaException("Nenhum processo encontrado.");
+        }
+        return processos;
+    }
 
 }

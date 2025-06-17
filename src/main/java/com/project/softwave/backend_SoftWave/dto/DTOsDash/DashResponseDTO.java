@@ -1,5 +1,7 @@
 package com.project.softwave.backend_SoftWave.dto.DTOsDash;
 
+import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
+
 import java.util.List;
 
 public class DashResponseDTO {
@@ -10,6 +12,7 @@ public class DashResponseDTO {
     private List<QtdClienteInativoAndAtivo> clientesInativosAndAtivos;
 //    private SetorComMaisProcessosDTO setorComMaisProcessos;
     private List<QtdPorSetorDTO> qtdProcessosPorSetor;
+    private List<ProcessoSimplesDTO> processosOrdenadosPorData;
     private Integer quantidadeProcessosTotais;
 
     public DashResponseDTO() {
@@ -77,5 +80,13 @@ public class DashResponseDTO {
 
     public void setQuantidadeProcessosTotais(Integer quantidadeProcessosTotais) {
         this.quantidadeProcessosTotais = quantidadeProcessosTotais;
+    }
+
+    public List<ProcessoSimplesDTO> getProcessosOrdenadosPorData() {
+        return processosOrdenadosPorData;
+    }
+
+    public void setProcessosOrdenadosPorData(List<ProcessoSimplesDTO> processosOrdenadosPorData) {
+        this.processosOrdenadosPorData = processosOrdenadosPorData;
     }
 }
