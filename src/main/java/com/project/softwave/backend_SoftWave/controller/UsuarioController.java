@@ -1,12 +1,11 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.AdvogadosResponseDTO;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioFotoPerfilDTO;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuariosResponseDTO;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.service.FotoPerfilService;
 import com.project.softwave.backend_SoftWave.service.PesquisaService;
+import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -24,6 +23,10 @@ public class UsuarioController {
 
     @Autowired
     private PesquisaService pesquisaService;
+
+    @Autowired
+    UsuarioService usuarioService;
+
     @Autowired
     private FotoPerfilService fotoPerfilService;
 
@@ -36,6 +39,13 @@ public class UsuarioController {
         List<AdvogadosResponseDTO> advogados = pesquisaService.listarAdvogados();
 
         return ResponseEntity.status(200).body(advogados);
+    }
+
+    @GetMapping("/listar-usarios-e-procesos")
+    public ResponseEntity<List<UsuarioProcessosDTO>> listarUsuariosEProcessos() {
+        List<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos();
+
+        return ResponseEntity.status(200).body(listaUsuarios);
     }
 
     @Operation(
@@ -83,4 +93,27 @@ public class UsuarioController {
         return ResponseEntity.status(200).body(fotoPerfilService.buscarPorId(id));
     }
 
+    @PutMapping("atualizar-role/{id}/{role}")
+    public ResponseEntity<String> atualizarRole(
+            @PathVariable Integer id,
+            @PathVariable Integer role
+    ){
+        usuarioService.atualizarRoleUsuario(id,role);
+        return ResponseEntity.status(200).build();
+    }
+
+    @PutMapping("atualizar-status/{id}")
+    public ResponseEntity<String> atualizarRole(
+            @PathVariable Integer id
+    ){
+        usuarioService.atualizarStatusUsuario(id);
+        return ResponseEntity.status(200).build();
+    }
+
+    @GetMapping("/usuario-documentos/{id}")
+    public ResponseEntity<UsuarioDocumentosDTO> trazerUsuarioDocumentos(
+            @PathVariable Integer id
+    ){
+        return ResponseEntity.status(200).body(usuarioService.buscarUsuarioComDocumentos(id));
+    }
 }

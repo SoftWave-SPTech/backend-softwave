@@ -1,18 +1,23 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoService;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDTO;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.UltimasMovimentacoesDTO;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovimentacoesRepository;
+import com.project.softwave.backend_SoftWave.dto.*;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovimentacoesRepository;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdPorSetorDTO;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.SetorComMaisProcessosDTO;
+import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +38,14 @@ public class ProcessoService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private UltimasMovimentacoesRepository movimentacoesRepository;
+
+    @Autowired
+    private ComentarioProcessoRepository comentarioProcessoRepository;
+
+    @Autowired
     private ProcessoRepository processoRepository;
+
     @Autowired
     private UltimasMovimentacoesRepository ultimasMovimentacoesRepository;
 
@@ -80,9 +93,17 @@ public class ProcessoService {
         processoRepository.save(processoAtual);
     }
 
-   public Processo listarProcessoPorId(Integer id) {
+    public Processo listarProcessoPorId(Integer id) {
         return processoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+    }
+
+    public List<ProcessoSimplesDTO> listarProcessoPorIdUsuario(Integer id) {
+        List<Processo>  listaProcesso = listarProcessosPorUsuarioId(id);
+
+        return listaProcesso.stream()
+                .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
+                .toList();
     }
 
 
@@ -183,6 +204,45 @@ public class ProcessoService {
 
         return setorComMaisProcesso;
     }
+
+    public ProcessoCompletoDTO buscarProcessoPorId(Integer id) {
+        // Busca o processo no banco
+        Processo processo = processoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Processo não encontrado com ID: " + id));
+
+        // Cria DTO básico com dados do processo e advogados
+        ProcessoCompletoDTO dto = new ProcessoCompletoDTO(processo);
+
+        // 🔸 Busca movimentações no banco
+        List<UltimasMovimentacoes> movimentacoes = movimentacoesRepository.findByProcessoId(processo.getId());
+
+        // 🔸 Converte movimentações para DTO
+        List<UltimasMovimentacoesDTO> movimentacoesDTO = movimentacoes.stream()
+                .map(UltimasMovimentacoesDTO::fromEntity) // método que você deve ter criado no DTO
+                .toList();
+
+        dto.setMovimentacoes(movimentacoesDTO);
+
+        // 🔸 Busca o último comentário associado ao processo
+        ComentarioProcesso comentario = comentarioProcessoRepository
+                .findFirstByProcessoIdOrderByDataCriacaoDesc(processo.getId());
+
+        // 🔸 Converte para DTO, se existir
+        if (comentario != null) {
+            ComentarioProcessoDTO comentarioDTO = new ComentarioProcessoDTO(
+                    comentario.getId(),
+                    comentario.getComentario(),
+                    comentario.getDataCriacao(),
+                    Integer.valueOf(comentario.getUltimaMovimentacao() != null ? comentario.getUltimaMovimentacao().getMovimento() : null)
+            );
+            dto.setComentario(comentarioDTO);
+        } else {
+            dto.setComentario(null);
+        }
+
+        return dto;
+    }
+
 
 
 }

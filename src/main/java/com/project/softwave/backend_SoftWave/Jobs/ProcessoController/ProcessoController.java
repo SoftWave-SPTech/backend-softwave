@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
 import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
+import com.project.softwave.backend_SoftWave.dto.ProcessoCompletoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
@@ -24,6 +25,8 @@ import java.util.List;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 import java.util.stream.Collectors;
 
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/processos")
@@ -70,7 +73,20 @@ public class ProcessoController {
         }
 
     }
-  
+    //===========================
+
+//    @GetMapping("/usuario-id/{id}")
+//    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
+//        try {
+//            List<ProcessoSimplesDTO> processosDoUsuario = processoService.listarProcessoPorIdUsuario(id);
+//            return ResponseEntity.ok(processosDoUsuario);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
+//
+
+    //===========================
   @Operation(summary = "Buscar processo por ID", method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
@@ -79,7 +95,7 @@ public class ProcessoController {
     @GetMapping("/{id}")
     public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorId(@PathVariable Integer id) {
         try {
-            Processo processo = processoService.listarProcessoPorId(id);
+                Processo processo = processoService.listarProcessoPorId(id);
             ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
             return ResponseEntity.ok(processoDTO);
         } catch (Exception e) {
@@ -145,5 +161,8 @@ public class ProcessoController {
     }
 
 
-
+    @GetMapping("visualizar-processo/{id}")
+    public ResponseEntity<ProcessoCompletoDTO> buscarProcessoPorId(@PathVariable Integer id){
+        return ResponseEntity.status(200).body(processoService.buscarProcessoPorId(id));
+    }
 }

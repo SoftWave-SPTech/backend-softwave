@@ -29,6 +29,7 @@ public class UsuarioFisicoService {
         }
         usuarioFisico.setRole(Role.ROLE_USUARIO);
         usuarioFisico.setAtivo(false);
+        usuarioFisico.setStatusUsuario(true);
         UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
         return usuarioFisicoCadastrado;
     }

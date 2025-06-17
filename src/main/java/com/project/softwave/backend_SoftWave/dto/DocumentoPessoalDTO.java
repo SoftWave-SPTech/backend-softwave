@@ -15,7 +15,7 @@ public class DocumentoPessoalDTO {
     private String urlArquivo;
 
     @NotNull
-//    private Integer fkCliente;
+    private Integer fkCliente;
 
     public static DocumentoPessoal toEntity(DocumentoPessoalDTO dto) {
         if (dto == null) {
@@ -26,6 +26,22 @@ public class DocumentoPessoalDTO {
         documento.setUrlArquivo(dto.getUrlArquivo());
 //        documento.setFkCliente(dto.getFkCliente());
         return documento;
+    }
+
+    public DocumentoPessoalDTO(Integer id, String nomeArquivo, String urlArquivo, Integer fkCliente) {
+        this.id = id;
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+        this.fkCliente = fkCliente;
+    }
+
+    public DocumentoPessoalDTO(Integer id, String nomeArquivo, String urlArquivo) {
+        this.id = id;
+        this.nomeArquivo = nomeArquivo;
+        this.urlArquivo = urlArquivo;
+    }
+
+    public DocumentoPessoalDTO() {
     }
 
     public static DocumentoPessoalDTO toResponseDto(DocumentoPessoal documento) {
@@ -65,12 +81,12 @@ public class DocumentoPessoalDTO {
         this.nomeArquivo = nomeArquivo;
     }
 
-    //
-//    public Integer getFkCliente() {
-//        return fkCliente;
-//    }
-//
-//    public void setFkCliente(Integer fkCliente) {
-//        this.fkCliente = fkCliente;
-//    }
+
+    public Integer getFkCliente() {
+        return fkCliente;
+    }
+
+    public void setFkCliente(Integer fkCliente) {
+        this.fkCliente = fkCliente;
+    }
 }

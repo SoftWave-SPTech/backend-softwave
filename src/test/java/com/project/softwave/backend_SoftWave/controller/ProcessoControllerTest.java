@@ -95,30 +95,6 @@ class ProcessoControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test
-    void listarProcessoPorIdUsuario_ComUsuarioExistente_DeveRetornar200() throws Exception {
-        List<Processo> processos = Arrays.asList(criarProcessoValido());
-        List<ProcessoSimplesDTO> dtos = processos.stream()
-                .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
-                .toList();
-        
-        when(processoService.listarProcessoPorIdUsuario(1)).thenReturn(processos);
-
-        mockMvc.perform(get("/processos/usuario-id/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].numeroProcesso").value("0000123-50.2025.8.26.0542"));
-    }
-
-    @Test
-    void listarProcessoPorIdUsuario_ComUsuarioInexistente_DeveRetornar404() throws Exception {
-        when(processoService.listarProcessoPorIdUsuario(999))
-                .thenThrow(new EntidadeNaoEncontradaException("Usuário não encontrado"));
-
-        mockMvc.perform(get("/processos/usuario-id/999"))
-                .andExpect(status().isNotFound());
-    }
-
     private CadastroProcessoDTO criarRequestValido() {
         CadastroProcessoDTO dto = new CadastroProcessoDTO();
         dto.setNumeroProcesso("0000123-50.2025.8.26.0542");

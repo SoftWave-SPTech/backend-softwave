@@ -24,6 +24,22 @@ public class UltimasMovimentacoesDTO {
         this.idProcesso = idProcesso;
     }
 
+
+
+
+    public static UltimasMovimentacoesDTO fromEntity(UltimasMovimentacoes entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new UltimasMovimentacoesDTO(
+                entity.getId(),
+                entity.getData(),
+                entity.getMovimento(),
+                entity.getProcesso().getId()
+        );
+    }
+
+
     public static UltimasMovimentacoesDTO toDTO(UltimasMovimentacoes movimentacao) {
         if (movimentacao == null) {
             return null;

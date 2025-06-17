@@ -41,6 +41,8 @@ public interface ProcessoRepository extends JpaRepository<Processo, Integer> {
 """)
     List<Usuario> findClientesPorAdvogado(@Param("advogadoId") Integer advogadoId);
 
+    List<Processo> findByUsuariosId(Integer id);
+
 
 //    List<Processo> findByUsuario(Usuario usuario);
 
