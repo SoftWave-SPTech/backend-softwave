@@ -96,8 +96,8 @@ class AuthControllerTest {
     void cadastrarSenha_ComDadosValidos_DeveRetornar200() throws Exception {
         UsuarioSenhaDto senhaDto = new UsuarioSenhaDto();
         senhaDto.setEmail("teste@email.com");
-        senhaDto.setNovaSenha("novaSenha@123");
-        senhaDto.setNovaSenhaConfirma("novaSenha@123");
+        senhaDto.setSenha("novaSenha@123");
+        senhaDto.setConfirmaSenha("novaSenha@123");
         
         doNothing().when(usuarioService).cadastrarSenha(any(UsuarioSenhaDto.class));
 

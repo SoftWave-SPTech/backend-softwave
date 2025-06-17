@@ -117,8 +117,8 @@ public class UsuarioService {
     @Transactional
     public void cadastrarSenha(UsuarioSenhaDto usuarioSenhaDto) {
         String email = usuarioSenhaDto.getEmail();
-        String senha = usuarioSenhaDto.getNovaSenha();
-        String confirmaSenha = usuarioSenhaDto.getNovaSenhaConfirma();
+        String senha = usuarioSenhaDto.getSenha();
+        String confirmaSenha = usuarioSenhaDto.getConfirmaSenha();
 
         if (senha == null || confirmaSenha == null) {
             throw new ResponseStatusException(400, "Senha e confirmação de senha não podem ser nulas", null);

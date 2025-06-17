@@ -17,19 +17,35 @@ public class UsuarioSenhaDto {
     @NotBlank(message = "A nova senha é obrigatória")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
             message = "A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais")
-    private String novaSenha;
+    private String senha;
 
     @Schema(description = "Confirmação da nova senha", example = "NovaSenha@123")
     @NotBlank(message = "A confirmação da nova senha é obrigatória")
-    private String novaSenhaConfirma;
+    private String confirmaSenha;
 
     public UsuarioSenhaDto() {
     }
 
-    public UsuarioSenhaDto(String email, String novaSenha, String novaSenhaConfirma) {
+    public UsuarioSenhaDto(String email, String senha, String confirmaSenha) {
         this.email = email;
-        this.novaSenha = novaSenha;
-        this.novaSenhaConfirma = novaSenhaConfirma;
+        this.senha = senha;
+        this.confirmaSenha = confirmaSenha;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public String getConfirmaSenha() {
+        return confirmaSenha;
+    }
+
+    public void setConfirmaSenha(String confirmaSenha) {
+        this.confirmaSenha = confirmaSenha;
     }
 
     public String getEmail() {
@@ -40,19 +56,4 @@ public class UsuarioSenhaDto {
         this.email = email;
     }
 
-    public String getNovaSenha() {
-        return novaSenha;
-    }
-
-    public void setNovaSenha(String novaSenha) {
-        this.novaSenha = novaSenha;
-    }
-
-    public String getNovaSenhaConfirma() {
-        return novaSenhaConfirma;
-    }
-
-    public void setNovaSenhaConfirma(String novaSenhaConfirma) {
-        this.novaSenhaConfirma = novaSenhaConfirma;
-    }
 }
