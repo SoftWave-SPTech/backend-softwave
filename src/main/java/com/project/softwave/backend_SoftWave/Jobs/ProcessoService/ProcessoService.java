@@ -233,7 +233,8 @@ public class ProcessoService {
                     comentario.getId(),
                     comentario.getComentario(),
                     comentario.getDataCriacao(),
-                    Integer.valueOf(comentario.getUltimaMovimentacao() != null ? comentario.getUltimaMovimentacao().getMovimento() : null)
+                    comentario.getProcesso().getId().longValue(),
+                    comentario.getUsuario().getId()
             );
             dto.setComentario(comentarioDTO);
         } else {
