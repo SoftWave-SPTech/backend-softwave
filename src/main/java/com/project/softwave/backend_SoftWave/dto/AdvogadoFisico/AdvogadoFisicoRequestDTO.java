@@ -2,19 +2,17 @@ package com.project.softwave.backend_SoftWave.dto.AdvogadoFisico;
 
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.br.CPF;
 
 @Schema(description = "DTO para cadastro de advogado físico")
 public class AdvogadoFisicoRequestDTO{
 
     @NotNull
-    @Positive
-    @Schema(description = "Número da OAB", example = "123456")
-    private Integer oab;
+    @Size(min = 6, max = 6, message = "O número da OAB deve ter exatamente 6 dígitos")
+    @Pattern(regexp = "\\d+", message = "O número da OAB deve conter apenas números")
+    @Schema(description = "Número da OAB", example = "532436")
+    private String oab;
 
     @NotBlank
     @Schema(description = "Nome completo do advogado", example = "João Carlos Mendes")
@@ -28,7 +26,7 @@ public class AdvogadoFisicoRequestDTO{
     @Schema(description = "Senha de acesso ao sistema", example = "SenhaSegura@2024")
     private String senha;
 
-    @CPF
+    @CPF(message= "O CPF informado não é válido")
     @Schema(description = "CPF do advogado", example = "90869258044")
     private String cpf;
 
@@ -66,7 +64,7 @@ public class AdvogadoFisicoRequestDTO{
     public AdvogadoFisicoRequestDTO() {
     }
 
-    public AdvogadoFisicoRequestDTO(Integer oab, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String numero, String telefone) {
+    public AdvogadoFisicoRequestDTO(String oab, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String numero, String telefone) {
         this.oab = oab;
         this.nome = nome;
         this.email = email;
@@ -92,7 +90,7 @@ public class AdvogadoFisicoRequestDTO{
         advogadoFisico.setSenha(dto.getSenha());
         advogadoFisico.setCpf(dto.getCpf());
         advogadoFisico.setRg(dto.getRg());
-        advogadoFisico.setOab(dto.getOab());
+        advogadoFisico.setOab(Integer.parseInt(dto.getOab()));
         advogadoFisico.setBairro(dto.getBairro());
         advogadoFisico.setCidade(dto.getCidade());
         advogadoFisico.setTelefone(dto.getTelefone());
@@ -114,11 +112,11 @@ public class AdvogadoFisicoRequestDTO{
         this.numero = numero;
     }
 
-    public Integer getOab() {
+    public String getOab() {
         return oab;
     }
 
-    public void setOab(Integer oab) {
+    public void setOab(String oab) {
         this.oab = oab;
     }
 

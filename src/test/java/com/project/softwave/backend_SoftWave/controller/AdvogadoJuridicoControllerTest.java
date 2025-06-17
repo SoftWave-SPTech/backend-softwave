@@ -2,10 +2,13 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico.AdvogadoJuridicoRequestDTO;
 import com.project.softwave.backend_SoftWave.dto.AdvogadoJuridico.AdvogadoJuridicoResponseDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.service.AdvogadoJuridicoService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,8 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -29,6 +35,7 @@ class AdvogadoJuridicoControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @SuppressWarnings("removal")
     @MockBean
     private AdvogadoJuridicoService service;
 
@@ -82,9 +89,9 @@ class AdvogadoJuridicoControllerTest {
     }
 
     @Test
-    void cadastrar_OABNegativa_DeveRetornar400() throws Exception {
+    void cadastrar_OABMenor6Digitos_DeveRetornar400() throws Exception {
         AdvogadoJuridicoRequestDTO request = criarRequestValido();
-        request.setOab(-123);
+        request.setOab("3123");
 
         mockMvc.perform(post("/advogados-juridicos")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -117,10 +124,81 @@ class AdvogadoJuridicoControllerTest {
                 .andExpect(status().isConflict());
     }
 
+    @Test
+    void listar_ComAdvogadosExistentes_DeveRetornar200() throws Exception {
+        List<AdvogadoJuridico> advogados = List.of(criarAdvogadoValido());
+        when(service.listar()).thenReturn(advogados);
+
+        mockMvc.perform(get("/advogados-juridicos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nomeFantasia").value("Advocacia Pereira & Associados"))
+                .andExpect(jsonPath("$[0].email").value("advocacia.exemplo@empresa.com"))
+                .andExpect(jsonPath("$[0].oab").value(567839));
+    }
+
+    @Test
+    void listar_SemAdvogados_DeveRetornar204() throws Exception {
+        when(service.listar())
+                .thenThrow(new EntidadeNaoEncontradaException("Nenhum advogado jurídico encontrado."));
+
+        mockMvc.perform(get("/advogados-juridicos"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void atualizar_ComDadosValidos_DeveRetornar200() throws Exception {
+        UsuarioJuridicoAtualizacaoDTO dto = criarAtualizacaoValida();
+        AdvogadoJuridico advogadoExistente = criarAdvogadoValido();
+        AdvogadoJuridico advogadoAtualizado = UsuarioJuridicoAtualizacaoDTO.toEntityAdvogado(dto,advogadoExistente);
+        advogadoAtualizado.setId(1);
+
+        when(service.atualizar(any(Integer.class), any(UsuarioJuridicoAtualizacaoDTO.class)))
+                .thenReturn(advogadoAtualizado);
+
+        mockMvc.perform(put("/advogados-juridicos/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.nomeFantasia").value(dto.getNomeFantasia()))
+                .andExpect(jsonPath("$.email").value(dto.getEmail()));
+    }
+
+    @Test
+    void atualizar_ComIdInexistente_DeveRetornar404() throws Exception {
+        UsuarioJuridicoAtualizacaoDTO dto = criarAtualizacaoValida();
+
+        when(service.atualizar(any(Integer.class), any(UsuarioJuridicoAtualizacaoDTO.class)))
+                .thenThrow(new EntidadeNaoEncontradaException("Advogado não encontrado com id: 999"));
+
+        mockMvc.perform(put("/advogados-juridicos/999")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deletar_ComIdExistente_DeveRetornar200() throws Exception {
+        when(service.deletar(any(Integer.class))).thenReturn(true);
+
+        mockMvc.perform(delete("/advogados-juridicos/1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deletar_ComIdInexistente_DeveRetornar404() throws Exception {
+        when(service.deletar(any(Integer.class)))
+                .thenThrow(new EntidadeNaoEncontradaException("Advogado jurídico não encontrado"));
+
+        mockMvc.perform(delete("/advogados-juridicos/999"))
+                .andExpect(status().isNotFound());
+    }
+
     // Métodos auxiliares
     private AdvogadoJuridicoRequestDTO criarRequestValido() {
         AdvogadoJuridicoRequestDTO request = new AdvogadoJuridicoRequestDTO();
-        request.setOab(567839);
+        request.setOab("567839");
         request.setEmail("advocacia.exemplo@empresa.com");
         request.setSenha("SenhaForte@123");
         request.setNomeFantasia("Advocacia Pereira & Associados");
@@ -154,5 +232,42 @@ class AdvogadoJuridicoControllerTest {
         response.setTelefone("(11) 97654-3210");
         response.setRepresentante("João Carlos");
         return response;
+    }
+
+    private AdvogadoJuridico criarAdvogadoValido() {
+        AdvogadoJuridico advogado = new AdvogadoJuridico();
+        advogado.setId(1);
+        advogado.setOab(567839);
+        advogado.setEmail("advocacia.exemplo@empresa.com");
+        advogado.setSenha("SenhaForte@123");
+        advogado.setNomeFantasia("Advocacia Pereira & Associados");
+        advogado.setRazaoSocial("Pereira e Associados Sociedade de Advogados LTDA");
+        advogado.setCnpj("87504726000140");
+        advogado.setCep("01310930");
+        advogado.setLogradouro("Avenida Paulista");
+        advogado.setBairro("Bela Vista");
+        advogado.setCidade("São Paulo");
+        advogado.setComplemento("Sala 801, Torre Oeste");
+        advogado.setNumero("123");
+        advogado.setTelefone("(11) 97654-3210");
+        advogado.setRepresentante("João Carlos");
+        return advogado;
+    }
+
+    private UsuarioJuridicoAtualizacaoDTO criarAtualizacaoValida() {
+        UsuarioJuridicoAtualizacaoDTO dto = new UsuarioJuridicoAtualizacaoDTO();
+        dto.setId(1);
+        dto.setNomeFantasia("Advocacia Pereira & Associados Atualizada");
+        dto.setEmail("advocacia.atualizada@empresa.com");
+        dto.setRazaoSocial("Pereira e Associados Sociedade de Advogados LTDA - Atualizada");
+        dto.setCep("01310930");
+        dto.setLogradouro("Avenida Paulista");
+        dto.setBairro("Bela Vista");
+        dto.setCidade("São Paulo");
+        dto.setComplemento("Sala 801, Torre Oeste");
+        dto.setNumero("123");
+        dto.setTelefone("(11) 97654-3210");
+        dto.setRepresentante("João Carlos");
+        return dto;
     }
 }

@@ -16,6 +16,7 @@ public class ClienteComProcessosResponseDTO {
     private String email;
     private String telefone;
     private String tipoUsuario;
+    private Boolean ativo;
     private List<ProcessoSimplesDTO> processos;
 
     public ClienteComProcessosResponseDTO() {
@@ -36,6 +37,7 @@ public class ClienteComProcessosResponseDTO {
         dto.setEmail(usuario.getEmail());
         dto.setTelefone(usuario.getTelefone());
         dto.setTipoUsuario(usuario.getClass().getSimpleName());
+        dto.setAtivo(usuario.getAtivo());
         List<Processo> processosList = new ArrayList<>();
         processosList.addAll(usuario.getProcessos());
         List<ProcessoSimplesDTO> processosDTO = new ArrayList<>();
@@ -55,6 +57,33 @@ public class ClienteComProcessosResponseDTO {
         }
         return dto;
     }
+
+    public static ClienteComProcessosResponseDTO toClienteComProcessosVinculadosAdvogadoResponseDTO(Usuario usuario, Integer advogadoId) {
+        ClienteComProcessosResponseDTO dto = new ClienteComProcessosResponseDTO();
+        dto.setId(usuario.getId());
+        dto.setEmail(usuario.getEmail());
+        dto.setTelefone(usuario.getTelefone());
+        dto.setTipoUsuario(usuario.getClass().getSimpleName());
+        dto.setAtivo(usuario.getAtivo());
+
+        List<ProcessoSimplesDTO> processosDTO = usuario.getProcessos().stream()
+                .filter(p -> p.getUsuarios().stream().anyMatch(u -> u.getId().equals(advogadoId))) // só processos com o advogado
+                .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
+                .toList();
+
+        dto.setProcessos(processosDTO);
+
+        if (usuario instanceof UsuarioFisico fisico) {
+            dto.setNome(fisico.getNome());
+            dto.setNomeFantasia(null);
+        } else if (usuario instanceof UsuarioJuridico juridico) {
+            dto.setNome(null);
+            dto.setNomeFantasia(juridico.getNomeFantasia());
+        }
+
+        return dto;
+    }
+
 
     public Integer getId() {
         return id;
@@ -110,5 +139,13 @@ public class ClienteComProcessosResponseDTO {
 
     public void setNomeFantasia(String nomeFantasia) {
         this.nomeFantasia = nomeFantasia;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 }

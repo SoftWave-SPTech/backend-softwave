@@ -18,7 +18,7 @@ public class DashboardController {
     @Autowired
     private DashboardService service;
 
-    @Operation(summary = "Traz os dados da dashboard", method = "GET")
+    @Operation(summary = "Retorna os dados da dashboard", method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Dados retornados com sucesso, dados tratados para retornarem zerados caso não encontrados")
     })

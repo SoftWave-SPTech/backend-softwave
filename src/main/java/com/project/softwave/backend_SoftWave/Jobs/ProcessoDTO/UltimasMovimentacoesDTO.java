@@ -12,14 +12,20 @@ public class UltimasMovimentacoesDTO {
     @NotBlank(message = "O movimento não pode estar em branco")
     private String movimento;
 
+    private Integer idProcesso;
+
     public UltimasMovimentacoesDTO() {
     }
 
-    public UltimasMovimentacoesDTO(Integer id, String data, String movimento) {
+    public UltimasMovimentacoesDTO(Integer id, String data, String movimento, Integer idProcesso) {
         this.id = id;
         this.data = data;
         this.movimento = movimento;
+        this.idProcesso = idProcesso;
     }
+
+
+
 
     public static UltimasMovimentacoesDTO fromEntity(UltimasMovimentacoes entity) {
         if (entity == null) {
@@ -28,16 +34,22 @@ public class UltimasMovimentacoesDTO {
         return new UltimasMovimentacoesDTO(
                 entity.getId(),
                 entity.getData(),
-                entity.getMovimento()
+                entity.getMovimento(),
+                entity.getProcesso().getId()
         );
     }
 
 
-    public static UltimasMovimentacoesDTO toDTO(UltimasMovimentacoesDTO movimentacao) {
+    public static UltimasMovimentacoesDTO toDTO(UltimasMovimentacoes movimentacao) {
         if (movimentacao == null) {
             return null;
         }
-        return new UltimasMovimentacoesDTO(movimentacao.getId(), movimentacao.getData(), movimentacao.getMovimento());
+        return new UltimasMovimentacoesDTO(
+                movimentacao.getId(),
+                movimentacao.getData(),
+                movimentacao.getMovimento(),
+                movimentacao.getProcesso().getId()
+        );
     }
 
     public Integer getId() {
@@ -62,5 +74,13 @@ public class UltimasMovimentacoesDTO {
 
     public void setMovimento(String movimento) {
         this.movimento = movimento;
+    }
+
+    public Integer getIdProcesso() {
+        return idProcesso;
+    }
+
+    public void setIdProcesso(Integer idProcesso) {
+        this.idProcesso = idProcesso;
     }
 }

@@ -20,6 +20,8 @@ public class ComentarioProcessoDTO {
     @NotNull
     private LocalDateTime dataCriacao;
 
+    private Integer usuarioID;
+
     private Integer ultimaMovimentacaoID;
 
     private Long processoID;
@@ -34,13 +36,21 @@ public class ComentarioProcessoDTO {
         this.ultimaMovimentacaoID = ultimaMovimentacaoID;
     }
 
-    public ComentarioProcessoDTO(Long id, String comentario, LocalDateTime dataCriacao, Long processoId) {
+    public ComentarioProcessoDTO(Long id, String comentario, LocalDateTime dataCriacao, Integer ultimaMovimentacaoID, Integer usuarioID) {
+        this.id = id;
+        this.comentario = comentario;
+        this.dataCriacao = dataCriacao;
+        this.ultimaMovimentacaoID = ultimaMovimentacaoID;
+        this.usuarioID = usuarioID;
+    }
+
+    public ComentarioProcessoDTO(Long id, String comentario, LocalDateTime dataCriacao, Long processoId, Integer usuarioId) {
         this.id = id;
         this.comentario = comentario;
         this.dataCriacao = dataCriacao;
         this.processoID = processoId;
+        this.usuarioID = usuarioId;
     }
-
 
 
     public Long getId() {
@@ -50,7 +60,6 @@ public class ComentarioProcessoDTO {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public String getComentario() {
         return comentario;
@@ -80,7 +89,19 @@ public class ComentarioProcessoDTO {
         return processoID;
     }
 
-    public void setProcessoID() {
+    public void setProcessoID(Long processoID) {
         this.processoID = processoID;
     }
+
+    public Integer getUsuarioID() {
+        return usuarioID;
+    }
+
+    public void setUsuarioID(Integer usuarioID) {
+        this.usuarioID = usuarioID;
+    }
+
+
+
+
 }

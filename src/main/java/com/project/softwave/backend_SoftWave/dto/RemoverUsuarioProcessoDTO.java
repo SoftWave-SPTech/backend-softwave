@@ -10,6 +10,14 @@ public class RemoverUsuarioProcessoDTO {
     @Schema(description = "ID do usuário", example = "42")
     private Integer usuarioId;
 
+    public RemoverUsuarioProcessoDTO() {
+    }
+
+    public RemoverUsuarioProcessoDTO(Integer processoId, Integer usuarioId) {
+        this.processoId = processoId;
+        this.usuarioId = usuarioId;
+    }
+
     public Integer getProcessoId() {
         return processoId;
     }

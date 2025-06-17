@@ -7,12 +7,18 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimenta
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovimentacoesRepository;
 import com.project.softwave.backend_SoftWave.dto.*;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovimentacoesRepository;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdPorSetorDTO;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.SetorComMaisProcessosDTO;
 import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
+import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
+import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
+import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
+import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
+import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 public class ProcessoService {
@@ -38,6 +45,12 @@ public class ProcessoService {
 
     @Autowired
     private ProcessoRepository processoRepository;
+
+    @Autowired
+    private UltimasMovimentacoesRepository ultimasMovimentacoesRepository;
+
+    @Autowired
+    private AnaliseProcessoRepository analiseProcessoRepository;
 
     public void vincularUsuariosAoProcesso(VincularUsuariosProcessoDTO dto) {
         Processo processo = processoRepository.findById(dto.getProcessoId())
@@ -80,21 +93,68 @@ public class ProcessoService {
         processoRepository.save(processoAtual);
     }
 
-    public List<ProcessoSimplesDTO> listarProcessoPorIdUsuario(Integer id) {
-        List<Processo> processos = processoRepository.findByUsuariosId(id);
-        List<ProcessoSimplesDTO> processosDoUsuario = new ArrayList<>();
-
-        for(Processo processoDaVez : processos){
-            ProcessoSimplesDTO auxiliar = new ProcessoSimplesDTO(
-                    processoDaVez.getId(),
-                    processoDaVez.getNumeroProcesso()
-            );
-
-            processosDoUsuario.add(auxiliar);
-
-        }
-        return processosDoUsuario;
+    public Processo listarProcessoPorId(Integer id) {
+        return processoRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
     }
+
+    public List<ProcessoSimplesDTO> listarProcessoPorIdUsuario(Integer id) {
+        List<Processo>  listaProcesso = listarProcessosPorUsuarioId(id);
+
+        return listaProcesso.stream()
+                .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
+                .toList();
+    }
+
+
+    public List<Processo> listarProcessosPorUsuarioId(Integer usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+
+        return processoRepository.findByUsuariosContaining(usuario);
+    }
+
+
+    public List<Processo> listarProcessos() {
+        List<Processo> processos = processoRepository.findAll();
+
+        if (processos.isEmpty()) {
+            throw new EntidadeNaoEncontradaException("Nenhum processo encontrado.");
+        }
+
+        return processos;
+    }
+
+    public Boolean deletarProcesso(Integer id) {
+        Optional<Processo> processoOptional = processoRepository.findById(id);
+        if (processoOptional.isPresent()) {
+            Processo processo = processoOptional.get();
+
+            // Buscar movimentações relacionadas ao processo
+            List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesRepository.findByProcesso(processo);
+
+            // Para cada movimentação, excluir primeiro a análise vinculada
+            for (UltimasMovimentacoes mov : movimentacoes) {
+                Optional<AnaliseProcesso> analise = analiseProcessoRepository.findByMovimentacoes(mov);
+                analise.ifPresent(analiseProcessoRepository::delete);
+            }
+            ultimasMovimentacoesRepository.deleteAll(movimentacoes);
+
+            // Desvincular usuários do processo
+            if (processo.getUsuarios() != null) {
+                for (Usuario usuario : processo.getUsuarios()) {
+                    usuario.getProcessos().remove(processo); // desvincula
+                }
+                processo.getUsuarios().clear(); // remove todos os vínculos do lado do processo
+            }
+            processoRepository.save(processo); // necessário para persistir desvinculação
+            processoRepository.deleteById(id);
+            return true;
+        } else {
+            throw new EntidadeNaoEncontradaException("Processo não encontrado");
+        }
+    }
+
 
     public Integer quantidadeProcessos(){
         Integer quantidadeProcessos = processoRepository.quantidadeProcessos();

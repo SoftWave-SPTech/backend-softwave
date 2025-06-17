@@ -2,6 +2,9 @@ package com.project.softwave.backend_SoftWave.entity;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,6 +14,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_usuario",
         discriminatorType = DiscriminatorType.STRING)
+@EntityListeners(AuditingEntityListener.class)
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +60,14 @@ public class Usuario {
 
     private LocalDateTime dataExpiracaoTokenRecuperacaoSenha;
     private LocalDateTime dataExpiracaoTokenPrimeiroAcesso;
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToMany
     @JoinTable(
@@ -297,5 +309,21 @@ public class Usuario {
 
     public void setDataExpiracaoTokenPrimeiroAcesso(LocalDateTime dataExpiracaoTokenPrimeiroAcesso) {
         this.dataExpiracaoTokenPrimeiroAcesso = dataExpiracaoTokenPrimeiroAcesso;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

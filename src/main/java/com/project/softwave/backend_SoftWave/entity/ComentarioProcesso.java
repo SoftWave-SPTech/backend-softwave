@@ -23,6 +23,27 @@ public class ComentarioProcesso {
     @ManyToOne
     private Processo processo;
 
+    @ManyToOne
+    private Usuario usuario;
+
+    public ComentarioProcesso() {}
+
+    public ComentarioProcesso(Long id, String comentario, LocalDateTime dataCriacao, UltimasMovimentacoes ultimaMovimentacao, Usuario usuario) {
+        this.id = id;
+        this.comentario = comentario;
+        this.dataCriacao = dataCriacao;
+        this.ultimaMovimentacao = ultimaMovimentacao;
+        this.usuario = usuario;
+    }
+
+    public ComentarioProcesso(Long id, String comentario, LocalDateTime dataCriacao, Processo processo, Usuario usuario) {
+        this.id = id;
+        this.comentario = comentario;
+        this.dataCriacao = dataCriacao;
+        this.processo = processo;
+        this.usuario = usuario;
+    }
+
     public Long getId() {
         return id;
     }
@@ -61,5 +82,13 @@ public class ComentarioProcesso {
 
     public void setProcesso(Processo processo) {
         this.processo = processo;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

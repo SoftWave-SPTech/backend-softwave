@@ -5,10 +5,14 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDT
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
+import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoCompletoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
+import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
+import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,6 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Collections;
+import java.util.List;
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+import java.util.stream.Collectors;
+
 
 import java.util.List;
 
@@ -64,20 +73,95 @@ public class ProcessoController {
         }
 
     }
+    //===========================
 
-    @GetMapping("/usuario-id/{id}")
-    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
+//    @GetMapping("/usuario-id/{id}")
+//    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
+//        try {
+//            List<ProcessoSimplesDTO> processosDoUsuario = processoService.listarProcessoPorIdUsuario(id);
+//            return ResponseEntity.ok(processosDoUsuario);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
+//
+
+    //===========================
+  @Operation(summary = "Buscar processo por ID", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Processo não encontrado."),
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorId(@PathVariable Integer id) {
         try {
-            List<ProcessoSimplesDTO> processosDoUsuario = processoService.listarProcessoPorIdUsuario(id);
-            return ResponseEntity.ok(processosDoUsuario);
+                Processo processo = processoService.listarProcessoPorId(id);
+            ProcessoSimplesDTO processoDTO = ProcessoSimplesDTO.toProcessoSimplesDTO(processo);
+            return ResponseEntity.ok(processoDTO);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    //Atualizar Processo
 
-    @GetMapping("/{id}")
+    @Operation(summary = "Buscar processo por ID do Usuário", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Processo não encontrado."),
+    })
+    @GetMapping("/usuario-id/{id}")
+    public ResponseEntity<List<ProcessoDTO>> listarProcessosPorUsuarioId(@PathVariable Integer id) {
+        try {
+            List<Processo> processos = processoService.listarProcessosPorUsuarioId(id);
+            List<ProcessoDTO> processoDtos = processos.stream()
+                    .map(ProcessoDTO::toResponseDto)
+                    .toList();
+            return ResponseEntity.ok(processoDtos);
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @Operation(summary = "Listar todos os processos", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Listagem de processos realizada com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Nenhum processo encontrado.")
+    })
+    @GetMapping
+    public ResponseEntity<List<ProcessoDTO>> listarProcessos(){
+        List<Processo> processos = processoService.listarProcessos();
+
+        List<ProcessoDTO> processoDtos = processos.stream()
+                .map(ProcessoDTO::toResponseDto)
+                .toList();
+
+        return ResponseEntity.status(200).body(processoDtos);
+    }
+
+
+    @Operation(summary = "Exclusão de um processo", method = "DELETE")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Exclusão do processo realizada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Processo não encontrado")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarProcesso(@PathVariable Integer id) {
+        try {
+            processoService.deletarProcesso(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    @GetMapping("visualizar-processo/{id}")
     public ResponseEntity<ProcessoCompletoDTO> buscarProcessoPorId(@PathVariable Integer id){
         return ResponseEntity.status(200).body(processoService.buscarProcessoPorId(id));
     }

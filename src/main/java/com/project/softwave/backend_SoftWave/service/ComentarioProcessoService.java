@@ -7,8 +7,10 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.UltimasMovi
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.UltimasMovimentacoesService;
 import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
+import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,17 +31,25 @@ public class ComentarioProcessoService {
     @Autowired
     private ProcessoRepository processoRepository;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public ComentarioProcessoDTO criarComentarioUltimaMovimentacao(ComentarioProcessoDTO dto) {
         if (dto.getUltimaMovimentacaoID() == null){
             throw new EntidadeNaoEncontradaException("ID da movimentação não pode ser nulo");
         }
+
         UltimasMovimentacoes ultimaMovimentacao = ultimasMovimentacoesRepository.findById(dto.getUltimaMovimentacaoID())
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Última movimentação não encontrada"));
+
+        Usuario usuarioAutor = usuarioRepository.findById(dto.getUsuarioID())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
 
         ComentarioProcesso comentario = new ComentarioProcesso();
         comentario.setComentario(dto.getComentario());
         comentario.setDataCriacao(dto.getDataCriacao());
         comentario.setUltimaMovimentacao(ultimaMovimentacao);
+        comentario.setUsuario(usuarioAutor);
 
         comentario = comentarioProcessoRepository.save(comentario);
         dto.setId(comentario.getId());
@@ -54,10 +64,14 @@ public class ComentarioProcessoService {
         Processo processo = processoRepository.findById( (dto.getProcessoID().intValue()))
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrada"));
 
+        Usuario usuarioAutor = usuarioRepository.findById(dto.getUsuarioID())
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+
         ComentarioProcesso comentario = new ComentarioProcesso();
         comentario.setComentario(dto.getComentario());
         comentario.setDataCriacao(dto.getDataCriacao());
         comentario.setProcesso(processo);
+        comentario.setUsuario(usuarioAutor);
 
         comentario = comentarioProcessoRepository.save(comentario);
         dto.setId(comentario.getId());
@@ -71,7 +85,8 @@ public class ComentarioProcessoService {
                         comentario.getId(),
                         comentario.getComentario(),
                         comentario.getDataCriacao(),
-                        comentario.getUltimaMovimentacao().getId()))
+                        comentario.getUltimaMovimentacao().getId())
+                        )
                 .collect(Collectors.toList());
     }
 
@@ -111,25 +126,25 @@ public class ComentarioProcessoService {
         comentarioProcessoRepository.deleteById(id);
     }
 
-    public List<ComentarioProcessoDTO> listarComentariosPorUltimaMovimentacaoId(Integer ultimaMovimentacaoId) {
+    public List<ComentarioProcesso> listarComentariosPorUltimaMovimentacaoId(Integer ultimaMovimentacaoId) {
             return comentarioProcessoRepository.findByUltimaMovimentacaoId(ultimaMovimentacaoId)
                     .stream()
-                    .map(comentario -> new ComentarioProcessoDTO(
-                            comentario.getId(),
+                    .map(comentario -> new ComentarioProcesso(comentario.getId(),
                             comentario.getComentario(),
                             comentario.getDataCriacao(),
-                            comentario.getUltimaMovimentacao().getId()))
+                            comentario.getUltimaMovimentacao(),
+                            comentario.getUsuario()))
                     .collect(Collectors.toList());
     }
 
-    public List<ComentarioProcessoDTO> listarComentariosPorProcessoId(@Valid Integer processoId) {
+    public List<ComentarioProcesso> listarComentariosPorProcessoId(Long processoId) {
         return comentarioProcessoRepository.findByProcessoId(processoId)
                 .stream()
-                .map(comentario -> new ComentarioProcessoDTO(
-                        comentario.getId(),
+                .map(comentario -> new ComentarioProcesso(comentario.getId(),
                         comentario.getComentario(),
                         comentario.getDataCriacao(),
-                        comentario.getProcesso().getId()))
+                        comentario.getProcesso(),
+                        comentario.getUsuario()))
                 .collect(Collectors.toList());
     }
 }

@@ -7,9 +7,11 @@ import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.*;
+import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
+import com.project.softwave.backend_SoftWave.exception.TokenExpiradoInvalidoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -70,6 +72,10 @@ public class UsuarioService {
         Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
 
+        if (!usuarioAutenticado.getAtivo()) {
+            throw new ResponseStatusException(403, "Usuário inativo", null);
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String tipoUsuario = usuarioAutenticado.getClass().getSimpleName();
@@ -92,14 +98,14 @@ public class UsuarioService {
 
     public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
         if (usuario.getEmail() == null || usuario.getSenha() == null) {
-            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
+            throw new LoginIncorretoException("Email e chave de acesso não podem ser nulos");
         }
 
         Optional<Usuario> possivelUsuario =
                 usuarioRepository.findByEmailEqualsAndSenhaEquals(
                             usuario.getEmail(),usuario.getSenha());
         if (possivelUsuario.isEmpty()) {
-            throw new LoginIncorretoException("Email ou senha inválidos");
+            throw new LoginIncorretoException("Email ou chave de acesso inválido");
         }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
@@ -111,8 +117,8 @@ public class UsuarioService {
     @Transactional
     public void cadastrarSenha(UsuarioSenhaDto usuarioSenhaDto) {
         String email = usuarioSenhaDto.getEmail();
-        String senha = usuarioSenhaDto.getSenha();
-        String confirmaSenha = usuarioSenhaDto.getConfirmaSenha();
+        String senha = usuarioSenhaDto.getNovaSenha();
+        String confirmaSenha = usuarioSenhaDto.getNovaSenhaConfirma();
 
         if (senha == null || confirmaSenha == null) {
             throw new ResponseStatusException(400, "Senha e confirmação de senha não podem ser nulas", null);
@@ -134,7 +140,7 @@ public class UsuarioService {
        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
         usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
-        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusHours(2));
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusMinutes(1));
         usuarioRepository.save(usuario);
 
         emailService.enviarEmailResetSenha(usuario.getEmail(), token);
@@ -143,18 +149,18 @@ public class UsuarioService {
     @Transactional
     public void resetarSenha(String token, String novaSenha, String novaSenhaConfirma) {
         Usuario usuario = usuarioRepository.findByTokenRecuperacaoSenha(token)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Token inválido"));
+                .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido"));
 
         if (novaSenha == null || novaSenhaConfirma == null) {
-            throw new ResponseStatusException(400, "Senha e confirmação de senha não podem ser nulas", null);
+            throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas");
         }
 
         if (!novaSenha.equals(novaSenhaConfirma)) {
-            throw new ResponseStatusException(400, "As senhas não coincidem", null);
+            throw new DadosInvalidosException("As senhas não coincidem");
         }
 
         if (LocalDateTime.now().isAfter(usuario.getDataExpiracaoTokenRecuperacaoSenha())) {
-            throw new EntidadeNaoEncontradaException("Token expirado");
+            throw new TokenExpiradoInvalidoException("Token expirado");
         }
 
         usuario.setSenha(passwordEncoder.encode(novaSenha));

@@ -1,6 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoDTO;
+import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoResponseDTO;
+import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
 import com.project.softwave.backend_SoftWave.service.ComentarioProcessoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -114,9 +117,10 @@ public class ComentarioProcessoController {
     })
     @GetMapping("/buscar-por-ultima-movimentacao/{ultimaMovimentacaoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ComentarioProcessoDTO>> listarComentariosPorUltimaMovimentacaoId(@Valid @PathVariable Integer ultimaMovimentacaoId) {
-        List<ComentarioProcessoDTO> comentarios = comentarioProcessoService.listarComentariosPorUltimaMovimentacaoId(ultimaMovimentacaoId);
-        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
+    public ResponseEntity<List<ComentarioProcessoResponseDTO>> listarComentariosPorUltimaMovimentacaoId(@Valid @PathVariable Integer ultimaMovimentacaoId) {
+        List<ComentarioProcesso> comentarios = comentarioProcessoService.listarComentariosPorUltimaMovimentacaoId(ultimaMovimentacaoId);
+        List<ComentarioProcessoResponseDTO> comentariosDTO = comentarios.stream().map(ComentarioProcessoResponseDTO::toResponseDTO).toList();
+        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentariosDTO);
     }
 
     @Operation(summary = "Listagem de comentarios por id processo", method = "DELETE")
@@ -126,8 +130,9 @@ public class ComentarioProcessoController {
     })
     @GetMapping("/buscar-por-proceso/{processoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ComentarioProcessoDTO>> listarComentariosPorProcessoId(@Valid @PathVariable Integer processoId) {
-        List<ComentarioProcessoDTO> comentarios = comentarioProcessoService.listarComentariosPorProcessoId(processoId);
-        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
+    public ResponseEntity<List<ComentarioProcessoResponseDTO>> listarComentariosPorProcessoId(@Valid @PathVariable Long processoId) {
+        List<ComentarioProcesso> comentarios = comentarioProcessoService.listarComentariosPorProcessoId(processoId);
+        List<ComentarioProcessoResponseDTO> comentariosDTO = comentarios.stream().map(ComentarioProcessoResponseDTO::toResponseDTO).toList();
+        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentariosDTO);
     }
 }
