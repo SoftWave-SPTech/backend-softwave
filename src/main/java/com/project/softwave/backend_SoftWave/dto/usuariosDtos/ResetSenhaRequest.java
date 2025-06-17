@@ -15,19 +15,19 @@ public class ResetSenhaRequest {
     @NotBlank(message = "A nova senha é obrigatória")
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
             message = "A senha deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais")
-    private String novaSenha;
+    private String senha;
 
     @Schema(description = "Confirmação da nova senha", example = "NovaSenha@123", required = true)
     @NotBlank(message = "A confirmação da nova senha é obrigatória")
-    private String novaSenhaConfirma;
+    private String confirmaSenha;
 
     public ResetSenhaRequest() {
     }
 
-    public ResetSenhaRequest(String token, String novaSenha, String novaSenhaConfirma) {
+    public ResetSenhaRequest(String token, String senha, String senhaConfirma) {
         this.token = token;
-        this.novaSenha = novaSenha;
-        this.novaSenhaConfirma = novaSenhaConfirma;
+        this.senha = senha;
+        this.confirmaSenha = senhaConfirma;
     }
 
     public String getToken() {
@@ -39,18 +39,18 @@ public class ResetSenhaRequest {
     }
 
     public String getNovaSenha() {
-        return novaSenha;
+        return senha;
     }
 
-    public void setNovaSenha(String novaSenha) {
-        this.novaSenha = novaSenha;
+    public void setNovaSenha(String senha) {
+        this.senha = senha;
     }
 
     public String getNovaSenhaConfirma() {
-        return novaSenhaConfirma;
+        return confirmaSenha;
     }
 
-    public void setNovaSenhaConfirma(String novaSenhaConfirma) {
-        this.novaSenhaConfirma = novaSenhaConfirma;
+    public void setNovaSenhaConfirma(String senhaConfirma) {
+        this.confirmaSenha = senhaConfirma;
     }
 }
