@@ -13,6 +13,8 @@ public class ComentarioProcesso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String comentario;
 
     private LocalDateTime dataCriacao;

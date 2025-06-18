@@ -2,6 +2,8 @@ package com.project.softwave.backend_SoftWave.dto;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 
+import java.time.LocalDateTime;
+
 public class ProcessoSimplesDTO {
 
     private Integer id;
@@ -22,8 +24,10 @@ public class ProcessoSimplesDTO {
     private String requerido;
     private String valor_acao;
     private String vara;
+    private LocalDateTime dataCriacao;
+    private LocalDateTime dataAtualizacao;
 
-    public ProcessoSimplesDTO(Integer id, String numeroProcesso, String area, String assunto, String autor, String classe, String controle, String descricao, String distribuicao, String executado, String foro, String indiciado, String juiz, double normalizado_valor_acao, String requerente, String requerido, String valor_acao, String vara) {
+    public ProcessoSimplesDTO(Integer id, String numeroProcesso, String area, String assunto, String autor, String classe, String controle, String descricao, String distribuicao, String executado, String foro, String indiciado, String juiz, double normalizado_valor_acao, String requerente, String requerido, String valor_acao, String vara, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.numeroProcesso = numeroProcesso;
         this.area = area;
@@ -42,6 +46,8 @@ public class ProcessoSimplesDTO {
         this.requerido = requerido;
         this.valor_acao = valor_acao;
         this.vara = vara;
+        this.dataCriacao = dataCriacao;
+        this.dataAtualizacao = dataAtualizacao;
     }
 
     public static ProcessoSimplesDTO toProcessoSimplesDTO(Processo processo){
@@ -63,7 +69,9 @@ public class ProcessoSimplesDTO {
                 processo.getRequerente(),
                 processo.getRequerido(),
                 processo.getValorAcao(),
-                processo.getVara()
+                processo.getVara(),
+                processo.getCreatedAt(),
+                processo.getUpdatedAt()
         );
     }
 
@@ -209,5 +217,21 @@ public class ProcessoSimplesDTO {
 
     public void setVara(String vara) {
         this.vara = vara;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public LocalDateTime getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
     }
 }

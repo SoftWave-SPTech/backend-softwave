@@ -245,7 +245,7 @@ public class ProcessoService {
     }
 
     public List<Processo> listarProcessosOrdenadosPorDataCriacao() {
-        List<Processo> processos = processoRepository.findAllByOrderByCreatedAtAsc();
+        List<Processo> processos = processoRepository.findAllByOrderByCreatedAtDesc();
         if (processos.isEmpty()) {
             throw new EntidadeNaoEncontradaException("Nenhum processo encontrado.");
         }
