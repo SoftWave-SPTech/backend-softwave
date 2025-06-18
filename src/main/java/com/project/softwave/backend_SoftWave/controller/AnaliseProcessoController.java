@@ -1,5 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.UltimasMovimentacoesDTO;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
+import com.project.softwave.backend_SoftWave.dto.AnaliseIAMovimentacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.AnaliseProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.service.AnaliseProcessoService;
@@ -75,8 +78,20 @@ public class AnaliseProcessoController {
     })
     @GetMapping("/por-movimentacao/{movimentacaoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<AnaliseProcesso> buscarPorMovimentacao(@PathVariable Integer movimentacaoId) {
+    public ResponseEntity<AnaliseIAMovimentacaoDTO> buscarPorMovimentacao(@PathVariable Integer movimentacaoId) {
         AnaliseProcesso analiseProcesso = analiseService.buscarPorIdMovimentacao(movimentacaoId);
-        return ResponseEntity.ok(analiseProcesso);
+        UltimasMovimentacoes ultimasMovimentacoes = analiseProcesso.getMovimentacoes();
+        UltimasMovimentacoesDTO movimentacoesDTO = new UltimasMovimentacoesDTO(
+                ultimasMovimentacoes.getId(),
+                ultimasMovimentacoes.getData(),
+                ultimasMovimentacoes.getMovimento(),
+                ultimasMovimentacoes.getProcesso().getId()
+        );
+        AnaliseIAMovimentacaoDTO analiseDto = new AnaliseIAMovimentacaoDTO(
+                analiseProcesso.getId(),
+                analiseProcesso.getResumoIA(),
+                movimentacoesDTO
+                );
+        return ResponseEntity.ok(analiseDto);
     }
 }

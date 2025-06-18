@@ -58,6 +58,7 @@ public class AdvogadoJuridicoService {
         advogado.setBairro(dto.getBairro());
         advogado.setCidade(dto.getCidade());
         advogado.setNumero(dto.getNumero());
+        advogado.setRepresentante(dto.getRepresentante());
 
         return advogadoJuridicoRepository.save(advogado);
     }
