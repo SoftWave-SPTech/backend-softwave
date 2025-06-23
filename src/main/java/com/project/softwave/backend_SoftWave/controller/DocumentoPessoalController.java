@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.controller;
 
+import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalCadastroDto;
 import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
 import com.project.softwave.backend_SoftWave.entity.DocumentoPessoal;
 import com.project.softwave.backend_SoftWave.service.DocumentoPessoalService;
@@ -11,7 +12,9 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,10 +32,19 @@ public class DocumentoPessoalController {
     })
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<DocumentoPessoalDTO> cadastrarDocumento(@Valid @RequestBody DocumentoPessoalDTO request) {
-        DocumentoPessoal documento = DocumentoPessoalDTO.toEntity(request);
-        DocumentoPessoal documentoSalvo = service.cadastrarDocumento(documento);
-        return ResponseEntity.status(201).body(DocumentoPessoalDTO.toResponseDto(documentoSalvo));
+    public ResponseEntity<String> cadastrarDocumento(
+            @RequestParam("nomeArquivo") String nomeArquivo,
+            @RequestParam("documentoPessoal") MultipartFile documentoPessoal,
+            @RequestParam("idUsuario") Integer idUsuario
+    ) throws IOException {
+
+        DocumentoPessoalCadastroDto dto = new DocumentoPessoalCadastroDto(
+                nomeArquivo,
+                documentoPessoal,
+                idUsuario
+        );
+        String documentoSalvo = service.cadastrarDocumento(dto);
+        return ResponseEntity.status(201).body(documentoSalvo);
     }
 
     @Operation(summary = "Busca por todos os documentos pessoais cadastrados pelo usuário", method = "GET")
@@ -63,17 +75,34 @@ public class DocumentoPessoalController {
         return ResponseEntity.status(200).body(DocumentoPessoalDTO.toResponseDto(documento));
     }
 
-    @Operation(summary = "Atualização das informações dos documentos pessoais", method = "PUT")
+    @Operation(summary = "Busca por ID do usuário seus documentos", method = "GET")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Atualização do documento pessoal realizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Documento pessoal não encontrado")
+            @ApiResponse(responseCode = "200", description = "Busca por ID do usuario seus documentos pessoais realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Documentos pessoais não encontrado"),
+            @ApiResponse(responseCode = "204", description = "Não há documentos pessoais cadastrado para esse usuário")
     })
-    @PutMapping("/{id}")
+    @GetMapping("usuario/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<DocumentoPessoalDTO> atualizarDocumento(@Valid @RequestBody DocumentoPessoal documento, @PathVariable Integer id) {
-        DocumentoPessoal documentoAtualizado = service.atualizarDocumento(documento, id);
-        return ResponseEntity.status(200).body(DocumentoPessoalDTO.toResponseDto(documentoAtualizado));
+    public ResponseEntity<List<DocumentoPessoalDTO>> buscarDocumentosUsuario(@PathVariable Integer id) {
+        List<DocumentoPessoal> documentos = service.buscarDocumentosUsuario(id);
+
+        List<DocumentoPessoalDTO> documentoPessoalDTOS = documentos.stream()
+                .map(DocumentoPessoalDTO::toResponseDto).toList();
+
+        return ResponseEntity.status(200).body(documentoPessoalDTOS);
     }
+
+//    @Operation(summary = "Atualização das informações dos documentos pessoais", method = "PUT")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Atualização do documento pessoal realizado com sucesso"),
+//            @ApiResponse(responseCode = "404", description = "Documento pessoal não encontrado")
+//    })
+////    @PutMapping("/{id}")
+////    @SecurityRequirement(name = "Bearer")
+////    public ResponseEntity<DocumentoPessoalDTO> atualizarDocumento(@Valid @RequestBody DocumentoPessoal documento, @PathVariable Integer id) {
+////        DocumentoPessoal documentoAtualizado = service.atualizarDocumento(documento, id);
+////        return ResponseEntity.status(200).body(DocumentoPessoalDTO.toResponseDto(documentoAtualizado));
+////    }
 
     @Operation(summary = "Exclusão de documentos pessoais", method = "DELETE")
     @ApiResponses(value = {
@@ -82,7 +111,7 @@ public class DocumentoPessoalController {
     })
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> deletarDocumento(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletarDocumento(@PathVariable Integer id) throws IOException {
         service.deletarDocumento(id);
         return ResponseEntity.status(204).build();
     }

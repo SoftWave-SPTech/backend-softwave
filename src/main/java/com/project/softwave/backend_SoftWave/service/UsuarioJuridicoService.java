@@ -26,6 +26,8 @@ public class UsuarioJuridicoService {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
             usuarioJuridico.setRole(Role.ROLE_USUARIO);
+            usuarioJuridico.setAtivo(false);
+            usuarioJuridico.setStatusUsuario(true);
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
             return usuarioJuridicoCadastrado;
     }
@@ -53,13 +55,14 @@ public class UsuarioJuridicoService {
 
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setTelefone(dto.getTelefone());
         usuarioJuridico.setLogradouro(dto.getLogradouro());
         usuarioJuridico.setCep(dto.getCep());
         usuarioJuridico.setBairro(dto.getBairro());
         usuarioJuridico.setCidade(dto.getCidade());
+        usuarioJuridico.setNumero(dto.getNumero());
+        usuarioJuridico.setRepresentante(dto.getRepresentante());
 
         return usuariosJuridicosRepository.save(usuarioJuridico);
     }

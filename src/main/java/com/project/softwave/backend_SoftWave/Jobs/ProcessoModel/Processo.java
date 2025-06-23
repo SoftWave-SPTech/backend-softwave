@@ -2,19 +2,24 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import com.project.softwave.backend_SoftWave.entity.*;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /*
 Classe para obterProcessos
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Processo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Integer id;
-    //            "processo": "1192602-55.2024.8.26.0100",
+//            "processo": "1192602-55.2024.8.26.0100",
     private String numeroProcesso;
 //            "classe": "Despejo por Falta de Pagamento Cumulado Com Cobrança",
     private String classe;
@@ -40,9 +45,6 @@ public class Processo {
     private Double normalizadoValorAcao;
 //            "autor": null,
     private String autor;
-//            "advogado": null,
-    //TODO CONECTAR AOS ADVOGADOS CADASTRADOS
-    private String advogado;
 //            "exectdo": null,
     private String executado;
 //            "reqte": "Jarbas Alessandro Rocha Marqueze Advogado:  Felipe Lauriano Rocha Marqueze",
@@ -51,40 +53,19 @@ public class Processo {
     private String requerido;
 //            "indiciado": null,
     private String indiciado;
+//             descrição descrita pelo advogado no cadastro
+    private String descricao;
 
-    @ManyToMany
-    @JoinTable(name = "processo_advogado_fisico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
-    private List<AdvogadoFisico> advogadosFisicos;
+    @ManyToMany(mappedBy = "processos")
+    private List<Usuario> usuarios;
 
-    @ManyToMany
-    @JoinTable(name = "processo_advogado_juridico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "advogado_id"))
-    private List<AdvogadoJuridico> advogadosJuridicos;
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @ManyToMany
-    @JoinTable(name = "processo_cliente_fisico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<UsuarioFisico> clientesFisicos;
-
-    @ManyToMany
-    @JoinTable(name = "processo_cliente_juridico",
-            joinColumns = @JoinColumn(name = "processo_id"),
-            inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<UsuarioJuridico> clientesJuridicos;
-
-    @OneToMany
-    private List<ComentarioProcesso> comentarios;
-
-    @OneToMany
-    private List<Tarefa> tarefas;
-
-    @OneToMany
-    private List<RegistroFinanceiro> registros;
-
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public Integer getId() {
         return id;
@@ -198,14 +179,6 @@ public class Processo {
         this.autor = autor;
     }
 
-    public String getAdvogado() {
-        return advogado;
-    }
-
-    public void setAdvogado(String advogado) {
-        this.advogado = advogado;
-    }
-
     public String getExecutado() {
         return executado;
     }
@@ -238,6 +211,38 @@ public class Processo {
         this.indiciado = indiciado;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public List<Usuario> getUsuarios() {
+        return usuarios;
+    }
+
+    public void setUsuarios(List<Usuario> usuarios) {
+        this.usuarios = usuarios;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
         return "Processo{" +
@@ -255,11 +260,12 @@ public class Processo {
                 ", valorAcao='" + valorAcao + '\'' +
                 ", normalizadoValorAcao=" + normalizadoValorAcao +
                 ", autor='" + autor + '\'' +
-                ", advogado='" + advogado + '\'' +
                 ", executado='" + executado + '\'' +
                 ", requerente='" + requerente + '\'' +
                 ", requerido='" + requerido + '\'' +
                 ", indiciado='" + indiciado + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", usuariosSize=" + (usuarios != null ? usuarios.size() : "null") +
                 '}';
     }
 }

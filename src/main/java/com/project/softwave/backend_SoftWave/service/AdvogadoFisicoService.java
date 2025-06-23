@@ -30,11 +30,13 @@ public class AdvogadoFisicoService {
     private UserValidator validarUsuarios;
 
     public AdvogadoFisico cadastrar(AdvogadoFisico advogadoFisico) {
-        if (advogadoFisicoRepository.findByEmailEqualsOrCpfEquals(
-                advogadoFisico.getEmail(), advogadoFisico.getCpf()).isPresent()) {
-            throw new EntidadeConflitoException("Email ou CPF já existe");
+        if (advogadoFisicoRepository.findByEmailEqualsOrCpfEqualsOrRgEquals(
+                advogadoFisico.getEmail(), advogadoFisico.getCpf(), advogadoFisico.getRg()).isPresent()){
+            throw new EntidadeConflitoException("Email, CPF ou RG já existe");
         }
             advogadoFisico.setRole(Role.ROLE_ADVOGADO);
+            advogadoFisico.setAtivo(false);
+            advogadoFisico.setStatusUsuario(true);
             return   advogadoFisicoRepository.save(advogadoFisico);
     }
 
@@ -61,6 +63,7 @@ public class AdvogadoFisicoService {
         advogado.setCep(dto.getCep());
         advogado.setBairro(dto.getBairro());
         advogado.setCidade(dto.getCidade());
+        advogado.setNumero(dto.getNumero());
 
         return advogadoFisicoRepository.save(advogado);
     }

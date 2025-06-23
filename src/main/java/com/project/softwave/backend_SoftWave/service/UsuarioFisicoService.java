@@ -23,11 +23,13 @@ public class UsuarioFisicoService {
     private UserValidator validarUsuarios;
 
     public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
-        if (usuariosFisicosRepository.findByEmailEqualsOrCpfEquals(
-                usuarioFisico.getEmail(),usuarioFisico.getCpf()).isPresent()) {
-            throw new EntidadeConflitoException("Email ou CPF já existe");
+        if (usuariosFisicosRepository.findByEmailEqualsOrCpfEqualsOrRgEquals(
+                usuarioFisico.getEmail(),usuarioFisico.getCpf(), usuarioFisico.getRg()).isPresent()) {
+            throw new EntidadeConflitoException("Email, CPF ou RG já existe");
         }
         usuarioFisico.setRole(Role.ROLE_USUARIO);
+        usuarioFisico.setAtivo(false);
+        usuarioFisico.setStatusUsuario(true);
         UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
         return usuarioFisicoCadastrado;
     }
@@ -61,6 +63,7 @@ public class UsuarioFisicoService {
         usuarioFisico.setCep(dto.getCep());
         usuarioFisico.setBairro(dto.getBairro());
         usuarioFisico.setCidade(dto.getCidade());
+        usuarioFisico.setNumero(dto.getNumero());
 
         return usuariosFisicosRepository.save(usuarioFisico);
     }

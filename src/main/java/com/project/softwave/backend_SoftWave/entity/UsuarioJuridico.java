@@ -1,57 +1,45 @@
 package com.project.softwave.backend_SoftWave.entity;
 
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
-import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-
-import java.util.List;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "pessoa_juridica")
-public class UsuarioJuridico extends Usuario{
+@DiscriminatorValue("usuario_juridico")
+public class UsuarioJuridico extends Usuario {
+
+    @Column(unique = true)
     private String cnpj;
+
     private String nomeFantasia;
+
     private String razaoSocial;
 
-    @OneToMany
-    private List<DocumentoPessoal> documentos;
+    private String representante;
 
-    @ManyToMany
-    private List<Processo> processosCliente;
-
-    public UsuarioJuridico(String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(String cnpj, String nomeFantasia, String razaoSocial, String representante) {
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+        this.representante = representante;
     }
 
-    public UsuarioJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(Integer id, String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, String representante) {
         super(id, senha, email, cep, logradouro, bairro, cidade, complemento, telefone);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+        this.representante = representante;
     }
 
-    public UsuarioJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial) {
+    public UsuarioJuridico(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone, String cnpj, String nomeFantasia, String razaoSocial, String representante) {
         super(senha, email, cep, logradouro, bairro, cidade, complemento, telefone);
         this.cnpj = cnpj;
         this.nomeFantasia = nomeFantasia;
         this.razaoSocial = razaoSocial;
+        this.representante = representante;
     }
-
-    //    public UsuarioJuridico(UsuarioJuridicoDTO usuarioJuridicoDTO) {
-//        super(null, usuarioJuridicoDTO.getSenha(), usuarioJuridicoDTO.getEmail());
-//        this.cnpj = usuarioJuridicoDTO.getCnpj();
-//        this.nomeFantasia = usuarioJuridicoDTO.getNomeFantasia();
-//        this.razaoSocial = usuarioJuridicoDTO.getRazaoSocial();
-//    }
 
     public UsuarioJuridico() {
     }
-
 
     public String getCnpj() {
         return cnpj;
@@ -77,5 +65,11 @@ public class UsuarioJuridico extends Usuario{
         this.razaoSocial = razaoSocial;
     }
 
+    public String getRepresentante() {
+        return representante;
+    }
 
+    public void setRepresentante(String representante) {
+        this.representante = representante;
+    }
 }

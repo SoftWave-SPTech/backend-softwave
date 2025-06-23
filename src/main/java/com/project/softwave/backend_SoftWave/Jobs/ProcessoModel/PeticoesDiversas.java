@@ -2,7 +2,7 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
 
-@Entity
+//@Entity
 public class PeticoesDiversas {
 //    {
 //        "data": "29/11/2024",

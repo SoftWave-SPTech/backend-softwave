@@ -28,6 +28,8 @@ public class AdvogadoJuridicoService {
             throw new EntidadeConflitoException("Email ou CNPJ já existe");
         }
         advogadoJuridico.setRole(Role.ROLE_ADVOGADO);
+        advogadoJuridico.setAtivo(false);
+        advogadoJuridico.setStatusUsuario(true);
         return advogadoJuridicoRepository.save(advogadoJuridico);
     }
 
@@ -49,13 +51,14 @@ public class AdvogadoJuridicoService {
 
         advogado.setNomeFantasia(dto.getNomeFantasia());
         advogado.setEmail(dto.getEmail());
-        advogado.setCnpj(dto.getCnpj());
         advogado.setRazaoSocial(dto.getRazaoSocial());
         advogado.setTelefone(dto.getTelefone());
         advogado.setLogradouro(dto.getLogradouro());
         advogado.setCep(dto.getCep());
         advogado.setBairro(dto.getBairro());
         advogado.setCidade(dto.getCidade());
+        advogado.setNumero(dto.getNumero());
+        advogado.setRepresentante(dto.getRepresentante());
 
         return advogadoJuridicoRepository.save(advogado);
     }

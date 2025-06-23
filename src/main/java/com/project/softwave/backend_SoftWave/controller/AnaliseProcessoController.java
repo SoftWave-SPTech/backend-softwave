@@ -1,5 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.UltimasMovimentacoesDTO;
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
+import com.project.softwave.backend_SoftWave.dto.AnaliseIAMovimentacaoDTO;
 import com.project.softwave.backend_SoftWave.dto.AnaliseProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.service.AnaliseProcessoService;
@@ -8,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,16 +28,17 @@ public class AnaliseProcessoController {
     @Autowired
     private GeminiService geminiService;
 
-    @Operation(summary = "Geração das análises de movimentações dos processos", method = "POST")
+    @Operation(summary = "Geração das análise com IA de uma movimentação do processo por ID da Movimentação", method = "POST")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Análises geradas com sucesso"),
-            @ApiResponse(responseCode = "500", description = "Erro interno ao gerar as análises")
+            @ApiResponse(responseCode = "201", description = "Análise gerada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno ao gerar a análise"),
+            @ApiResponse(responseCode = "404", description = "Movimentação não encontrada"),
     })
-    @PostMapping
+    @PostMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> analisarProcessos() {
-        geminiService.gerarAnalises();
-        return ResponseEntity.status(201).body("Análises geradas com sucesso!");
+    public ResponseEntity<String> analisarProcessos(@Valid @PathVariable Integer id) {
+        geminiService.gerarAnalisePorId(id);
+        return ResponseEntity.status(201).body("Análise gerada com sucesso!");
     }
 
     @Operation(summary = "Lista todas as análises de movimentações dos processos", method = "GET")
@@ -73,8 +78,20 @@ public class AnaliseProcessoController {
     })
     @GetMapping("/por-movimentacao/{movimentacaoId}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<AnaliseProcessoDTO> buscarPorMovimentacao(@PathVariable Integer movimentacaoId) {
+    public ResponseEntity<AnaliseIAMovimentacaoDTO> buscarPorMovimentacao(@PathVariable Integer movimentacaoId) {
         AnaliseProcesso analiseProcesso = analiseService.buscarPorIdMovimentacao(movimentacaoId);
-        return ResponseEntity.ok(AnaliseProcessoDTO.toDTO(analiseProcesso));
+        UltimasMovimentacoes ultimasMovimentacoes = analiseProcesso.getMovimentacoes();
+        UltimasMovimentacoesDTO movimentacoesDTO = new UltimasMovimentacoesDTO(
+                ultimasMovimentacoes.getId(),
+                ultimasMovimentacoes.getData(),
+                ultimasMovimentacoes.getMovimento(),
+                ultimasMovimentacoes.getProcesso().getId()
+        );
+        AnaliseIAMovimentacaoDTO analiseDto = new AnaliseIAMovimentacaoDTO(
+                analiseProcesso.getId(),
+                analiseProcesso.getResumoIA(),
+                movimentacoesDTO
+                );
+        return ResponseEntity.ok(analiseDto);
     }
 }

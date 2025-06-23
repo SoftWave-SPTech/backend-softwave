@@ -1,14 +1,22 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioSenhaDto;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioTokenDTO;
+import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdClienteInativoAndAtivo;
+import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
+import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.*;
+import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
+import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
+import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
+import com.project.softwave.backend_SoftWave.exception.TokenExpiradoInvalidoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,9 +26,20 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class UsuarioService {
 
     @Autowired
@@ -35,6 +54,15 @@ public class UsuarioService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private ProcessoService processoService;
+
+    @Autowired
+    private DocumentoPessoalRepository documentoPessoalRepository;
+
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
                 usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
@@ -43,6 +71,10 @@ public class UsuarioService {
 
         Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
+
+        if (!usuarioAutenticado.getAtivo()) {
+            throw new ResponseStatusException(403, "Usuário inativo", null);
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -54,19 +86,26 @@ public class UsuarioService {
                 .map(GrantedAuthority::getAuthority)
                 .orElse("ROLE_USER");
 
-        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role);
+        String nome = "";
+        if (usuarioAutenticado instanceof UsuarioFisico){
+             nome = ((UsuarioFisico) usuarioAutenticado).getNome();
+        }else {
+             nome = ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
+        }
+
+        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
     }
 
     public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
         if (usuario.getEmail() == null || usuario.getSenha() == null) {
-            throw new LoginIncorretoException("Email ou senha não podem ser nulos");
+            throw new LoginIncorretoException("Email e chave de acesso não podem ser nulos");
         }
 
         Optional<Usuario> possivelUsuario =
                 usuarioRepository.findByEmailEqualsAndSenhaEquals(
                             usuario.getEmail(),usuario.getSenha());
         if (possivelUsuario.isEmpty()) {
-            throw new LoginIncorretoException("Email ou senha inválidos");
+            throw new LoginIncorretoException("Email ou chave de acesso inválido");
         }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
@@ -93,4 +132,164 @@ public class UsuarioService {
         usuarioRepository.updateSenhaByEmail(senhaCriptografada, email);
     }
 
+    @Transactional
+    public void solicitarResetSenha(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+
+       String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+        usuario.setTokenRecuperacaoSenha(token);
+        usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusMinutes(1));
+        usuarioRepository.save(usuario);
+
+        emailService.enviarEmailResetSenha(usuario.getEmail(), token);
+    }
+
+    @Transactional
+    public void resetarSenha(String token, String novaSenha, String novaSenhaConfirma) {
+        Usuario usuario = usuarioRepository.findByTokenRecuperacaoSenha(token)
+                .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido"));
+
+        if (novaSenha == null || novaSenhaConfirma == null) {
+            throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas");
+        }
+
+        if (!novaSenha.equals(novaSenhaConfirma)) {
+            throw new DadosInvalidosException("As senhas não coincidem");
+        }
+
+        if (LocalDateTime.now().isAfter(usuario.getDataExpiracaoTokenRecuperacaoSenha())) {
+            throw new TokenExpiradoInvalidoException("Token expirado");
+        }
+
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
+        usuario.setTokenRecuperacaoSenha(null);
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(null);
+        usuarioRepository.save(usuario);
+    }
+
+    public List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo(){
+
+        List<Usuario> all = usuarioRepository.findAll();
+        List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo = new ArrayList<>();
+        Integer ativos = 0;
+        Integer inativos = 0;
+        QtdClienteInativoAndAtivo clientesAtivos = new QtdClienteInativoAndAtivo("Clientes Ativos");
+        QtdClienteInativoAndAtivo clientesInativos = new QtdClienteInativoAndAtivo("Clientes Inativos");
+
+        if(!all.isEmpty()){
+            for(Usuario usuarioDaVez : all){
+                if (usuarioDaVez.getSenha().length() <= 8 && usuarioDaVez.getSenha().length() > 0){
+                    inativos++;
+                }else if(usuarioDaVez.getSenha().length() > 8){
+                    ativos++;
+                }
+            }
+        }
+
+        clientesAtivos.setQtdClienteAtivoOrInativo(ativos);
+        clientesInativos.setQtdClienteAtivoOrInativo(inativos);
+
+        quantidadeClienteInativoAndInativo.add(clientesInativos);
+        quantidadeClienteInativoAndInativo.add(clientesAtivos);
+
+        return quantidadeClienteInativoAndInativo;
+    }
+
+    public Integer quantidadeAdvogados(){
+        Integer qtdAdvogados = usuarioRepository.quantidadeAdvogados();
+
+        if (qtdAdvogados > 0){
+            return qtdAdvogados;
+        }else{
+            return 0;
+        }
+    }
+
+    public Integer quantidadeClientes(){
+        Integer qtdUsuarios = usuarioRepository.quantidadeClientes();
+
+        if (qtdUsuarios > 0){
+            return qtdUsuarios;
+        }else{
+            return 0;
+        }
+    }
+
+    public List<UsuarioProcessosDTO> listarUsuariosEProcessos(){
+
+        List<Usuario> todos = usuarioRepository.findAll();
+
+
+        List<UsuarioProcessosDTO> usuarios = todos.stream()
+                .map(UsuarioProcessosDTO::new)
+                .toList();
+
+        for (UsuarioProcessosDTO usuarioDaVez : usuarios){
+            usuarioDaVez.setProcesos(processoService.listarProcessoPorIdUsuario(usuarioDaVez.getId()));
+        }
+
+        return  usuarios;
+    }
+
+    public UsuarioDocumentosDTO buscarUsuarioComDocumentos(Integer idUsuario) {
+        // 🔍 Buscar o usuário no banco
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + idUsuario));
+
+        // 🔗 Buscar os documentos do usuário
+        List<DocumentoPessoal> documentos = documentoPessoalRepository.findByFkUsuarioId(idUsuario);
+
+        // 🔄 Mapear documentos para DTO
+        List<DocumentoPessoalDTO> documentosDTO = documentos.stream()
+                .map(doc -> new DocumentoPessoalDTO(doc.getId(), doc.getNomeArquivo(), doc.getUrlArquivo()))
+                .toList();
+
+        // 🧠 Montar o DTO do usuário
+        String nome;
+        String nomeFantasia = null;
+
+        if (usuario instanceof UsuarioFisico usuarioFisico) {
+            nome = usuarioFisico.getNome();
+        } else if (usuario instanceof UsuarioJuridico usuarioJuridico) {
+            nome = usuarioJuridico.getRepresentante();
+            nomeFantasia = usuarioJuridico.getNomeFantasia(); // opcional, se quiser trazer
+        } else {
+            nome = null;
+        }
+
+        return new UsuarioDocumentosDTO(
+                usuario.getId(),
+                nome,
+                nomeFantasia,
+                usuario.getAtivo(),
+                usuario.getTelefone(),
+                usuario.getEmail(),
+                usuario.getFoto(),
+                documentosDTO
+        );
+    }
+
+    public void atualizarRoleUsuario(Integer id, Integer role){
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+
+        if(role == 2){
+            usuario.setRole(Role.ROLE_ADMIN);
+        }else if(role == 1){
+            usuario.setRole(Role.ROLE_ADVOGADO);
+        }
+
+        usuarioRepository.save(usuario);
+    }
+
+    public void atualizarStatusUsuario(Integer id){
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+
+        usuario.setStatusUsuario(!usuario.getStatusUsuario());
+
+        usuarioRepository.save(usuario);
+    }
 }

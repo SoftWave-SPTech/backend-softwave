@@ -1,6 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoDTO;
+import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoResponseDTO;
+import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
 import com.project.softwave.backend_SoftWave.service.ComentarioProcessoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,10 +28,22 @@ public class ComentarioProcessoController {
             @ApiResponse(responseCode = "201", description = "Criação de comentário sobre o processo realizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    @PostMapping
+    @PostMapping("/processo")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<ComentarioProcessoDTO> criarComentario(@Valid @RequestBody ComentarioProcessoDTO dto) {
-        ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentario(dto);
+    public ResponseEntity<ComentarioProcessoDTO> criarComentarioProcesso(@Valid @RequestBody ComentarioProcessoDTO dto) {
+        ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentarioProcesso(dto);
+        return ResponseEntity.status(201).body(novoComentario);
+    }
+
+    @Operation(summary = "Criação de comentário sobre o processo", method = "POST")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Criação de comentário sobre o processo realizado com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    @PostMapping("/movimentacao")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<ComentarioProcessoDTO> criarComentarioMovimentacao(@Valid @RequestBody ComentarioProcessoDTO dto) {
+        ComentarioProcessoDTO novoComentario = comentarioProcessoService.criarComentarioUltimaMovimentacao(dto);
         return ResponseEntity.status(201).body(novoComentario);
     }
 
@@ -93,5 +108,31 @@ public class ComentarioProcessoController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).build();
         }
+    }
+
+    @Operation(summary = "Listagem de comentarios por id movimentação", method = "DELETE")
+    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "204", description = "Exclusão de comentário do processo realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Comentário do processo não encontrado")
+    })
+    @GetMapping("/buscar-por-ultima-movimentacao/{ultimaMovimentacaoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ComentarioProcessoResponseDTO>> listarComentariosPorUltimaMovimentacaoId(@Valid @PathVariable Integer ultimaMovimentacaoId) {
+        List<ComentarioProcesso> comentarios = comentarioProcessoService.listarComentariosPorUltimaMovimentacaoId(ultimaMovimentacaoId);
+        List<ComentarioProcessoResponseDTO> comentariosDTO = comentarios.stream().map(ComentarioProcessoResponseDTO::toResponseDTO).toList();
+        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentariosDTO);
+    }
+
+    @Operation(summary = "Listagem de comentarios por id processo", method = "DELETE")
+    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "204", description = "Exclusão de comentário do processo realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Comentário do processo não encontrado")
+    })
+    @GetMapping("/buscar-por-proceso/{processoId}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<List<ComentarioProcessoResponseDTO>> listarComentariosPorProcessoId(@Valid @PathVariable Long processoId) {
+        List<ComentarioProcesso> comentarios = comentarioProcessoService.listarComentariosPorProcessoId(processoId);
+        List<ComentarioProcessoResponseDTO> comentariosDTO = comentarios.stream().map(ComentarioProcessoResponseDTO::toResponseDTO).toList();
+        return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentariosDTO);
     }
 }

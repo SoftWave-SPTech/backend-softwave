@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,6 @@ public interface UltimasMovimentacoesRepository extends JpaRepository<UltimasMov
 
 
     List<UltimasMovimentacoes> findByProcessoIdOrderByDataDesc(Integer processoId);
+
+    List<UltimasMovimentacoes> findByProcesso(Processo processo);
 }
