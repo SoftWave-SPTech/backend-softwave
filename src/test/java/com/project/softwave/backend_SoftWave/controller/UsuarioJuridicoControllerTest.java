@@ -124,16 +124,6 @@ class UsuarioJuridicoControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    void cadastrarUsuarioJuridico_SemSenha_DeveRetornar400() throws Exception {
-        UsuarioJuridicoRequestDTO requestDTO = criarRequestValido();
-        requestDTO.setSenha(null);
-
-        mockMvc.perform(post("/usuarios-juridicos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest());
-    }
 
     @Test
     void cadastrarUsuarioJuridico_SemComplemento_DeveRetornar201() throws Exception {
@@ -241,7 +231,7 @@ class UsuarioJuridicoControllerTest {
         UsuarioJuridicoRequestDTO requestDTO = new UsuarioJuridicoRequestDTO();
         requestDTO.setNomeFantasia("Empresa XPTO");
         requestDTO.setEmail("empresa@xpto.com");
-        requestDTO.setSenha("Senha123@");
+        requestDTO.setTokenPrimeiroAcesso("Senha123@");
         requestDTO.setRazaoSocial("XPTO LTDA");
         requestDTO.setCnpj("17330474000102");
         requestDTO.setCep("03942030");

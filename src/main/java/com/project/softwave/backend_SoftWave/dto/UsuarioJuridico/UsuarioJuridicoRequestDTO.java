@@ -16,8 +16,8 @@ public class UsuarioJuridicoRequestDTO {
     private String email;
 
     @NotBlank
-    @Schema(description = "Senha do usuário", example = "Senha123@")
-    private String senha;
+    @Schema(description = "Token de primeiro acesso", example = "49454487")
+    private String tokenPrimeiroAcesso;
 
     @NotBlank
     @Schema(description = "Razão social da empresa", example = "XPTO LTDA")
@@ -62,7 +62,8 @@ public class UsuarioJuridicoRequestDTO {
         UsuarioJuridico entity = new UsuarioJuridico();
         entity.setNomeFantasia(dto.getNomeFantasia());
         entity.setEmail(dto.getEmail());
-        entity.setSenha(dto.getSenha());
+        entity.setSenha("SenhaTemporaria123!");
+        entity.setTokenPrimeiroAcesso(dto.getTokenPrimeiroAcesso());
         entity.setRazaoSocial(dto.getRazaoSocial());
         entity.setCnpj(dto.getCnpj());
         entity.setCep(dto.getCep());
@@ -91,8 +92,13 @@ public class UsuarioJuridicoRequestDTO {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public String getSenha() { return senha; }
-    public void setSenha(String senha) { this.senha = senha; }
+    public String getTokenPrimeiroAcesso() {
+        return tokenPrimeiroAcesso;
+    }
+
+    public void setTokenPrimeiroAcesso(String tokenPrimeiroAcesso) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
+    }
 
     public String getRazaoSocial() { return razaoSocial; }
     public void setRazaoSocial(String razaoSocial) { this.razaoSocial = razaoSocial; }

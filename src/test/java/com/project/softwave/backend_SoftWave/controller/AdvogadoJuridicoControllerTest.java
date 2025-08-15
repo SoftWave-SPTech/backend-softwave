@@ -200,7 +200,7 @@ class AdvogadoJuridicoControllerTest {
         AdvogadoJuridicoRequestDTO request = new AdvogadoJuridicoRequestDTO();
         request.setOab("567839");
         request.setEmail("advocacia.exemplo@empresa.com");
-        request.setSenha("SenhaForte@123");
+        request.setTokenPrimeiroAcesso("SenhaForte@123");
         request.setNomeFantasia("Advocacia Pereira & Associados");
         request.setRazaoSocial("Pereira e Associados Sociedade de Advogados LTDA");
         request.setCnpj("87504726000140");

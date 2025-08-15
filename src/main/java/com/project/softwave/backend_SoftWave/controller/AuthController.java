@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
+import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -47,7 +48,7 @@ public class AuthController {
     })
     public ResponseEntity<UsuarioLoginDto> primeiroAcesso(
             @Parameter(description = "Credenciais do usuário", required = true)
-            @Valid @RequestBody UsuarioLoginDto usuarioLoginDto) {
+            @Valid @RequestBody UsuarioPrimeiroAcessoDTO usuarioLoginDto) {
         UsuarioLoginDto usuarioLogado = this.usuarioService.primeiroAcesso(usuarioLoginDto);
         return ResponseEntity.status(200).body(usuarioLogado);
     }

@@ -19,8 +19,8 @@ public class AdvogadoJuridicoRequestDTO {
     private String email;
 
     @NotBlank
-    @Schema(description = "Senha de acesso ao sistema", example = "SenhaForte@123")
-    private String senha;
+    @Schema(description = "Token de primeiro acesso", example = "49454487")
+    private String tokenPrimeiroAcesso;
 
     @NotBlank
     @Schema(description = "Nome fantasia da empresa de advocacia", example = "Advocacia Pereira & Associados")
@@ -72,7 +72,8 @@ public class AdvogadoJuridicoRequestDTO {
         AdvogadoJuridico usuarioJuridico = new AdvogadoJuridico();
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setEmail(dto.getEmail());
-        usuarioJuridico.setSenha(dto.getSenha());
+        usuarioJuridico.setSenha("SenhaTemporaria123!");
+        usuarioJuridico.setTokenPrimeiroAcesso(dto.getTokenPrimeiroAcesso());
         usuarioJuridico.setRazaoSocial(dto.getRazaoSocial());
         usuarioJuridico.setCnpj(dto.getCnpj());
         usuarioJuridico.setLogradouro(dto.getLogradouro());
@@ -114,12 +115,12 @@ public class AdvogadoJuridicoRequestDTO {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getTokenPrimeiroAcesso() {
+        return tokenPrimeiroAcesso;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setTokenPrimeiroAcesso(String tokenPrimeiroAcesso) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
     }
 
     public String getNomeFantasia() {
