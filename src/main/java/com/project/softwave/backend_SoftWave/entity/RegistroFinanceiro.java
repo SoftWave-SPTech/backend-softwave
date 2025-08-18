@@ -12,68 +12,189 @@ public class RegistroFinanceiro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String descricao;
-    private BigDecimal valor;
-    private LocalDate data;
+    private Integer id;
+    private Integer parcelaAtual;
+    private Integer totalParcelas;
+    private Double valorParcela;
+    private Double valorPago;
+    private Double valorPagar;
+    private Integer ano;
+    private final Integer honorarioSucumbencia = 20;
+    private MetodoPagamento metodoPagamento;
+    private TipoPagamento tipoPagamento;
+    private Meses mes;
+    private StatusFinanceiro statusFinanceiro;
 
     @ManyToOne
-    private Usuario usuarios;
+    private Usuario cliente;
 
     @ManyToOne
-    private Processo processos;
+    private Processo processo;
 
-//    @ManyToOne
-//    private Processo processo;
-//
-//    @ManyToOne
-//    private AdvogadoFisico advogado;
+    public RegistroFinanceiro() {
+    }
 
-    public Long getId() {
+    public RegistroFinanceiro(
+            Integer id,
+            Integer parcelaAtual,
+            Integer totalParcelas,
+            Double valorParcela,
+            Double valorPago,
+            Double valorPagar,
+            Integer ano,
+            MetodoPagamento metodoPagamento,
+            TipoPagamento tipoPagamento,
+            Meses mes,
+            StatusFinanceiro statusFinanceiro,
+            Usuario cliente,
+            Processo processo
+    ) {
+        this.id = id;
+        this.parcelaAtual = parcelaAtual;
+        this.totalParcelas = totalParcelas;
+        this.valorParcela = valorParcela;
+        this.valorPago = valorPago;
+        this.valorPagar = valorPagar;
+        this.ano = ano;
+        this.metodoPagamento = metodoPagamento;
+        this.tipoPagamento = tipoPagamento;
+        this.mes = mes;
+        this.statusFinanceiro = statusFinanceiro;
+        this.cliente = cliente;
+        this.processo = processo;
+    }
+
+    public RegistroFinanceiro(
+            Integer parcelaAtual,
+            Integer totalParcelas,
+            Double valorParcela,
+            Double valorPago,
+            Double valorPagar,
+            Integer ano,
+            MetodoPagamento metodoPagamento,
+            TipoPagamento tipoPagamento,
+            Meses mes,
+            Usuario cliente,
+            Processo processo
+    ) {
+        this.parcelaAtual = parcelaAtual;
+        this.totalParcelas = totalParcelas;
+        this.valorParcela = valorParcela;
+        this.valorPago = valorPago;
+        this.valorPagar = valorPagar;
+        this.ano = ano;
+        this.metodoPagamento = metodoPagamento;
+        this.tipoPagamento = tipoPagamento;
+        this.mes = mes;
+        this.cliente = cliente;
+        this.processo = processo;
+    }
+
+    public Integer getHonorarioSucumbencia() {
+        return honorarioSucumbencia;
+    }
+
+    public Integer getAno() {
+        return ano;
+    }
+
+    public void setAno(Integer ano) {
+        this.ano = ano;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public Integer getParcelaAtual() {
+        return parcelaAtual;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setParcelaAtual(Integer parcelaAtual) {
+        this.parcelaAtual = parcelaAtual;
     }
 
-    public BigDecimal getValor() {
-        return valor;
+    public Integer getTotalParcelas() {
+        return totalParcelas;
     }
 
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
+    public void setTotalParcelas(Integer totalParcelas) {
+        this.totalParcelas = totalParcelas;
     }
 
-    public LocalDate getData() {
-        return data;
+    public Double getValorParcela() {
+        return valorParcela;
     }
 
-    public void setData(LocalDate data) {
-        this.data = data;
+    public void setValorParcela(Double valorParcela) {
+        this.valorParcela = valorParcela;
     }
 
-    public Usuario getUsuarios() {
-        return usuarios;
+    public Double getValorPago() {
+        return valorPago;
     }
 
-    public void setUsuarios(Usuario usuarios) {
-        this.usuarios = usuarios;
+    public void setValorPago(Double valorPago) {
+        this.valorPago = valorPago;
     }
 
-    public Processo getProcessos() {
-        return processos;
+    public Double getValorPagar() {
+        return valorPagar;
     }
 
-    public void setProcessos(Processo processos) {
-        this.processos = processos;
+    public void setValorPagar(Double valorPagar) {
+        this.valorPagar = valorPagar;
+    }
+
+    public MetodoPagamento getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public void setMetodoPagamento(MetodoPagamento metodoPagamento) {
+        this.metodoPagamento = metodoPagamento;
+    }
+
+    public TipoPagamento getTipoPagamento() {
+        return tipoPagamento;
+    }
+
+    public void setTipoPagamento(TipoPagamento tipoPagamento) {
+        this.tipoPagamento = tipoPagamento;
+    }
+
+    public Meses getMes() {
+        return mes;
+    }
+
+    public void setMes(Meses mes) {
+        this.mes = mes;
+    }
+
+    public StatusFinanceiro getStatusFinanceiro() {
+        return statusFinanceiro;
+    }
+
+    public void setStatusFinanceiro(StatusFinanceiro statusFinanceiro) {
+        this.statusFinanceiro = statusFinanceiro;
+    }
+
+    public Usuario getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Usuario cliente) {
+        this.cliente = cliente;
+    }
+
+    public Processo getProcesso() {
+        return processo;
+    }
+
+    public void setProcesso(Processo processo) {
+        this.processo = processo;
     }
 }
