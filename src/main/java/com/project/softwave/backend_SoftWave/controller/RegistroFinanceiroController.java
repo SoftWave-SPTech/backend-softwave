@@ -3,6 +3,7 @@ package com.project.softwave.backend_SoftWave.controller;
 import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroRequestDTO;
 import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.RegistroFinanceiroDTO;
+import com.project.softwave.backend_SoftWave.entity.RegistroFinanceiro;
 import com.project.softwave.backend_SoftWave.service.RegistroFinanceiroService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,8 +31,18 @@ public class RegistroFinanceiroController {
     })
     @PostMapping
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<FinanceiroResponseDTO> criarRegistro(@Valid @RequestBody FinanceiroRequestDTO dto) {
-        return null;
+    public ResponseEntity<FinanceiroResponseDTO> criarRegistro(
+            @Valid @RequestBody FinanceiroRequestDTO dto,
+            @Valid @RequestParam Integer cliente,
+            @Valid @RequestParam Integer processo
+    ) {
+        RegistroFinanceiro registro = FinanceiroRequestDTO.toEntity(dto);
+        FinanceiroResponseDTO registroCriado = FinanceiroResponseDTO
+                .toDto(
+                        registroFinanceiroService.criarRegistro(registro, cliente, processo)
+                );
+
+        return ResponseEntity.status(201).body(registroCriado);
     }
 
 
@@ -43,7 +54,12 @@ public class RegistroFinanceiroController {
     @GetMapping
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<FinanceiroResponseDTO>> listarRegistros() {
-        return null;
+        List<RegistroFinanceiro> registros = registroFinanceiroService.listarRegistros();
+
+        List<FinanceiroResponseDTO> todos = registros.stream()
+                .map(FinanceiroResponseDTO::toDto).toList();
+
+        return ResponseEntity.status(200).body(todos);
     }
 
 
@@ -56,7 +72,9 @@ public class RegistroFinanceiroController {
     @GetMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<FinanceiroResponseDTO> buscarRegistroPorId(@Valid @PathVariable Integer id) {
-        return null;
+        RegistroFinanceiro registro = registroFinanceiroService.buscarRegistroPorId(id);
+
+        return ResponseEntity.status(200).body(FinanceiroResponseDTO.toDto(registro));
     }
 
 
@@ -68,10 +86,14 @@ public class RegistroFinanceiroController {
     @PutMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<FinanceiroResponseDTO> atualizarRegistro(
-            @Valid @PathVariable Long id,
-            @RequestBody FinanceiroRequestDTO dto
+            @Valid @PathVariable Integer id,
+            @RequestBody FinanceiroRequestDTO dto,
+            @Valid @RequestParam Integer cliente,
+            @Valid @RequestParam Integer processo
     ) {
-        return null;
+        RegistroFinanceiro registro = registroFinanceiroService.atualizarRegistro(id, FinanceiroRequestDTO.toEntity(dto), cliente, processo);
+
+        return ResponseEntity.status(200).body(FinanceiroResponseDTO.toDto(registro));
     }
 
     @Operation(summary = "Exclusão de registros financeiros", method = "DELETE")
@@ -82,7 +104,8 @@ public class RegistroFinanceiroController {
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> deletarRegistro(@Valid @PathVariable Integer id) {
-        return null;
+        registroFinanceiroService.deletarRegistro(id);
+        return ResponseEntity.status(200).build();
     }
 
     @Operation(summary = "Atualização de status do registros financeiros", method = "PUT")
@@ -92,18 +115,20 @@ public class RegistroFinanceiroController {
     })
     @PutMapping("/status")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<FinanceiroResponseDTO> atualizarStatusRegistro(@Valid @RequestParam String status) {
-        return null;
+    public ResponseEntity<FinanceiroResponseDTO> atualizarStatusRegistro(@Valid @RequestParam String status, @Valid @RequestParam Integer id) {
+        RegistroFinanceiro registro = registroFinanceiroService.atualizarStatusRegistro(id, status);
+
+        return ResponseEntity.status(200).body(FinanceiroResponseDTO.toDto(registro));
     }
 
-    @Operation(summary = "Buscar dados do registro financeiro ...", method = "PUT")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Busca de dados do registro financeiro realizado com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Registro financeiro não encontrado")
-    })
-    @GetMapping("/dados/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<FinanceiroResponseDTO> dadosDaTela(@Valid @PathVariable Integer id) {
-        return null;
-    }
+//    @Operation(summary = "Buscar dados do registro financeiro ...", method = "PUT")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Busca de dados do registro financeiro realizado com sucesso"),
+//            @ApiResponse(responseCode = "404", description = "Registro financeiro não encontrado")
+//    })
+//    @GetMapping("/dados/{id}")
+//    @SecurityRequirement(name = "Bearer")
+//    public ResponseEntity<FinanceiroResponseDTO> dadosDaTela(@Valid @PathVariable Integer id) {
+//        return null;
+//    }
 }

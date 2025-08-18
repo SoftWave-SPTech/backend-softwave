@@ -40,35 +40,38 @@ public class FinanceiroRequestDTO {
     @Schema(description = "Mês do pagamento", example = "MARCO")
     private String mes;
 
-    @NotNull
-    private Integer cliente; // ID do cliente
-
-    @NotNull
-    private Integer processo; // ID do processo
 
     // ------------------ CONVERSORES ------------------
 
-    public RegistroFinanceiro toEntity() {
-        return null;
+    public static RegistroFinanceiro toEntity(FinanceiroRequestDTO dto) {
+        RegistroFinanceiro entity = new RegistroFinanceiro();
+
+        entity.setMes(dto.getMes() != null ? Meses.valueOf(dto.getMes().toUpperCase()) : null);
+        entity.setValorParcela(dto.getValorParcela());
+        entity.setValorPago(dto.getValorPago());
+        entity.setValorPagar(dto.getValorPagar());
+        entity.setTipoPagamento(dto.getTipoPagamento() != null ? TipoPagamento.valueOf(dto.getTipoPagamento().toUpperCase()) : null);
+        entity.setMetodoPagamento(dto.getMetodoPagamento() != null ? MetodoPagamento.valueOf(dto.getMetodoPagamento().toUpperCase()) : null);
+        entity.setTotalParcelas(dto.getTotalParcelas());
+        entity.setParcelaAtual(dto.getParcelaAtual());
+        entity.setAno(dto.getAno());
+
+        return entity;
     }
 
-    public static FinanceiroRequestDTO fromEntity(RegistroFinanceiro entity) {
-        if (entity == null) return null;
+    public static FinanceiroRequestDTO toDto (RegistroFinanceiro entity) {
 
         FinanceiroRequestDTO dto = new FinanceiroRequestDTO();
-        dto.parcelaAtual = entity.getParcelaAtual();
-        dto.totalParcelas = entity.getTotalParcelas();
-        dto.valorParcela = entity.getValorParcela();
-        dto.valorPago = entity.getValorPago();
-        dto.valorPagar = entity.getValorPagar();
-        dto.ano = entity.getAno();
+        dto.setParcelaAtual(entity.getParcelaAtual());
+        dto.setTotalParcelas(entity.getTotalParcelas());
+        dto.setValorParcela(entity.getValorParcela());
+        dto.setValorPago(entity.getValorPago());
+        dto.setValorPagar(entity.getValorPagar());
+        dto.setAno(entity.getAno());
 
-        dto.metodoPagamento = entity.getMetodoPagamento() != null ? entity.getMetodoPagamento().name() : null;
-        dto.tipoPagamento = entity.getTipoPagamento() != null ? entity.getTipoPagamento().name() : null;
-        dto.mes = entity.getMes() != null ? entity.getMes().name() : null;
-
-        dto.cliente = entity.getCliente() != null ? entity.getCliente().getId() : null;
-        dto.processo = entity.getProcesso() != null ? entity.getProcesso().getId() : null;
+        dto.setMetodoPagamento(entity.getMetodoPagamento() != null ? entity.getMetodoPagamento().name() : null);
+        dto.setTipoPagamento(entity.getTipoPagamento() != null ? entity.getTipoPagamento().name() : null);
+        dto.setMes(entity.getMes() != null ? entity.getMes().name() : null);
 
         return dto;
     }
@@ -86,9 +89,7 @@ public class FinanceiroRequestDTO {
             Integer ano,
             String metodoPagamento,
             String tipoPagamento,
-            String mes,
-            Integer cliente,
-            Integer processo
+            String mes
     ) {
         this.parcelaAtual = parcelaAtual;
         this.totalParcelas = totalParcelas;
@@ -99,8 +100,6 @@ public class FinanceiroRequestDTO {
         this.metodoPagamento = metodoPagamento;
         this.tipoPagamento = tipoPagamento;
         this.mes = mes;
-        this.cliente = cliente;
-        this.processo = processo;
     }
 
     // ------------------ GETTERS E SETTERS ------------------
@@ -131,10 +130,4 @@ public class FinanceiroRequestDTO {
 
     public String getMes() { return mes; }
     public void setMes(String mes) { this.mes = mes; }
-
-    public Integer getCliente() { return cliente; }
-    public void setCliente(Integer cliente) { this.cliente = cliente; }
-
-    public Integer getProcesso() { return processo; }
-    public void setProcesso(Integer processo) { this.processo = processo; }
 }
