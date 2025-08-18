@@ -115,6 +115,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     """, nativeQuery = true)
     List<Usuario> findClientesComProcessosPorStatus(@Param("status") String status);
 
+    Boolean existsByEmail(String email);
+
 
 
 }

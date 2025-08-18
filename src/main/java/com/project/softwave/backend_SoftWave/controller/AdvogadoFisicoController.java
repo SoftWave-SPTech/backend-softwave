@@ -23,18 +23,20 @@ import java.io.IOException;
 import java.util.List;
 
     @RestController
-    @AllArgsConstructor
     @RequestMapping("/advogados-fisicos")
     public class AdvogadoFisicoController {
 
-        @Autowired
         private AdvogadoFisicoService service;
 
-        @Autowired
         private UsuarioService usuarioService;
 
-        @Autowired
         private FotoPerfilService fotoPerfilService;
+
+        public AdvogadoFisicoController(AdvogadoFisicoService service, UsuarioService usuarioService, FotoPerfilService fotoPerfilService) {
+            this.service = service;
+            this.usuarioService = usuarioService;
+            this.fotoPerfilService = fotoPerfilService;
+        }
 
         @Operation(summary = "Cadastro de advogado físico", method = "POST")
         @ApiResponses(value = {
