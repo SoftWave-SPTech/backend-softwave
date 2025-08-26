@@ -80,12 +80,6 @@ public class UsuarioService {
 
         String tipoUsuario = usuarioAutenticado.getClass().getSimpleName();
 
-        final String token = gerenciadorTokenJwt.generateToken(authentication, tipoUsuario);
-        String role = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse("ROLE_USER");
-
         String nome = "";
         if (usuarioAutenticado instanceof UsuarioFisico){
              nome = ((UsuarioFisico) usuarioAutenticado).getNome();
@@ -93,23 +87,34 @@ public class UsuarioService {
              nome = ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
         }
 
+        final String token = gerenciadorTokenJwt.generateToken(authentication, tipoUsuario, nome, usuarioAutenticado.getId());
+        String role = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElse("ROLE_USER");
+
         return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
     }
 
-    public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
-        if (usuario.getEmail() == null || usuario.getSenha() == null) {
+    public UsuarioLoginDto primeiroAcesso(UsuarioPrimeiroAcessoDTO usuario) {
+        if (usuario.getEmail() == null || usuario.getTokenPrimeiroAcesso() == null) {
             throw new LoginIncorretoException("Email e chave de acesso não podem ser nulos");
         }
 
         Optional<Usuario> possivelUsuario =
-                usuarioRepository.findByEmailEqualsAndSenhaEquals(
-                            usuario.getEmail(),usuario.getSenha());
+                usuarioRepository.findByEmailEqualsAndTokenPrimeiroAcessoEquals(
+                            usuario.getEmail(),usuario.getTokenPrimeiroAcesso());
         if (possivelUsuario.isEmpty()) {
             throw new LoginIncorretoException("Email ou chave de acesso inválido");
         }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
                 possivelUsuario.get().getSenha());
+
+        Boolean usuarioAtivo = usuarioRepository.existsByEmailAndAtivoIsTrue(usuario.getEmail());
+        if (usuarioAtivo) {
+            throw new ResponseStatusException(403, "Usuário Já Ativo", null);
+        }
 
         return primeiroAcesso;
         }

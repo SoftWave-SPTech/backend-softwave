@@ -23,7 +23,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findByEmail(String email);
 
-    Optional<Usuario> findByEmailEqualsAndSenhaEquals(String email, String senha);
+    Optional<Usuario> findByEmailEqualsAndTokenPrimeiroAcessoEquals(String email, String senha);
 
     @Transactional
     @Modifying
@@ -115,8 +115,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     """, nativeQuery = true)
     List<Usuario> findClientesComProcessosPorStatus(@Param("status") String status);
 
+    Boolean existsByEmailAndAtivoIsTrue(String email);
+
     Boolean existsByEmail(String email);
-
-
 
 }
