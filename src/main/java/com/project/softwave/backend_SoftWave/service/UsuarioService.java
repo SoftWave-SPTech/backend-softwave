@@ -138,6 +138,22 @@ public class UsuarioService {
     }
 
     @Transactional
+    public void editarEmail(String EmailAntigo, String novoEmail) {
+        Usuario usuario = usuarioRepository.findByEmail(EmailAntigo)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+        System.out.println("Email antigo: " + EmailAntigo);
+        System.out.println("Novo email: " + novoEmail);
+        if (usuarioRepository.existsByEmail(novoEmail)) {
+            throw new DadosInvalidosException("Já existe um usuário cadastrado com este email");
+        }
+
+
+        usuario.setEmail(novoEmail);
+        emailService.enviarEmailPrimeiroAcesso(novoEmail, usuario.getTokenPrimeiroAcesso());
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
     public void solicitarResetSenha(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
