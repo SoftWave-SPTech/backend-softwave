@@ -309,7 +309,7 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
 
-        usuario.setStatusUsuario(!usuario.getStatusUsuario());
+        usuario.setAtivo(!usuario.getAtivo());
 
         usuarioRepository.save(usuario);
     }

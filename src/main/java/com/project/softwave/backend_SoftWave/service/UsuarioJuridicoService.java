@@ -27,7 +27,6 @@ public class UsuarioJuridicoService {
             }
             usuarioJuridico.setRole(Role.ROLE_USUARIO);
             usuarioJuridico.setAtivo(false);
-            usuarioJuridico.setStatusUsuario(true);
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
             return usuarioJuridicoCadastrado;
     }
