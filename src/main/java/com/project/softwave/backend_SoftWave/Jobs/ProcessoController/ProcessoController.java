@@ -24,7 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 import java.util.stream.Collectors;
-
+import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import java.util.Map;
+import java.util.HashMap;
 
 import java.util.List;
 
@@ -34,6 +36,9 @@ public class ProcessoController {
 
     @Autowired
     private ProcessoService processoService;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @Autowired
     private ProcessoGrau1API processoGrau1API;
@@ -164,5 +169,48 @@ public class ProcessoController {
     @GetMapping("visualizar-processo/{id}")
     public ResponseEntity<ProcessoCompletoDTO> buscarProcessoPorId(@PathVariable Integer id){
         return ResponseEntity.status(200).body(processoService.buscarProcessoPorId(id));
+    }
+
+    @Operation(summary = "IDs de advogados e clientes vinculados ao processo", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
+    })
+    @GetMapping("/{id}/vinculos")
+    public ResponseEntity<Map<String, Object>> listarVinculos(@PathVariable Integer id) {
+        var advs = usuarioRepository.findAdvogadosIdsByProcesso(id);
+        var clientes = usuarioRepository.findClientesIdsByProcesso(id);
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("advogadosIds", advs);
+        body.put("clientesIds", clientes);
+
+        return ResponseEntity.ok(body);
+    }
+
+    @Operation(summary = "Atualizar processo (nº, descrição e vínculos)", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Processo atualizado com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Processo não encontrado.")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<String> atualizarProcesso(
+            @PathVariable Integer id,
+            @RequestBody CadastroProcessoDTO dto
+    ) {
+        try {
+            // busca o processo existente pelo ID
+            Processo processoAtual = processoService.listarProcessoPorId(id);
+
+            // reaproveita sua lógica já existente que atualiza campos e vínculos
+            processoService.atualizarProcessoComUsuarios(processoAtual, dto);
+
+            return ResponseEntity.ok("Processo atualizado com sucesso!");
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Processo não encontrado.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar o processo: " + e.getMessage());
+        }
     }
 }

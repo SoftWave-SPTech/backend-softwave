@@ -115,6 +115,24 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     """, nativeQuery = true)
     List<Usuario> findClientesComProcessosPorStatus(@Param("status") String status);
 
+    // IDs dos ADVOGADOS vinculados a um processo
+    @Query(value = """
+    SELECT u.id
+    FROM usuario u
+    JOIN usuarios_processos up ON up.usuario_id = u.id
+    WHERE up.processo_id = :processoId
+      AND u.tipo_usuario IN ('advogado_fisico','advogado_juridico')
+    """, nativeQuery = true)
+    List<Integer> findAdvogadosIdsByProcesso(@Param("processoId") Integer processoId);
 
+    // IDs dos CLIENTES vinculados a um processo
+    @Query(value = """
+    SELECT u.id
+    FROM usuario u
+    JOIN usuarios_processos up ON up.usuario_id = u.id
+    WHERE up.processo_id = :processoId
+      AND u.tipo_usuario IN ('usuario_fisico','usuario_juridico')
+    """, nativeQuery = true)
+    List<Integer> findClientesIdsByProcesso(@Param("processoId") Integer processoId);
 
 }
