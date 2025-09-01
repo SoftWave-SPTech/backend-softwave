@@ -19,7 +19,7 @@ public class RegistroFinanceiro {
     private Double valorPago;
     private Double valorPagar;
     private Integer ano;
-    private final Integer honorarioSucumbencia = 20;
+    private final Double honorarioSucumbencia = 0.10;
     private MetodoPagamento metodoPagamento;
     private TipoPagamento tipoPagamento;
     private Meses mes;
@@ -90,7 +90,7 @@ public class RegistroFinanceiro {
         this.processo = processo;
     }
 
-    public Integer getHonorarioSucumbencia() {
+    public Double getHonorarioSucumbencia() {
         return honorarioSucumbencia;
     }
 
