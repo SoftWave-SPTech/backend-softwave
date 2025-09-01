@@ -23,11 +23,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findByEmail(String email);
 
-    Optional<Usuario> findByEmailEqualsAndSenhaEquals(String email, String senha);
+    Optional<Usuario> findByEmailEqualsAndTokenPrimeiroAcessoEquals(String email, String senha);
 
     @Transactional
     @Modifying
-    @Query("UPDATE Usuario u SET u.senha = :senha, u.ativo = true WHERE u.email = :email")
+    @Query("UPDATE Usuario u SET u.senha = :senha, u.ativo = true, u.tokenPrimeiroAcesso = null WHERE u.email = :email")
     void updateSenhaByEmail(String senha, String email);
 
     @Transactional
@@ -114,7 +114,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
       AND (u.tipo_usuario = 'usuario_juridico' OR u.tipo_usuario = 'usuario_fisico')
     """, nativeQuery = true)
     List<Usuario> findClientesComProcessosPorStatus(@Param("status") String status);
-
+           
     // IDs dos ADVOGADOS vinculados a um processo
     @Query(value = """
     SELECT u.id
@@ -134,5 +134,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
       AND u.tipo_usuario IN ('usuario_fisico','usuario_juridico')
     """, nativeQuery = true)
     List<Integer> findClientesIdsByProcesso(@Param("processoId") Integer processoId);
+
+    Boolean existsByEmailAndAtivoIsTrue(String email);
+
+    Boolean existsByEmail(String email);
+
 
 }

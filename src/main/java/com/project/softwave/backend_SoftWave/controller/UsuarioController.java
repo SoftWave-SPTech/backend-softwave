@@ -41,6 +41,19 @@ public class UsuarioController {
         return ResponseEntity.status(200).body(advogados);
     }
 
+    @Operation(
+            summary = "Editar Email e ReenviarToken",
+            description = "Atualiza o email do usuário e reenvia o token de autenticação."
+    )
+    @PutMapping("/editar-email/{email}/{novoEmail}")
+    public ResponseEntity<Void> editarEmailEReenviarToken(
+            @PathVariable String email,
+            @PathVariable String novoEmail
+    ) {
+        usuarioService.editarEmail(email, novoEmail);
+        return ResponseEntity.status(200).build();
+    }
+
     @GetMapping("/listar-usarios-e-procesos")
     public ResponseEntity<List<UsuarioProcessosDTO>> listarUsuariosEProcessos() {
         List<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos();

@@ -1,10 +1,7 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.ResetSenhaRequest;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioLoginDto;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioSenhaDto;
-import com.project.softwave.backend_SoftWave.dto.usuariosDtos.UsuarioTokenDTO;
+import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
 import org.junit.jupiter.api.Test;
@@ -70,7 +67,7 @@ class AuthControllerTest {
     void primeiroAcesso_ComCredenciaisValidas_DeveRetornar200() throws Exception {
         UsuarioLoginDto loginDto = new UsuarioLoginDto("teste@email.com", "senha123");
         
-        when(usuarioService.primeiroAcesso(any(UsuarioLoginDto.class))).thenReturn(loginDto);
+        when(usuarioService.primeiroAcesso(any(UsuarioPrimeiroAcessoDTO.class))).thenReturn(loginDto);
 
         mockMvc.perform(post("/auth/primeiro-acesso")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +80,7 @@ class AuthControllerTest {
     void primeiroAcesso_ComCredenciaisInvalidas_DeveRetornar401() throws Exception {
         UsuarioLoginDto loginDto = new UsuarioLoginDto("teste@email.com", "senha_errada");
         
-        when(usuarioService.primeiroAcesso(any(UsuarioLoginDto.class)))
+        when(usuarioService.primeiroAcesso(any(UsuarioPrimeiroAcessoDTO.class)))
                 .thenThrow(new LoginIncorretoException("Credenciais inválidas"));
 
         mockMvc.perform(post("/auth/primeiro-acesso")

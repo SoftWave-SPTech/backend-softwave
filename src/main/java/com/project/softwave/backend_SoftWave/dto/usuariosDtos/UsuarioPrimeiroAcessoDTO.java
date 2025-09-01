@@ -6,21 +6,22 @@ import jakarta.validation.constraints.NotBlank;
 
 
 @Schema(description = "DTO para autenticação de usuário")
-public class UsuarioLoginDto {
+public class UsuarioPrimeiroAcessoDTO {
 
     @Schema(description = "Email do usuário", example = "usuario@exemplo.com", required = true)
     @NotBlank(message = "O email é obrigatório")
     @Email(message = "Email inválido")
     private String email;
 
-    @Schema(description = "Senha do usuário", example = "Senha@123", required = true)
-    @NotBlank(message = "A senha é obrigatória")
-    private String senha;
+    @Schema(description = "Token de primeiro acesso", example = "12387590", required = true)
+    @NotBlank(message = "Token é obrigatório")
+    private String tokenPrimeiroAcesso;
 
-    public UsuarioLoginDto() {
+    public UsuarioPrimeiroAcessoDTO() {
     }
 
-    public UsuarioLoginDto(String email, String senha) {
+    public UsuarioPrimeiroAcessoDTO(String tokenPrimeiroAcesso, String email) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
         this.email = email;
     }
 
@@ -32,11 +33,11 @@ public class UsuarioLoginDto {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getTokenPrimeiroAcesso() {
+        return tokenPrimeiroAcesso;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setTokenPrimeiroAcesso(String tokenPrimeiroAcesso) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
     }
 }

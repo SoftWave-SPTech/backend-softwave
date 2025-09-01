@@ -50,8 +50,6 @@ public class Usuario {
 
     private Boolean ativo;
 
-    private Boolean statusUsuario;
-
     private String tokenRecuperacaoSenha;
     private String tokenPrimeiroAcesso;
 
@@ -94,14 +92,6 @@ public class Usuario {
         this.cidade = cidade;
         this.complemento = complemento;
         this.telefone = telefone;
-    }
-
-    public Boolean getStatusUsuario() {
-        return statusUsuario;
-    }
-
-    public void setStatusUsuario(Boolean statusUsuario) {
-        this.statusUsuario = statusUsuario;
     }
 
     public Usuario(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
