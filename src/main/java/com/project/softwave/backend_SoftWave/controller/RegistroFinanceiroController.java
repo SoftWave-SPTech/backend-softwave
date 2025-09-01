@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.controller;
 
+import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroDadosTelaDTO;
 import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroRequestDTO;
 import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.RegistroFinanceiroDTO;
@@ -121,14 +122,14 @@ public class RegistroFinanceiroController {
         return ResponseEntity.status(200).body(FinanceiroResponseDTO.toDto(registro));
     }
 
-//    @Operation(summary = "Buscar dados do registro financeiro ...", method = "PUT")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Busca de dados do registro financeiro realizado com sucesso"),
-//            @ApiResponse(responseCode = "404", description = "Registro financeiro não encontrado")
-//    })
-//    @GetMapping("/dados/{id}")
-//    @SecurityRequirement(name = "Bearer")
-//    public ResponseEntity<FinanceiroResponseDTO> dadosDaTela(@Valid @PathVariable Integer id) {
-//        return null;
-//    }
+    @Operation(summary = "Buscar dados do registro financeiro ...", method = "PUT")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Busca de dados do registro financeiro realizado com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Registro financeiro não encontrado")
+    })
+    @GetMapping("/dados/{id}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<FinanceiroDadosTelaDTO> dadosDaTela(@Valid @PathVariable Integer id) {
+        return ResponseEntity.status(200).body(registroFinanceiroService.dadosDaTela(id));
+    }
 }

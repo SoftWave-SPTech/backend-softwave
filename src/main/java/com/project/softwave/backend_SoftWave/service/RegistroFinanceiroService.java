@@ -1,6 +1,7 @@
 package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
+import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroDadosTelaDTO;
 import com.project.softwave.backend_SoftWave.entity.RegistroFinanceiro;
 import com.project.softwave.backend_SoftWave.entity.StatusFinanceiro;
 import com.project.softwave.backend_SoftWave.exception.CorpoRequisicaoVazioException;
@@ -114,14 +115,29 @@ public class RegistroFinanceiroService {
         return registroFinanceiroRepository.save(registroFinanceiroAtualizado);
     }
 
-//    public RegistroFinanceiro dadosDaTela(){
-//        //valor do processo quanto os advogados estão cobrando
-//        //valor do caso quanto ele vale
-//        //valor com honorário de sucumbencia
-//        //valor total o que eles cobraram mais o honorário
-//
-//
-//
-//        return  null;
-//    }
+    public FinanceiroDadosTelaDTO dadosDaTela(Integer id){
+        RegistroFinanceiro registroFinanceiro = registroFinanceiroRepository
+                .findById(id)
+                .orElseThrow(
+                        () -> new EntidadeNaoEncontradaException("registro não encontrado")
+                );
+
+        FinanceiroDadosTelaDTO dadosTela = new FinanceiroDadosTelaDTO();
+
+        dadosTela.setValorTotalProcesso(
+                (registroFinanceiro.getValorPagar() + registroFinanceiro.getValorPago())
+        );
+
+        dadosTela.setValorTotalCaso(registroFinanceiro.getProcesso().getNormalizadoValorAcao());
+
+        dadosTela.setValorHonorarioSucumbencia(
+                (registroFinanceiro.getProcesso().getNormalizadoValorAcao() * registroFinanceiro.getHonorarioSucumbencia())
+        );
+
+        dadosTela.setValorTotalReceber(
+                (dadosTela.getValorTotalProcesso() + dadosTela.getValorHonorarioSucumbencia())
+        );
+
+        return dadosTela;
+    }
 }
