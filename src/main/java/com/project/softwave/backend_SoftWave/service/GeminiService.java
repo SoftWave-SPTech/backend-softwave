@@ -23,7 +23,7 @@ public class GeminiService {
     private final AnaliseProcessoRepository analiseRepository;
     private final UltimasMovimentacoesRepository ultimasMovimentacoesRepository;
 
-    private final String apiKey =  "AIzaSyAtYHo_lun-el1wWyDirq06awLH7G74uMI";
+    private final String apiKey =  "AIzaSyCyF9md2vSFdPQcRf7nAop2EXn4FNsJt6M";
 
     public GeminiService(
             AnaliseProcessoRepository analiseRepository,
