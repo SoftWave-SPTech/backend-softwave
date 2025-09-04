@@ -21,8 +21,11 @@ public class UsuarioJuridicoService {
     private UserValidator validacoesUsuarios;
 
     public UsuarioJuridico cadastrar(UsuarioJuridico usuarioJuridico) {
-            if (usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
-                    usuarioJuridico.getEmail(), usuarioJuridico.getCnpj()).isPresent()) {
+            if (
+                    usuariosJuridicosRepository.findByEmailEqualsOrCnpjEquals(
+                        usuarioJuridico.getEmail(), usuarioJuridico.getCnpj()
+                    ).isPresent()
+            ) {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
             usuarioJuridico.setRole(Role.ROLE_USUARIO);
@@ -34,7 +37,7 @@ public class UsuarioJuridicoService {
     public List<UsuarioJuridico> listar(){
 
         if (usuariosJuridicosRepository.findAll().isEmpty()){
-            throw new EntidadeNaoEncontradaException("Nenhum usuário jurídico encontrado.");
+            throw new NoContentException("Nenhum usuário jurídico encontrado!");
         }
 
         return usuariosJuridicosRepository.findAll();
@@ -43,14 +46,14 @@ public class UsuarioJuridicoService {
 
     public UsuarioJuridico buscarPorId(Integer id) {
         return usuariosJuridicosRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário jurídico com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário jurídico não encontrado!"));
     }
 
     @Transactional
     public UsuarioJuridico atualizar(Integer id, UsuarioJuridicoAtualizacaoDTO dto) {
 
         UsuarioJuridico usuarioJuridico = usuariosJuridicosRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         usuarioJuridico.setNomeFantasia(dto.getNomeFantasia());
         usuarioJuridico.setEmail(dto.getEmail());
@@ -71,7 +74,7 @@ public class UsuarioJuridicoService {
             usuariosJuridicosRepository.deleteById(id);
             return true;
         }
-        throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado.");
+        throw new EntidadeNaoEncontradaException("Usuário jurídico não encontrado!");
     }
 
 }

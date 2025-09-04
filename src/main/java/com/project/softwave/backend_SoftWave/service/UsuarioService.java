@@ -7,11 +7,8 @@ import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.*;
-import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
-import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
-import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
+import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
-import com.project.softwave.backend_SoftWave.exception.TokenExpiradoInvalidoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -70,10 +67,10 @@ public class UsuarioService {
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
         Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado!"));
 
         if (!usuarioAutenticado.getAtivo()) {
-            throw new ResponseStatusException(403, "Usuário inativo", null);
+            throw new ForbiddenException("Usuário inativo!");
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -113,7 +110,7 @@ public class UsuarioService {
 
         Boolean usuarioAtivo = usuarioRepository.existsByEmailAndAtivoIsTrue(usuario.getEmail());
         if (usuarioAtivo) {
-            throw new ResponseStatusException(403, "Usuário Já Ativo", null);
+            throw new ForbiddenException("Usuário Já Ativo!");
         }
 
         return primeiroAcesso;
@@ -126,11 +123,11 @@ public class UsuarioService {
         String confirmaSenha = usuarioSenhaDto.getConfirmaSenha();
 
         if (senha == null || confirmaSenha == null) {
-            throw new ResponseStatusException(400, "Senha e confirmação de senha não podem ser nulas", null);
+            throw new CorpoRequisicaoVazioException("Senha e confirmação de senha não podem ser nulas!");
         }
 
         if (!senha.equals(confirmaSenha)) {
-            throw new ResponseStatusException(400, "As senhas não coincidem", null);
+            throw new DadosInvalidosException("As senhas não coincidem!");
         }
 
         String senhaCriptografada = passwordEncoder.encode(senha);
@@ -140,11 +137,11 @@ public class UsuarioService {
     @Transactional
     public void editarEmail(String EmailAntigo, String novoEmail) {
         Usuario usuario = usuarioRepository.findByEmail(EmailAntigo)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
-        System.out.println("Email antigo: " + EmailAntigo);
-        System.out.println("Novo email: " + novoEmail);
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
+//        System.out.println("Email antigo: " + EmailAntigo);
+//        System.out.println("Novo email: " + novoEmail);
         if (usuarioRepository.existsByEmail(novoEmail)) {
-            throw new DadosInvalidosException("Já existe um usuário cadastrado com este email");
+            throw new EntidadeConflitoException("Já existe um usuário cadastrado com este email!");
         }
 
 
@@ -156,7 +153,7 @@ public class UsuarioService {
     @Transactional
     public void solicitarResetSenha(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
@@ -170,18 +167,18 @@ public class UsuarioService {
     @Transactional
     public void resetarSenha(String token, String novaSenha, String novaSenhaConfirma) {
         Usuario usuario = usuarioRepository.findByTokenRecuperacaoSenha(token)
-                .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido"));
+                .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido!"));
 
         if (novaSenha == null || novaSenhaConfirma == null) {
-            throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas");
+            throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas!");
         }
 
         if (!novaSenha.equals(novaSenhaConfirma)) {
-            throw new DadosInvalidosException("As senhas não coincidem");
+            throw new DadosInvalidosException("As senhas não coincidem!");
         }
 
         if (LocalDateTime.now().isAfter(usuario.getDataExpiracaoTokenRecuperacaoSenha())) {
-            throw new TokenExpiradoInvalidoException("Token expirado");
+            throw new TokenExpiradoInvalidoException("Token expirado!");
         }
 
         usuario.setSenha(passwordEncoder.encode(novaSenha));
@@ -241,7 +238,6 @@ public class UsuarioService {
     public List<UsuarioProcessosDTO> listarUsuariosEProcessos(){
 
         List<Usuario> todos = usuarioRepository.findAll();
-
 
         List<UsuarioProcessosDTO> usuarios = todos.stream()
                 .map(UsuarioProcessosDTO::new)
@@ -307,7 +303,7 @@ public class UsuarioService {
 
     public void atualizarStatusUsuario(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         usuario.setAtivo(!usuario.getAtivo());
 
