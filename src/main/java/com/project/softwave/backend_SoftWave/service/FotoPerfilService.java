@@ -41,7 +41,7 @@ public class FotoPerfilService {
 
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Usuário não encontrado");
+            throw new EntidadeNaoEncontradaException("Usuário não encontrado!");
         }
 
         Usuario usuario = usuarioOpt.get();
@@ -72,7 +72,7 @@ public class FotoPerfilService {
 
     public void deletarFotoPerfil(Integer id) throws IOException{
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         Files.deleteIfExists(Paths.get(usuario.getFoto()));
         usuario.setFoto(null);
@@ -81,7 +81,7 @@ public class FotoPerfilService {
 
     public String buscarPorId(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         return usuario.getFoto();
     }

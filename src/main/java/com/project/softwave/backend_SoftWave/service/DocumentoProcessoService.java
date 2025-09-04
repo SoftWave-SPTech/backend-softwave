@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRep
 import com.project.softwave.backend_SoftWave.dto.DocumentoProcessoCadastroDto;
 import com.project.softwave.backend_SoftWave.entity.DocumentosProcesso;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.DocumentoProcessoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,11 +31,19 @@ public class DocumentoProcessoService {
     @Value("${file.PASTA_DOCUMENTOS_PROCESSOS}")
     private String PASTA_DOCUMENTOS_PROCESSOS;
 
-    public List<DocumentosProcesso> listar(){return repository.findAll();}
+    public List<DocumentosProcesso> listar(){
+        List<DocumentosProcesso> todos = repository.findAll();
+
+        if(todos.isEmpty()){
+            throw  new NoContentException("Nenhum documento processo encontrado!");
+        }
+
+        return todos;
+    }
 
     public DocumentosProcesso buscarPorId(Integer id) {
         return repository.findById(id).orElseThrow(
-                () -> new EntidadeNaoEncontradaException("Documento com ID %d não encontrado".formatted(id))
+                () -> new EntidadeNaoEncontradaException("Documento não encontrado!")
         );
     }
 
@@ -48,7 +57,7 @@ public class DocumentoProcessoService {
         Files.write(caminhoCompletoDocumento, documento.getDocumentoProcesso().getBytes());
 
         Processo processo = processoRepository.findById(documento.getIdProcesso())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado!"));
 
         DocumentosProcesso documentoParaSalvar = new DocumentosProcesso(
                 documento.getNomeArquivo(),
@@ -62,7 +71,7 @@ public class DocumentoProcessoService {
 
     public void deletarDocumento(Integer id) throws IOException{
         DocumentosProcesso documentoProcesso = repository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Documento não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Documento não encontrado!"));
 
         Files.deleteIfExists(Paths.get(documentoProcesso.getUrlArquivo()));
         repository.deleteById(id);
@@ -72,7 +81,7 @@ public class DocumentoProcessoService {
         if(processoRepository.findById(id).isPresent()){
             return repository.findByFkProcessoId(id);
         }else {
-            throw new EntidadeNaoEncontradaException("Processo não encontrado");
+            throw new EntidadeNaoEncontradaException("Processo não encontrado!");
         }
     }
 }

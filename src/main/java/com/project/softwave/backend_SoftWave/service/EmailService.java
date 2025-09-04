@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.service;
 
+import com.project.softwave.backend_SoftWave.exception.ServiceUnavailableException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.constraints.Email;
@@ -55,7 +56,10 @@ public class EmailService {
 
         } catch (MessagingException e) {
             e.printStackTrace();
-            // Você pode lançar uma exceção personalizada aqui
+            throw new ServiceUnavailableException(
+                    "O serviço não está disponível!" +
+                            "Por favor, contate o nosso suporte para que possamos ajudá-lo!"
+            );
         }
     }
 
@@ -93,7 +97,10 @@ public class EmailService {
 
         } catch (MessagingException e) {
             e.printStackTrace();
-            // Você pode lançar uma exceção personalizada aqui
+            throw new ServiceUnavailableException(
+                    "O serviço não está disponível!" +
+                            "Por favor, contate o nosso suporte para que possamos ajudá-lo!"
+            );
         }
     }
 

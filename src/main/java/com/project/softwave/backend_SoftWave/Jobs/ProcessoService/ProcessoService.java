@@ -16,7 +16,9 @@ import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
+import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
@@ -54,7 +56,7 @@ public class ProcessoService {
 
     public void vincularUsuariosAoProcesso(VincularUsuariosProcessoDTO dto) {
         Processo processo = processoRepository.findById(dto.getProcessoId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado!"));
 
         List<Usuario> usuarios = usuarioRepository.findAllById(dto.getUsuariosIds());
 
@@ -68,13 +70,13 @@ public class ProcessoService {
 
     public void removerUsuarioDoProcesso(RemoverUsuarioProcessoDTO dto) {
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         Processo processo = processoRepository.findById(dto.getProcessoId())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado!"));
 
         if (!usuario.getProcessos().contains(processo)) {
-            throw new EntidadeNaoEncontradaException("Este processo não está vinculado a este usuário.");
+            throw new EntidadeConflitoException("Este processo não está vinculado a este usuário!");
         }
 
         usuario.getProcessos().remove(processo);
@@ -83,7 +85,7 @@ public class ProcessoService {
 
     public Processo buscarPorNumeroProcesso(String numeroProcesso) {
         return processoRepository.findProcessoByNumeroProcesso(numeroProcesso)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado!"));
     }
 
     public void atualizarProcessoComUsuarios(Processo processoAtual, CadastroProcessoDTO novoProcesso) {
@@ -101,15 +103,21 @@ public class ProcessoService {
     public List<ProcessoSimplesDTO> listarProcessoPorIdUsuario(Integer id) {
         List<Processo>  listaProcesso = listarProcessosPorUsuarioId(id);
 
-        return listaProcesso.stream()
+        List<ProcessoSimplesDTO> todos = listaProcesso.stream()
                 .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhum processo encontrado!");
+        }
+
+        return todos;
     }
 
 
     public List<Processo> listarProcessosPorUsuarioId(Integer usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         return processoRepository.findByUsuariosContaining(usuario);
     }
@@ -119,7 +127,7 @@ public class ProcessoService {
         List<Processo> processos = processoRepository.findAll();
 
         if (processos.isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Nenhum processo encontrado.");
+            throw new NoContentException("Nenhum processo encontrado!");
         }
 
         return processos;

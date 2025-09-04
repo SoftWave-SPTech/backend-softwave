@@ -3,10 +3,10 @@ package com.project.softwave.backend_SoftWave.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class PrazoInvalidoException extends RuntimeException {
-    public PrazoInvalidoException(){}
-    public PrazoInvalidoException(String message) {
+@ResponseStatus(HttpStatus.NO_CONTENT)
+public class NoContentException extends RuntimeException {
+    public NoContentException(){}
+    public NoContentException(String message) {
         super(message);
     }
 }

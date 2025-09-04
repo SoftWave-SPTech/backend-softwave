@@ -8,6 +8,7 @@ import com.project.softwave.backend_SoftWave.entity.AnaliseProcesso;
 import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.ServiceUnavailableException;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,7 @@ public class GeminiService {
             boolean jaTemAnalise = analiseRepository.findByMovimentacoesId(movimentacao.getId()).isPresent();
 
             if (jaTemAnalise) {
-                throw new EntidadeConflitoException("Análise já existente para a movimentação: " + movimentacaoId);
+                throw new EntidadeConflitoException("Análise já existente para esta movimentação!");
             }
 
             String prompt = "Explique de forma simples a seguinte movimentação processual:\n\n"
@@ -55,11 +56,14 @@ public class GeminiService {
                 analiseRepository.save(analise);
 
             } catch (Exception e) {
-                throw new DadosInvalidosException("Erro ao gerar análise da movimentação " + movimentacaoId);
+                throw new ServiceUnavailableException(
+                        "O serviço não está disponível!" +
+                                "Por favor, contate o nosso suporte para que possamos ajudá-lo!"
+                );
             }
 
         }, () -> {
-            throw new EntidadeNaoEncontradaException("Movimentação com ID " + movimentacaoId + " não encontrada.");
+            throw new EntidadeNaoEncontradaException("Movimentação não encontrada!");
         });
     }
 
@@ -94,7 +98,10 @@ public class GeminiService {
 
         if (root.has("error")) {
             String mensagemErro = root.path("error").path("message").asText();
-            throw new RuntimeException("Erro da IA: " + mensagemErro);
+            throw new ServiceUnavailableException(
+                    "O serviço não está disponível!" +
+                            "Por favor, contate o nosso suporte para que possamos ajudá-lo!"
+            );
         }
 
         return root.path("candidates")

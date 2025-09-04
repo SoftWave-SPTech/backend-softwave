@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.Jobs;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.*;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.*;
+import com.project.softwave.backend_SoftWave.exception.ServiceUnavailableException;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -192,6 +193,11 @@ public class ProcessoGrau1API {
                     }catch (Exception e) {
                         System.err.println("Erro ao processar o processo de índice " + i + ": " + e.getMessage());
                         e.printStackTrace();
+
+                        throw new ServiceUnavailableException(
+                                "O serviço não está disponível!" +
+                                        "Por favor, contate o nosso suporte para que possamos ajudá-lo!"
+                        );
                     }
 
                 }
@@ -205,7 +211,10 @@ public class ProcessoGrau1API {
                 System.out.println(mensagem);
             }
         }catch (Exception e){
-            throw new RuntimeException(e);
+            throw new ServiceUnavailableException(
+                    "O serviço não está disponível!" +
+                            "Por favor, contate o nosso suporte para que possamos ajudá-lo!"
+            );
         }
     }
 

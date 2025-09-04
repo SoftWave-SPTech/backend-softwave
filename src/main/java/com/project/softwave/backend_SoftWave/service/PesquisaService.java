@@ -10,6 +10,7 @@ import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,57 +30,96 @@ public class PesquisaService {
     private ProcessoRepository processoRepository;
 
     public List<ClienteComProcessosResponseDTO> buscarClientesComProcessos() {
-        return usuarioRepository.findClientesComProcessos()
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessos()
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorSetor(String setor) {
-        return usuarioRepository.findClientesComProcessosPorSetor(setor)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessosPorSetor(setor)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorForo(String foro) {
-        return usuarioRepository.findClientesComProcessosPorForo(foro)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessosPorForo(foro)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorAssunto(String assunto) {
-        return usuarioRepository.findClientesComProcessosPorAssunto(assunto)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessosPorAssunto(assunto)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorVara(String vara) {
-        return usuarioRepository.findClientesComProcessosPorVara(vara)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessosPorVara(vara)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> pesquisarPorTermo(String termo) {
-        return usuarioRepository.buscarClientesPorTermo(termo)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.buscarClientesPorTermo(termo)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorDescricao(String descricao) {
-        return usuarioRepository.findClientesComProcessosPorDescricao(descricao)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessosPorDescricao(descricao)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+        return todos;
     }
 
     public List<ClienteComProcessosResponseDTO> buscarClientesPorAdvogado(Integer advogadoId) {
         Usuario advogado = usuarioRepository.findById(advogadoId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado!"));
 
         // Pega todos os processos que o advogado está vinculado
         List<Processo> processos = processoRepository.findByUsuariosContaining(advogado);
@@ -96,10 +136,16 @@ public class PesquisaService {
             }
         }
         // Remove advogados e mapeia para DTO
-        return clientesUnicos.stream()
+        List<ClienteComProcessosResponseDTO> todos = clientesUnicos.stream()
                 .filter(u -> !(u instanceof AdvogadoFisico || u instanceof AdvogadoJuridico))
                 .map(cliente -> ClienteComProcessosResponseDTO.toClienteComProcessosVinculadosAdvogadoResponseDTO(cliente, advogadoId))
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
 
@@ -112,28 +158,46 @@ public class PesquisaService {
         } else if (statusDescritivo.equalsIgnoreCase("inativo") || statusDescritivo.equalsIgnoreCase("inativos")) {
             status = "0";
         } else {
-            return List.of(); // retorna lista vazia se o status for inválido
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
         }
 
-        return usuarioRepository.findClientesComProcessosPorStatus(status)
+        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessosPorStatus(status)
                 .stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
 
     public List<AdvogadosResponseDTO> listarAdvogados() {
-        return usuarioRepository.findAdvogados()
+        List<AdvogadosResponseDTO> todos = usuarioRepository.findAdvogados()
                 .stream()
                 .map(AdvogadosResponseDTO::toAdvogadosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
     public List<UsuariosResponseDTO> listarClientes() {
-        return usuarioRepository.findClientes()
+        List<UsuariosResponseDTO> todos = usuarioRepository.findClientes()
                 .stream()
                 .map(UsuariosResponseDTO::toUsuariosResponseDTO)
                 .toList();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
 

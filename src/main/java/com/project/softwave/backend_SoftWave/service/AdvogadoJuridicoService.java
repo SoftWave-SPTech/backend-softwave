@@ -25,7 +25,7 @@ public class AdvogadoJuridicoService {
     public AdvogadoJuridico cadastrar(AdvogadoJuridico advogadoJuridico) {
         if (advogadoJuridicoRepository.findByEmailEqualsOrCnpjEquals(
                 advogadoJuridico.getEmail(), advogadoJuridico.getCnpj()).isPresent()) {
-            throw new EntidadeConflitoException("Email ou CNPJ já existe");
+            throw new EntidadeConflitoException("Email ou CNPJ já existe!");
         }
         advogadoJuridico.setRole(Role.ROLE_ADVOGADO);
         advogadoJuridico.setAtivo(false);
@@ -36,7 +36,7 @@ public class AdvogadoJuridicoService {
         List<AdvogadoJuridico> advogadosJuridicos = advogadoJuridicoRepository.findAll();
 
         if (advogadosJuridicos.isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Nenhum advogado jurídico encontrado.");
+            throw new NoContentException("Nenhum advogado jurídico encontrado!");
         }
 
         return advogadosJuridicos;
@@ -46,7 +46,7 @@ public class AdvogadoJuridicoService {
     public AdvogadoJuridico atualizar(Integer id, UsuarioJuridicoAtualizacaoDTO dto) {
 
         AdvogadoJuridico advogado = advogadoJuridicoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado com id: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado!"));
 
         advogado.setNomeFantasia(dto.getNomeFantasia());
         advogado.setEmail(dto.getEmail());
@@ -66,14 +66,13 @@ public class AdvogadoJuridicoService {
 
     public AdvogadoJuridico buscarPorId(Integer id) {
         return advogadoJuridicoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado jurídico com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado jurídico não encontrado!"));
     }
 
     public AdvogadoJuridico buscarPorOab(Integer oab) {
         return advogadoJuridicoRepository.findByOab(oab)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado jurídico com OAB " + oab + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado jurídico não encontrado!"));
     }
-
 
 
     public Boolean deletar(Integer id) {
@@ -81,7 +80,7 @@ public class AdvogadoJuridicoService {
             advogadoJuridicoRepository.deleteById(id);
             return true;
         } else {
-            throw new EntidadeNaoEncontradaException("Advogado jurídico não encontrado");
+            throw new EntidadeNaoEncontradaException("Advogado jurídico não encontrado!");
         }
     }
 

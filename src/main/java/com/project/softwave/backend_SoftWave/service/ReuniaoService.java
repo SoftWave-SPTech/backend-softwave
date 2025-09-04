@@ -4,6 +4,7 @@ import com.project.softwave.backend_SoftWave.entity.Reuniao;
 import com.project.softwave.backend_SoftWave.entity.StatusReuniao;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.ReuniaoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,16 @@ public class ReuniaoService {
 
 
     public List<Reuniao> listarReuniao() {
-        return reuniaoRepository.findAll();
+        List<Reuniao> todos = reuniaoRepository.findAll();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma reuniao encontrada!");
+        }
+        return todos;
 
     }
 
     public Reuniao buscarPorId(Integer id) {
-
 
         return reuniaoRepository.findById(id).orElseThrow(
                 () -> new EntidadeNaoEncontradaException("Reunião %d não encontrada".formatted(id))
@@ -55,7 +60,7 @@ public class ReuniaoService {
 
 
         Reuniao reuniaoExistente = reuniaoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Reunião %d não encontrada".formatted(id)));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Reunião não encontrada!"));
 
         if (reuniaoExistente.getStatusReuniao() == StatusReuniao.REALIZADA) {
             throw new EntidadeConflitoException("A reunião não pode ser atualizada, pois já foi realizada.");
@@ -69,7 +74,7 @@ public class ReuniaoService {
 
 
             Reuniao reuniao = reuniaoRepository.findById(id).orElseThrow(
-                    () -> new EntidadeNaoEncontradaException("Reunião %d não encontrada".formatted(id))
+                    () -> new EntidadeNaoEncontradaException("Reunião não encontrada!")
             );
 
 

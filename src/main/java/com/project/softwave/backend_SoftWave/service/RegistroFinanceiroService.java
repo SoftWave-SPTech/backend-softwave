@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.entity.RegistroFinanceiro;
 import com.project.softwave.backend_SoftWave.entity.StatusFinanceiro;
 import com.project.softwave.backend_SoftWave.exception.CorpoRequisicaoVazioException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.RegistroFinanceiroRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,14 @@ public class RegistroFinanceiroService {
             registroFinanceiro.setCliente(
                     usuarioRepository.findById(cliente)
                             .orElseThrow(
-                                    () -> new EntidadeNaoEncontradaException("Registro não encontrados!")
+                                    () -> new EntidadeNaoEncontradaException("Cliente não encontrados!")
                             )
             );
 
             registroFinanceiro.setProcesso(
                     processoRepository.findById(processo)
                             .orElseThrow(
-                                    () -> new EntidadeNaoEncontradaException("Registro não encontrados!")
+                                    () -> new EntidadeNaoEncontradaException("Processo não encontrados!")
                             )
             );
 
@@ -54,7 +55,13 @@ public class RegistroFinanceiroService {
     }
 
     public List<RegistroFinanceiro> listarRegistros() {
-        return registroFinanceiroRepository.findAll();
+        List<RegistroFinanceiro> todos = registroFinanceiroRepository.findAll();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        }
+
+        return todos;
     }
 
     public RegistroFinanceiro buscarRegistroPorId(Integer id) {

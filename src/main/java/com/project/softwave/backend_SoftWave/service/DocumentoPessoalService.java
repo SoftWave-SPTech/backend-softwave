@@ -5,6 +5,7 @@ import com.project.softwave.backend_SoftWave.entity.DocumentoPessoal;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +32,18 @@ public class DocumentoPessoalService {
     private  String PASTA_DOCUMENTOS_PESSOAIS;
 
     public List<DocumentoPessoal> listarDocumentos() {
-        return repository.findAll();
+        List<DocumentoPessoal> todos = repository.findAll();
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhum documento pessoal encontrado!");
+        }
+
+        return todos;
     }
 
     public DocumentoPessoal buscarPorId(Integer id) {
         return repository.findById(id).orElseThrow(
-                () -> new EntidadeNaoEncontradaException("Documento com ID %d não encontrado".formatted(id))
+                () -> new EntidadeNaoEncontradaException("Documento não encontrado!")
         );
     }
 
@@ -52,7 +59,7 @@ public class DocumentoPessoalService {
         Files.write(caminhoCompletoDocumento, documento.getDocumentoPessoal().getBytes());
 
         Usuario usuario = usuarioRepository.findById(documento.getIdUsuario())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuario Não Encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuario Não Encontrado!"));
 
         DocumentoPessoal documentoPessoalParaSalvar = new DocumentoPessoal(documento.getNomeArquivo(), caminhoCompletoDocumento.toString(), usuario);
         repository.save(documentoPessoalParaSalvar);
@@ -72,7 +79,7 @@ public class DocumentoPessoalService {
 
     public void deletarDocumento(Integer id) throws IOException {
         DocumentoPessoal documentoPessoal = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Documento não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Documento não encontrado!"));
 
         Files.deleteIfExists(Paths.get(documentoPessoal.getUrlArquivo()));
         repository.deleteById(id);
@@ -82,7 +89,7 @@ public class DocumentoPessoalService {
         if (usuarioRepository.findById(id).isPresent()) {
             return repository.findByFkUsuarioId(id);
         }else{
-            throw new EntidadeNaoEncontradaException("Usuário não encontrado");
+            throw new EntidadeNaoEncontradaException("Usuário não encontrado!");
         }
     }
 }
