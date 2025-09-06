@@ -89,8 +89,19 @@ public class ProcessoService {
     }
 
     public void atualizarProcessoComUsuarios(Processo processoAtual, CadastroProcessoDTO novoProcesso) {
+        // Primeiro, remove todos os vínculos existentes
+        if (processoAtual.getUsuarios() != null) {
+            for (Usuario usuario : processoAtual.getUsuarios()) {
+                usuario.getProcessos().remove(processoAtual);
+            }
+            processoAtual.getUsuarios().clear();
+        }
+        
+        // Depois, adiciona os novos vínculos
         VincularUsuariosProcessoDTO novoVinculo = new VincularUsuariosProcessoDTO(processoAtual.getId(), novoProcesso.getUsuarios());
         vincularUsuariosAoProcesso(novoVinculo);
+        
+        // Atualiza a descrição
         processoAtual.setDescricao(novoProcesso.getDescricao());
         processoRepository.save(processoAtual);
     }
