@@ -103,15 +103,9 @@ public class ProcessoService {
     public List<ProcessoSimplesDTO> listarProcessoPorIdUsuario(Integer id) {
         List<Processo>  listaProcesso = listarProcessosPorUsuarioId(id);
 
-        List<ProcessoSimplesDTO> todos = listaProcesso.stream()
+        return listaProcesso.stream()
                 .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
                 .toList();
-
-        if(todos.isEmpty()){
-            throw new NoContentException("Nenhum processo encontrado!");
-        }
-
-        return todos;
     }
 
 
