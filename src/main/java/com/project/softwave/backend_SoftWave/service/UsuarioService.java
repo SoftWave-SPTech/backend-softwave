@@ -158,7 +158,7 @@ public class UsuarioService {
        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
         usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
-        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusMinutes(1));
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusMinutes(5));
         usuarioRepository.save(usuario);
 
         emailService.enviarEmailResetSenha(usuario.getEmail(), token);
