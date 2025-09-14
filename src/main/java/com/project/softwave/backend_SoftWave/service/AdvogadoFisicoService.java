@@ -60,6 +60,7 @@ public class AdvogadoFisicoService {
         advogado.setBairro(dto.getBairro());
         advogado.setCidade(dto.getCidade());
         advogado.setNumero(dto.getNumero());
+        advogado.setComplemento(dto.getComplemento());
 
         return advogadoFisicoRepository.save(advogado);
     }
