@@ -21,7 +21,7 @@ public interface UltimasMovimentacoesRepository extends JpaRepository<UltimasMov
 
     List<UltimasMovimentacoes> findAll();
 
-    List<UltimasMovimentacoes> findByProcessoId(Integer processoId);
+//    List<UltimasMovimentacoes> findByProcessoId(Integer processoId);
 
 
     List<UltimasMovimentacoes> findByProcessoIdOrderByDataDesc(Integer processoId);

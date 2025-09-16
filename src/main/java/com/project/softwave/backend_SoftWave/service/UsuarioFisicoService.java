@@ -10,7 +10,6 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +31,7 @@ public class UsuarioFisicoService {
             throw new EntidadeConflitoException("Email, CPF ou RG já existe");
         }
         usuarioFisico.setRole(Role.ROLE_USUARIO);
+        usuarioFisico.setTentativasFalhasLogin(0);
         usuarioFisico.setAtivo(false);
         UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
         return usuarioFisicoCadastrado;

@@ -4,7 +4,6 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoServic
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdClienteInativoAndAtivo;
 import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
-import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.*;
 import com.project.softwave.backend_SoftWave.exception.*;
@@ -13,7 +12,6 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +19,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDateTime;
@@ -60,38 +57,54 @@ public class UsuarioService {
     @Autowired
     private DocumentoPessoalRepository documentoPessoalRepository;
 
+
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
-        final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
-                usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
+        try {
+            final UsernamePasswordAuthenticationToken credentials =
+                    new UsernamePasswordAuthenticationToken(usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
 
-        final Authentication authentication = this.authenticationManager.authenticate(credentials);
+            final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
-        Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado!"));
+            Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
+                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado!"));
 
-        if (!usuarioAutenticado.getAtivo()) {
-            throw new ForbiddenException("Usuário inativo!");
+            if (!usuarioAutenticado.getAtivo()) {
+                throw new ForbiddenException("Usuário inativo!");
+            }
+
+            if(usuarioAutenticado.getTentativasFalhasLogin() >= 3){
+                throw new TooManyRequestsException("Muitas tentativas de login! Por favor, faça o reset de senha!");
+            }
+
+            // Login bem-sucedido → zera contador
+            usuarioAutenticado.setTentativasFalhasLogin(0);
+            usuarioRepository.save(usuarioAutenticado);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String tipoUsuario = usuarioAutenticado.getClass().getSimpleName();
+            String nome = usuarioAutenticado instanceof UsuarioFisico
+                    ? ((UsuarioFisico) usuarioAutenticado).getNome()
+                    : ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
+
+            final String token = gerenciadorTokenJwt.generateToken(authentication, tipoUsuario, nome, usuarioAutenticado.getId());
+            String role = authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("ROLE_USER");
+
+            return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
+
+        } catch (LoginIncorretoException e) {
+            // Senha incorreta → incrementa contador
+            usuarioRepository.findByEmail(usuarioLoginDto.getEmail()).ifPresent(usuario -> {
+                usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
+                usuarioRepository.save(usuario);
+            });
+            throw new LoginIncorretoException("Credenciais inválidas");
         }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String tipoUsuario = usuarioAutenticado.getClass().getSimpleName();
-
-        String nome = "";
-        if (usuarioAutenticado instanceof UsuarioFisico){
-             nome = ((UsuarioFisico) usuarioAutenticado).getNome();
-        }else {
-             nome = ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
-        }
-
-        final String token = gerenciadorTokenJwt.generateToken(authentication, tipoUsuario, nome, usuarioAutenticado.getId());
-        String role = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse("ROLE_USER");
-
-        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
     }
+
 
     public UsuarioLoginDto primeiroAcesso(UsuarioPrimeiroAcessoDTO usuario) {
         if (usuario.getEmail() == null || usuario.getTokenPrimeiroAcesso() == null) {
@@ -169,6 +182,9 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByTokenRecuperacaoSenha(token)
                 .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido!"));
 
+
+
+
         if (novaSenha == null || novaSenhaConfirma == null) {
             throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas!");
         }
@@ -181,6 +197,7 @@ public class UsuarioService {
             throw new TokenExpiradoInvalidoException("Token expirado!");
         }
 
+        usuario.setTentativasFalhasLogin(0);
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuario.setTokenRecuperacaoSenha(null);
         usuario.setDataExpiracaoTokenRecuperacaoSenha(null);
