@@ -4,6 +4,7 @@ import com.project.softwave.backend_SoftWave.service.AutenticacaoService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -37,9 +38,19 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
 
         String requestTokenHeader = request.getHeader("Authorization");
 
-        if (Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("jwt".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
+        if ((Objects.nonNull(requestTokenHeader) && requestTokenHeader.startsWith("Bearer ") || (jwtToken != null))) {
+            if(requestTokenHeader != null) {
+                jwtToken = requestTokenHeader.substring(7);
+            }
             try {
                 username = jwtTokenManager.getUsernameFromToken(jwtToken);
             } catch (ExpiredJwtException exception) {
