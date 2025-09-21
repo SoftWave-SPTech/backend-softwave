@@ -65,6 +65,7 @@ public class UsuarioJuridicoService {
         usuarioJuridico.setCidade(dto.getCidade());
         usuarioJuridico.setNumero(dto.getNumero());
         usuarioJuridico.setRepresentante(dto.getRepresentante());
+        usuarioJuridico.setComplemento(dto.getComplemento());
 
         return usuariosJuridicosRepository.save(usuarioJuridico);
     }

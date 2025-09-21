@@ -67,6 +67,7 @@ public class UsuarioFisicoService {
         usuarioFisico.setBairro(dto.getBairro());
         usuarioFisico.setCidade(dto.getCidade());
         usuarioFisico.setNumero(dto.getNumero());
+        usuarioFisico.setComplemento(dto.getComplemento());
 
         return usuariosFisicosRepository.save(usuarioFisico);
     }
