@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -95,13 +96,13 @@ public class UsuarioService {
 
             return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
 
-        } catch (LoginIncorretoException e) {
+        } catch (AuthenticationException e) {
             // Senha incorreta → incrementa contador
             usuarioRepository.findByEmail(usuarioLoginDto.getEmail()).ifPresent(usuario -> {
                 usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
                 usuarioRepository.save(usuario);
             });
-            throw new LoginIncorretoException("Credenciais inválidas");
+            throw new TooManyRequestsException("Muitas tentativas de login! Por favor, faça o reset de senha!");
         }
     }
 

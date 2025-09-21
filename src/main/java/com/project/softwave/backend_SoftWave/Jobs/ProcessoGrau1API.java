@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -265,7 +266,8 @@ public class ProcessoGrau1API {
         String movimento = ultimasMovimentacoesObject.getString("movimento");
         novaMovimentacao.setMovimento(movimento);
         novaMovimentacao.setProcesso(novoProcesso);
-        Optional<UltimasMovimentacoes> movimentacoesExistentes = ultimasMovimentacoesRepository.findByMovimentoAndData(movimento,dataMovimentacao);
+        LocalDateTime dataMovimentaca = novaMovimentacao.getData();
+        Optional<UltimasMovimentacoes> movimentacoesExistentes = ultimasMovimentacoesRepository.findByMovimentoAndData(movimento,dataMovimentaca);
         movimentacoesExistentes.ifPresent(e -> novaMovimentacao.setId(e.getId()));
         return novaMovimentacao;
     }
