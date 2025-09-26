@@ -16,3 +16,11 @@ docker compose pull
 docker compose up -d --build
 
 echo "Deploy realizado com sucesso!"
+
+echo "Verificando se o container subiu..."
+sleep 10
+if [ $(docker ps -q --filter "name=backend_softwave" | wc -l) -eq 0 ]; then
+  echo "❌ Deploy falhou!"
+  exit 1
+fi
+echo "✅ Backend rodando!"
