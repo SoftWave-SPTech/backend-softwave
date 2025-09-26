@@ -36,6 +36,12 @@ jobs:
 
       - name: Run tests
         run: mvn test --batch-mode
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-jar
+          path: target/*.jar
 
   deploy:
     needs: build
@@ -53,6 +59,12 @@ jobs:
           key: ${{ secrets.AWS_SSH_KEY }}
           source: "."
           target: "/home/ec2-user/app"
+          
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-jar
+          path: app/
 
       - name: Run deploy script on EC2
         uses: appleboy/ssh-action@v0.1.10
