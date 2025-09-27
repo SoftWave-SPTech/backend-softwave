@@ -4,68 +4,68 @@ INSERT INTO `softwave`.`usuario`
  cpf, nome, rg, oab, role, token_primeiro_acesso,
  cnpj, nome_fantasia, razao_social, representante)
 VALUES
-    (1,'advogado_fisico', b'1', 'Pinheiros', '05422-000', 'São Paulo', 'Rua dos Pinheiros', '123',
+    (1,'advogado_fisico', b'0', 'Pinheiros', '05422-000', 'São Paulo', 'Rua dos Pinheiros', '123',
      'leticiasantos08032005@gmail.com', 'Senha@1234', '11911112222',
      '98765432100', 'Leticia Fonseca', '7654321', 123456, 1,
      'apy2ocT', NULL, NULL, NULL, NULL),
 
-    (2,'usuario_fisico', b'1', 'Bela Vista', '01310-200', 'São Paulo', 'Avenida Paulista', '200',
+    (2,'usuario_fisico', b'0', 'Bela Vista', '01310-200', 'São Paulo', 'Avenida Paulista', '200',
      'maria.souza@email.com', 'Senha@1234', '11922223333',
      '46009286875', 'Maria Souza', '11523344', NULL, 0,
      'lz88fJQT', NULL, NULL, NULL, NULL),
 
-    (3,'advogado_juridico', b'1', 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '150',
+    (3,'advogado_juridico', b'0', 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '150',
      'felipe@laurianoleao.com', 'Senha@1234', '11999998888',
      NULL, 'Felipe Lauriano Rocha Marqueze', NULL, 509556, 3,
      'bz88fCQT', '57404168000180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Felipe Lauriano Rocha Marqueze'),
 
-    (4,'usuario_juridico', b'1', 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '155',
+    (4,'usuario_juridico', b'0', 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '155',
      'raissa@laurianoleao.com', 'Senha@1234', '11988887777',
      NULL, 'Raissa Leão Marqueze', NULL, NULL, 2,
      'kT72xQpL', '57404168000180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Raissa Leão Marqueze'),
 
-    (5,'advogado_juridico', b'1', 'Savassi', '30140-000', 'Belo Horizonte', 'Rua da Bahia', '500',
+    (5,'advogado_juridico', b'0', 'Savassi', '30140-000', 'Belo Horizonte', 'Rua da Bahia', '500',
      'dono@escritorio.com', 'Senha@1234', '31955556666',
      NULL, 'Escritório Dono Advogados', NULL, 654621, 1,
      'Lp99zVwR', '44332211000177', 'Escritório Dono', 'Escritório Dono Advogados', 'Maria Oliveira'),
 
-    (6,'advogado_juridico', b'1', 'Moema', '04077-000', 'São Paulo', 'Avenida Ibirapuera', '900',
+    (6,'advogado_juridico', b'0', 'Moema', '04077-000', 'São Paulo', 'Avenida Ibirapuera', '900',
      'advocacia@silvaealmeida.com', 'Senha@1234', '11944445555',
      NULL, 'Silva & Almeida Advocacia', NULL, 856321, 1,
      'Qm44sXyT', '98765432000155', 'Silva & Almeida', 'Silva & Almeida Sociedade de Advogados', 'José Almeida'),
 
-    (7,'usuario_fisico', b'1', 'Santana', '02012-020', 'São Paulo', 'Rua Voluntários da Pátria', '321',
+    (7,'usuario_fisico', b'0', 'Santana', '02012-020', 'São Paulo', 'Rua Voluntários da Pátria', '321',
      'joao.pereira@email.com', 'Senha@1234', '11987654321',
      '12345678910', 'João Pereira', '44556677', NULL, 0,
      'Rt21pKLM', NULL, NULL, NULL, NULL),
 
-    (8,'usuario_fisico', b'1', 'Centro', '20040-010', 'Rio de Janeiro', 'Rua do Ouvidor', '45',
+    (8,'usuario_fisico', b'0', 'Centro', '20040-010', 'Rio de Janeiro', 'Rua do Ouvidor', '45',
      'ana.costa@email.com', 'Senha@1234', '21999887766',
      '10987654321', 'Ana Costa', '88997766', NULL, 0,
      'Wq77nDHF', NULL, NULL, NULL, NULL),
 
-    (9,'usuario_fisico', b'1', 'Boa Viagem', '51020-020', 'Recife', 'Avenida Conselheiro Aguiar', '101',
+    (9,'usuario_fisico', b'0', 'Boa Viagem', '51020-020', 'Recife', 'Avenida Conselheiro Aguiar', '101',
      'marcos.silva@email.com', 'Senha@1234', '81988776655',
      '32165498700', 'Marcos Silva', '22334455', NULL, 0,
      'Jk55vTRE', NULL, NULL, NULL, NULL),
 
-    (10,'advogado_fisico', b'1', 'Lapa', '05075-010', 'São Paulo', 'Rua Guaicurus', '77',
+    (10,'advogado_fisico', b'0', 'Lapa', '05075-010', 'São Paulo', 'Rua Guaicurus', '77',
      'carla.advogada@email.com', 'Senha@1234', '11911223344',
      '98732165400', 'Carla Menezes', '88667788', 785412, 1,
      'Gh83pZQT', NULL, NULL, NULL, NULL),
 
-    (11,'advogado_fisico', b'1', 'Barra', '22631-000', 'Rio de Janeiro', 'Avenida das Américas', '1500',
+    (11,'advogado_fisico', b'0', 'Barra', '22631-000', 'Rio de Janeiro', 'Avenida das Américas', '1500',
      'ricardo.advogado@email.com', 'Senha@1234', '21933445566',
      '65498732100', 'Ricardo Oliveira', '11224455', 963258, 1,
      'Bn67xWEP', NULL, NULL, NULL, NULL),
 
-    (12,'advogado_fisico', b'1', 'Savassi', '30140-110', 'Belo Horizonte', 'Rua Antônio de Albuquerque', '88',
+    (12,'advogado_fisico', b'0', 'Savassi', '30140-110', 'Belo Horizonte', 'Rua Antônio de Albuquerque', '88',
      'fernanda.adv@email.com', 'Senha@1234', '31988776655',
      '74185296300', 'Fernanda Rocha', '66778899', 741852, 1,
      'Vc11mXLO', NULL, NULL, NULL, NULL);
 
 
-INSERT INTO processos
+INSERT INTO processo
 (id, apensado, area, assunto, autor, classe, controle, descricao, distribuicao, executado, foro, indiciado, juiz, normalizado_valor_acao, numero_processo, requerente, requerido, valor_acao, vara)
 VALUES
     (1, 'Não informado', 'Cível', 'Indenização por Dano Material', 'Não informado', 'Procedimento Comum Cível', '2025/000844', 'Caso de trabalhos', '08/04/2025 às 20:03 - Livre', 'Não informado', 'Foro Central Cível', 'Não indiciado', 'Andrea de Abreu', 84418.62, '1046526-28.2025.8.26.0100', 'Nelson Missaglia Advogado: Felipe Lauriano Rocha Marqueze', 'João Ricardo Martins Pinheiro Advogado: Glauco Castiglioni Cerri', 84418.62, '10ª Vara Cível'),
@@ -172,33 +172,32 @@ VALUES
 (7, 12),
 (8, 12),
 (9, 12);
-
 INSERT INTO softwave.comentario_processo
-(usuario_id, processo_id, movimentacao_id, comentario)
+(usuario_id, processo_id, ultima_movimentacao_id, comentario, data_criacao)
 VALUES
 -- Comentários vinculados ao processo
-(1, 1, NULL, 'Analisados os documentos apresentados pelo autor; recomenda-se solicitar esclarecimentos adicionais sobre a petição inicial.'),
-(3, 2, NULL, 'Verificada a execução de cobrança; sugerido envio de notificação extrajudicial ao réu antes de prosseguir com a ação.'),
-(5, 5, NULL, 'Avaliação preliminar da inclusão indevida em cadastro de inadimplentes; preparar contestação fundamentada.'),
-(6, 6, NULL, 'Análise do boletim de ocorrência e laudos apresentados; providenciar juntada de novas provas.'),
-(12, 7, NULL, 'Verificados contratos e cláusulas de prática abusiva; sugerida estratégia de defesa baseada em precedentes judiciais.'),
-(10, 8, NULL, 'Revisão da documentação processual; observar prazos para apresentação de contestações e manifestações.'),
-(11, 9, NULL, 'Analisado seguro contestado; recomendada preparação de laudo técnico para reforço do argumento do autor.'),
-(3, 10, NULL, 'Levantamento do valor a ser liberado via alvará judicial; verificar eventuais impugnações antes da requisição.'),
-(3, 11, NULL, 'Revisão do contrato bancário questionado; preparar memoriais para audiência de conciliação.'),
-(1, 12, NULL, 'Analisada locação de imóvel e cumprimento de cláusulas; sugerida notificação ao locatário para regularização.');
+(1, 1, NULL, 'Analisados os documentos apresentados pelo autor; recomenda-se solicitar esclarecimentos adicionais sobre a petição inicial.', '2025-01-10 09:15:22'),
+(3, 2, NULL, 'Verificada a execução de cobrança; sugerido envio de notificação extrajudicial ao réu antes de prosseguir com a ação.', '2025-01-11 14:47:39'),
+(5, 5, NULL, 'Avaliação preliminar da inclusão indevida em cadastro de inadimplentes; preparar contestação fundamentada.', '2025-01-13 10:28:11'),
+(6, 6, NULL, 'Análise do boletim de ocorrência e laudos apresentados; providenciar juntada de novas provas.', '2025-01-15 16:02:44'),
+(12, 7, NULL, 'Verificados contratos e cláusulas de prática abusiva; sugerida estratégia de defesa baseada em precedentes judiciais.', '2025-01-17 11:37:05'),
+(10, 8, NULL, 'Revisão da documentação processual; observar prazos para apresentação de contestações e manifestações.', '2025-01-19 08:56:42'),
+(11, 9, NULL, 'Analisado seguro contestado; recomendada preparação de laudo técnico para reforço do argumento do autor.', '2025-01-21 15:29:13'),
+(3, 10, NULL, 'Levantamento do valor a ser liberado via alvará judicial; verificar eventuais impugnações antes da requisição.', '2025-01-24 10:42:51'),
+(3, 11, NULL, 'Revisão do contrato bancário questionado; preparar memoriais para audiência de conciliação.', '2025-01-27 13:18:37'),
+(1, 12, NULL, 'Analisada locação de imóvel e cumprimento de cláusulas; sugerida notificação ao locatário para regularização.', '2025-01-30 17:05:29');
 
 -- Comentários vinculados à última movimentação
 INSERT INTO softwave.comentario_processo
-(advogado_id, processo_id, movimentacao_id, comentario)
+(usuario_id, processo_id, ultima_movimentacao_id, comentario, data_criacao)
 VALUES
-    (1, NULL, 1, 'Verificada certidão de publicação; recomendar acompanhamento de prazo para manifestações futuras.'),
-    (3, NULL, 2, 'Despacho do juiz analisado; sugerido envio de contrarrazões dentro do prazo legal.'),
-    (5, NULL, 20, 'Intimação recebida; providenciar resposta documental e atualização do cliente sobre prazos.'),
-    (6, NULL, 25, 'Juntada de documentos ao processo; revisar consistência e validade das provas apresentadas.'),
-    (9, NULL, 30, 'Planilha de cálculos conferida; elaborar parecer sobre valores devidos e possíveis ajustes.'),
-    (10, NULL, 34, 'Petição juntada; analisar conteúdo e preparar eventual manifestação do escritório.'),
-    (11, NULL, 49, 'Conclusos para sentença; revisar todo o histórico processual e preparar eventuais recursos ou manifestações.');
+    (1, NULL, 1, 'Verificada certidão de publicação; recomendar acompanhamento de prazo para manifestações futuras.', '2025-02-02 09:12:23'),
+    (3, NULL, 2, 'Despacho do juiz analisado; sugerido envio de contrarrazões dentro do prazo legal.', '2025-02-04 11:46:51'),
+    (5, NULL, 20, 'Intimação recebida; providenciar resposta documental e atualização do cliente sobre prazos.', '2025-02-07 10:04:39'),
+    (6, NULL, 25, 'Juntada de documentos ao processo; revisar consistência e validade das provas apresentadas.', '2025-02-10 16:58:02'),
+    (9, NULL, 30, 'Planilha de cálculos conferida; elaborar parecer sobre valores devidos e possíveis ajustes.', '2025-02-13 12:37:48'),
+    (10, NULL, 34, 'Petição juntada; analisar conteúdo e preparar eventual manifestação do escritório.', '2025-02-16 18:25:31'),
+    (11, NULL, 49, 'Conclusos para sentença; revisar todo o histórico processual e preparar eventuais recursos ou manifestações.', '2025-02-20 20:41:10');
 
 INSERT INTO registro_financeiro (
     id, ano, honorario_sucumbencia, mes, metodo_pagamento, parcela_atual,
