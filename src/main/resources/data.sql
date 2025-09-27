@@ -22,7 +22,7 @@ VALUES
     (4,'usuario_juridico', b'0', 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '155',
      'raissa@laurianoleao.com', 'Senha@1234', '11988887777',
      NULL, 'Raissa Leão Marqueze', NULL, NULL, 2,
-     'kT72xQpL', '57404168000180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Raissa Leão Marqueze'),
+     'kT72xQpL', '57404168250180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Raissa Leão Marqueze'),
 
     (5,'advogado_juridico', b'0', 'Savassi', '30140-000', 'Belo Horizonte', 'Rua da Bahia', '500',
      'dono@escritorio.com', 'Senha@1234', '31955556666',
