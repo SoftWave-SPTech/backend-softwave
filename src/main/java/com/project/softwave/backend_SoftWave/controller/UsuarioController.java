@@ -54,7 +54,7 @@ public class UsuarioController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/listar-usarios-e-procesos")
+    @GetMapping("/listar-usuarios-e-processos")
     public ResponseEntity<List<UsuarioProcessosDTO>> listarUsuariosEProcessos() {
         List<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos();
 

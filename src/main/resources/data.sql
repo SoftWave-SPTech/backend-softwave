@@ -19,10 +19,10 @@ VALUES
      NULL, 'Felipe Lauriano Rocha Marqueze', NULL, 509556, 3,
      'bz88fCQT', '57404168000180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Felipe Lauriano Rocha Marqueze'),
 
-    (4,'usuario_juridico', b'0', 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '155',
-     'raissa@laurianoleao.com', 'Senha@1234', '11988887777',
-     NULL, 'Raissa Leão Marqueze', NULL, NULL, 2,
-     'kT72xQpL', '57404168250180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Raissa Leão Marqueze'),
+    (4,'usuario_juridico', b'0', 'Aricanduva', '03471-047', 'São Paulo', 'Rua Rodolfo Julian', '11',
+     'padariawl@gmail.com', 'Senha@1234', '27248356',
+     NULL, NULL, NULL, NULL, 0,
+     'kT72xQpL', '11266247000170', 'Padaria WL Suave Sabor', 'Padaria Mercearia WL Ltda', 'Edneia Fonseca'),
 
     (5,'advogado_juridico', b'0', 'Savassi', '30140-000', 'Belo Horizonte', 'Rua da Bahia', '500',
      'dono@escritorio.com', 'Senha@1234', '31955556666',
