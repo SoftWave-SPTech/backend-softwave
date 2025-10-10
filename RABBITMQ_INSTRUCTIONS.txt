@@ -1,0 +1,22 @@
+RabbitMQ integration added.
+
+How it works:
+- GET /api/processo/numero/{numeroProcesso} now enqueues a message to RabbitMQ and returns 202 with a correlationId.
+- A consumer listens to the queue and executes the original processamento using ProcessoGrau1API.getApiParams().
+
+Setup:
+1. Run RabbitMQ locally (default guest/guest on localhost:5672).
+   You can run: docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+2. Build and run the Spring Boot app as usual (mvn spring-boot:run).
+
+Notes:
+- I added dependency 'spring-boot-starter-amqp' to pom.xml.
+- Files added under com.project.softwave.backend_SoftWave.messaging:
+  - RabbitMQConfig.java
+  - ProcessoMessage.java
+  - ProcessoProducer.java
+  - ProcessoConsumer.java
+
+Return behavior:
+- The endpoint returns JSON: {status: ACCEPTED, numeroProcesso, correlationId, message}
