@@ -28,6 +28,10 @@ public class DocumentoPessoalService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Autowired
+    private com.project.softwave.backend_SoftWave.integracao.S3MicroserviceClient s3MicroserviceClient;
+
+
     @Value("${file.PASTA_DOCUMENTOS_PESSOAIS}")
     private  String PASTA_DOCUMENTOS_PESSOAIS;
 
@@ -48,24 +52,28 @@ public class DocumentoPessoalService {
     }
 
     public String cadastrarDocumento(DocumentoPessoalCadastroDto documento) throws IOException {
-        File diretorio = new File(PASTA_DOCUMENTOS_PESSOAIS);
-        if (!diretorio.exists()) {
-            diretorio.mkdirs();
+        // Faz o upload via microserviço
+        var uploadResponse = s3MicroserviceClient.uploadFile("docs/pessoais", documento.getDocumentoPessoal());
+        String url = uploadResponse.getUrl();
+        String key = uploadResponse.getKey();
 
-        }
-
-        String nomeOriginalArquivo = documento.getDocumentoPessoal().getOriginalFilename();
-        Path caminhoCompletoDocumento = Paths.get(PASTA_DOCUMENTOS_PESSOAIS, nomeOriginalArquivo);
-        Files.write(caminhoCompletoDocumento, documento.getDocumentoPessoal().getBytes());
-
+        // Busca o usuário no banco
         Usuario usuario = usuarioRepository.findById(documento.getIdUsuario())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuario Não Encontrado!"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
-        DocumentoPessoal documentoPessoalParaSalvar = new DocumentoPessoal(documento.getNomeArquivo(), caminhoCompletoDocumento.toString(), usuario);
+        // Cria entidade e salva no banco
+        DocumentoPessoal documentoPessoalParaSalvar = new DocumentoPessoal(
+                documento.getNomeArquivo(),
+                url,
+                key, // <-- novo campo que você vai adicionar na entidade
+                usuario
+        );
         repository.save(documentoPessoalParaSalvar);
 
-        return caminhoCompletoDocumento.toString();
+        return url;
     }
+
+
 
 //    public DocumentoPessoal atualizarDocumento(DocumentoPessoal documentoAtualizado, Integer id) {
 //        boolean existeDocumento = repository.existsById(id);
@@ -81,9 +89,18 @@ public class DocumentoPessoalService {
         DocumentoPessoal documentoPessoal = repository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Documento não encontrado!"));
 
-        Files.deleteIfExists(Paths.get(documentoPessoal.getUrlArquivo()));
+        // Extrai a key da URL (ex: docs/pessoais/arquivo.png)
+        String key = documentoPessoal.getUrlArquivo()
+                .replace("https://softwave-arquivos-prod.s3.amazonaws.com/", "");
+
+        // Chama o microserviço para deletar
+        s3MicroserviceClient.deleteFile(key);
+
+        // Remove o registro do banco
         repository.deleteById(id);
     }
+
+
 
     public List<DocumentoPessoal> buscarDocumentosUsuario(Integer id){
         if (usuarioRepository.findById(id).isPresent()) {
@@ -92,5 +109,10 @@ public class DocumentoPessoalService {
             throw new EntidadeNaoEncontradaException("Usuário não encontrado!");
         }
     }
+
+    public String gerarPresignedUrl(String key) {
+        return s3MicroserviceClient.generatePresignedUrl(key);
+    }
+
 }
 
