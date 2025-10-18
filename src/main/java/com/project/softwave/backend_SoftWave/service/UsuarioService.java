@@ -64,13 +64,11 @@ public class UsuarioService {
             final UsernamePasswordAuthenticationToken credentials =
                     new UsernamePasswordAuthenticationToken(usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
 
-            final Authentication authentication = this.authenticationManager.authenticate(credentials);
-
             Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
-                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado!"));
+                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado! verifique com o administrador."));
 
             if (!usuarioAutenticado.getAtivo()) {
-                throw new ForbiddenException("Usuário inativo!");
+                throw new ForbiddenException("Usuário inativo!, realize o primeiro acesso ou verifique com o administrador.");
             }
 
             if(usuarioAutenticado.getTentativasFalhasLogin() >= 3){
@@ -78,6 +76,8 @@ public class UsuarioService {
             }
 
             // Login bem-sucedido → zera contador
+            final Authentication authentication = this.authenticationManager.authenticate(credentials);
+
             usuarioAutenticado.setTentativasFalhasLogin(0);
             usuarioRepository.save(usuarioAutenticado);
 
@@ -96,13 +96,18 @@ public class UsuarioService {
 
             return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
 
-        } catch (AuthenticationException e) {
-            // Senha incorreta → incrementa contador
-            usuarioRepository.findByEmail(usuarioLoginDto.getEmail()).ifPresent(usuario -> {
-                usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
-                usuarioRepository.save(usuario);
-            });
-            throw new TooManyRequestsException("Muitas tentativas de login! Por favor, faça o reset de senha!");
+        } catch (Exception e) {
+            if(e.equals(AuthenticationException.class)){
+                // Senha incorreta → incrementa contador
+                Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioLoginDto.getEmail());
+                if (usuarioOpt.isPresent()) {
+                    Usuario usuario = usuarioOpt.get();
+                    usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
+                    usuarioRepository.save(usuario);
+                }
+                throw new LoginIncorretoException("Email ou senha inválidos!");
+            }
+            throw e;
         }
     }
 
@@ -117,6 +122,8 @@ public class UsuarioService {
                             usuario.getEmail(),usuario.getTokenPrimeiroAcesso());
         if (possivelUsuario.isEmpty()) {
             throw new LoginIncorretoException("Email ou chave de acesso inválido");
+        }else {
+            possivelUsuario.get().setTentativasFalhasLogin(0);
         }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
@@ -168,7 +175,9 @@ public class UsuarioService {
     public void solicitarResetSenha(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
-
+        if(!usuario.getAtivo()){
+            throw new ForbiddenException("Usuário inativo!, realize o primeiro acesso ou verifique com o administrador.");
+        }
        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
         usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
