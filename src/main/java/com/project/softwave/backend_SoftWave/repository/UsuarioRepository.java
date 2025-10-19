@@ -139,5 +139,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Boolean existsByEmail(String email);
 
-
+    @Query("SELECT u FROM Usuario u WHERE " +
+           "((TYPE(u) = AdvogadoFisico AND TREAT(u AS AdvogadoFisico).oab = :oab) " +
+           "OR (TYPE(u) = AdvogadoJuridico AND TREAT(u AS AdvogadoJuridico).oab = :oab))")
+    Optional<Usuario> oabExistente(@Param("oab") Integer oab);
 }
