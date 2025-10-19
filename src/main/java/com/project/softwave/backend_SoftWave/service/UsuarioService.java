@@ -216,7 +216,7 @@ public class UsuarioService {
 
     public List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo(){
 
-        List<Usuario> all = usuarioRepository.findAll();
+        List<Usuario> all = usuarioRepository.findClientes();
         List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo = new ArrayList<>();
         Integer ativos = 0;
         Integer inativos = 0;
@@ -225,11 +225,12 @@ public class UsuarioService {
 
         if(!all.isEmpty()){
             for(Usuario usuarioDaVez : all){
-                if (usuarioDaVez.getSenha().length() <= 8 && usuarioDaVez.getSenha().length() > 0){
-                    inativos++;
-                }else if(usuarioDaVez.getSenha().length() > 8){
-                    ativos++;
-                }
+               if(usuarioDaVez.getTokenPrimeiroAcesso() == null || usuarioDaVez.getTokenPrimeiroAcesso().isEmpty()){
+                   ativos++;
+               }else{
+                   inativos++;
+               }
+
             }
         }
 
