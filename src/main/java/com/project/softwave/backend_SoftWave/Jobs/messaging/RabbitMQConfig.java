@@ -18,6 +18,7 @@ public class RabbitMQConfig {
         return new Queue(QUEUE, true);
     }
 
+    @Bean
     public DirectExchange processoExchange() {
         return new DirectExchange(EXCHANGE);
     }
