@@ -2,12 +2,12 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoController;
 
 import com.project.softwave.backend_SoftWave.Jobs.ParametrosAPI;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
+import com.project.softwave.backend_SoftWave.Jobs.messaging.ProcessoProducer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
-import com.project.softwave.backend_SoftWave.messaging.ProcessoProducer;
 
 @RestController
 @RequestMapping("/api/processo")
