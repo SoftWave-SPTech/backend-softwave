@@ -2,6 +2,8 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroDadosTelaDTO;
+import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.ReceitaUltimosMesesDTO;
+import com.project.softwave.backend_SoftWave.entity.Meses;
 import com.project.softwave.backend_SoftWave.entity.RegistroFinanceiro;
 import com.project.softwave.backend_SoftWave.entity.StatusFinanceiro;
 import com.project.softwave.backend_SoftWave.exception.CorpoRequisicaoVazioException;
@@ -12,8 +14,7 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -146,5 +147,36 @@ public class RegistroFinanceiroService {
         );
 
         return dadosTela;
+    }
+
+    public List<ReceitaUltimosMesesDTO> getReceitaUltimos6Meses() {
+        List<RegistroFinanceiro> registros = registroFinanceiroRepository.findUltimos6MesesRegistros();
+
+        // Agrupa os registros por (ano, mes)
+        Map<String, Double> receitaPorMes = new HashMap<>();
+
+        for (RegistroFinanceiro r : registros) {
+
+            Double valorTotalProcesso = r.getValorPagar() + r.getValorPago();
+            Double valorHonorarioSucumbencia = r.getProcesso().getNormalizadoValorAcao() * r.getHonorarioSucumbencia();
+            Double totalReceber = valorTotalProcesso + valorHonorarioSucumbencia;
+
+            String chave = r.getAno() + "-" + r.getMes();
+            receitaPorMes.merge(chave, totalReceber, Double::sum);
+        }
+
+        // Converte o Map em uma lista de DTOs ordenada
+        List<ReceitaUltimosMesesDTO> lista = receitaPorMes.entrySet().stream()
+                .map(entry -> {
+                    String[] partes = entry.getKey().split("-");
+                    Integer ano = Integer.parseInt(partes[0]);
+                    Meses mes = Meses.valueOf(partes[1]);
+                    return new ReceitaUltimosMesesDTO(mes, ano, entry.getValue());
+                })
+                .sorted(Comparator.comparing(ReceitaUltimosMesesDTO::getAno)
+                        .thenComparing(dto -> dto.getMes().ordinal()))
+                .collect(Collectors.toList());
+
+        return lista;
     }
 }
