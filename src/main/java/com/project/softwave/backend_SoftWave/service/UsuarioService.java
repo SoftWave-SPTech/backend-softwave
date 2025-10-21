@@ -159,15 +159,14 @@ public class UsuarioService {
     public void editarEmail(String EmailAntigo, String novoEmail) {
         Usuario usuario = usuarioRepository.findByEmail(EmailAntigo)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
-//        System.out.println("Email antigo: " + EmailAntigo);
-//        System.out.println("Novo email: " + novoEmail);
         if (usuarioRepository.existsByEmail(novoEmail)) {
             throw new EntidadeConflitoException("Já existe um usuário cadastrado com este email!");
         }
 
-
         usuario.setEmail(novoEmail);
+        //TODO Chamar endpoint API EMAIL para Envair Token de Primeiro Acesso novamente para novo Email
         emailService.enviarEmailPrimeiroAcesso(novoEmail, usuario.getTokenPrimeiroAcesso());
+        //
         usuarioRepository.save(usuario);
     }
 
