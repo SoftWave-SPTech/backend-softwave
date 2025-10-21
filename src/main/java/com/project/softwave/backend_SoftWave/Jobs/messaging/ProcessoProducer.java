@@ -9,7 +9,6 @@ public class ProcessoProducer {
 
     private final RabbitTemplate rabbitTemplate;
 
-    // Substitua pelos valores reais ou importe de RabbitMQConfig
     private static final String EXCHANGE = "exchange_name";
     private static final String QUEUE = "queue_name";
 
@@ -30,7 +29,6 @@ public class ProcessoProducer {
         try {
             rabbitTemplate.convertAndSend(EXCHANGE, QUEUE, msg);
         } catch (Exception e) {
-            // Log o erro (use um logger apropriado, como SLF4J)
             throw new MessageSendingException("Falha ao enviar a mensagem para o RabbitMQ.", e);
         }
     }
@@ -42,7 +40,6 @@ public class ProcessoProducer {
         return msg;
     }
 
-    // Exceção personalizada para falhas no envio de mensagens
     public static class MessageSendingException extends RuntimeException {
         public MessageSendingException(String message, Throwable cause) {
             super(message, cause);
