@@ -60,6 +60,9 @@ public class UsuarioService {
     @Autowired
     private DocumentoPessoalRepository documentoPessoalRepository;
 
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
+
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
                 usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
@@ -90,7 +93,17 @@ public class UsuarioService {
                 .map(GrantedAuthority::getAuthority)
                 .orElse("ROLE_USER");
 
-        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
+        // Busca a foto atual do S3 se existir
+        String fotoUrl = null;
+        if (usuarioAutenticado.getFoto() != null) {
+            try {
+                fotoUrl = fotoPerfilService.buscarPorId(usuarioAutenticado.getId());
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+            }
+        }
+        
+        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, fotoUrl);
     }
 
     public UsuarioLoginDto primeiroAcesso(UsuarioPrimeiroAcessoDTO usuario) {
@@ -276,6 +289,16 @@ public class UsuarioService {
             nome = null;
         }
 
+        // Busca a foto atual do S3 se existir
+        String fotoUrl = null;
+        if (usuario.getFoto() != null) {
+            try {
+                fotoUrl = fotoPerfilService.buscarPorId(usuario.getId());
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+            }
+        }
+
         return new UsuarioDocumentosDTO(
                 usuario.getId(),
                 nome,
@@ -283,7 +306,7 @@ public class UsuarioService {
                 usuario.getAtivo(),
                 usuario.getTelefone(),
                 usuario.getEmail(),
-                usuario.getFoto(),
+                fotoUrl,
                 documentosDTO
         );
     }

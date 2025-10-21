@@ -3,6 +3,7 @@ package com.project.softwave.backend_SoftWave.service;
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.integracao.S3MicroserviceClient;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,11 +34,13 @@ public class FotoPerfilService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private S3MicroserviceClient s3MicroserviceClient;
+
     @Value("${file.PASTA_FOTOS_PERFIS}")
     private String PASTA_FOTOS_PERFIS;
 
     public String atualizarFotoPerfil(Integer id, MultipartFile fotoPerfil) throws IOException {
-
 
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
@@ -46,35 +49,60 @@ public class FotoPerfilService {
 
         Usuario usuario = usuarioOpt.get();
 
-        // Deleta a foto antiga, se existir
+        // Deleta a foto antiga do S3, se existir
         if (usuario.getFoto() != null) {
-            Path fotoAntigaPath = Paths.get(usuario.getFoto());
-            Files.deleteIfExists(fotoAntigaPath);
+            try {
+                String key;
+                
+                // Se é uma URL completa, extrai a key
+                if (usuario.getFoto().contains("softwave-arquivos-prod.s3.amazonaws.com")) {
+                    key = usuario.getFoto().replace("https://softwave-arquivos-prod.s3.amazonaws.com/", "");
+                } else {
+                    // Se já é uma key, usa diretamente
+                    key = usuario.getFoto();
+                }
+                
+                s3MicroserviceClient.deleteFile(key);
+            } catch (Exception e) {
+                System.err.println("Erro ao deletar foto antiga do S3: " + e.getMessage());
+            }
         }
 
-        // Cria o diretório, se necessário
-        File diretorio = new File(PASTA_FOTOS_PERFIS);
-        if (!diretorio.exists()) {
-            diretorio.mkdirs();
-        }
+        // Upload da nova foto para o S3
+        String nomeArquivo = "perfil_" + id + "_" + fotoPerfil.getOriginalFilename();
+        com.project.softwave.backend_SoftWave.integracao.UploadResponse uploadResponse = s3MicroserviceClient.uploadFile("perfis", fotoPerfil);
 
-        // Salva a nova foto
-        String novoNomeArquivo = "perfil_" + id + "_" + fotoPerfil.getOriginalFilename();
-        Path caminhoFoto = Paths.get(PASTA_FOTOS_PERFIS, novoNomeArquivo);
-        Files.write(caminhoFoto, fotoPerfil.getBytes());
-
-        // Atualiza a URL no banco de dados
-        usuario.setFoto(caminhoFoto.toString());
+        // Salva a key no banco de dados (não a URL completa)
+        usuario.setFoto(uploadResponse.getKey());
         usuarioRepository.save(usuario);
 
-        return "http://localhost:8080/" + usuario.getFoto();
+        // Retorna URL pré-assinada para uso imediato
+        return s3MicroserviceClient.generatePresignedUrl(uploadResponse.getKey());
     }
 
     public void deletarFotoPerfil(Integer id) throws IOException{
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
-        Files.deleteIfExists(Paths.get(usuario.getFoto()));
+        // Deleta a foto do S3, se existir
+        if (usuario.getFoto() != null) {
+            try {
+                String key;
+                
+                // Se é uma URL completa, extrai a key
+                if (usuario.getFoto().contains("softwave-arquivos-prod.s3.amazonaws.com")) {
+                    key = usuario.getFoto().replace("https://softwave-arquivos-prod.s3.amazonaws.com/", "");
+                } else {
+                    // Se já é uma key, usa diretamente
+                    key = usuario.getFoto();
+                }
+                
+                s3MicroserviceClient.deleteFile(key);
+            } catch (Exception e) {
+                System.err.println("Erro ao deletar foto do S3: " + e.getMessage());
+            }
+        }
+
         usuario.setFoto(null);
         usuarioRepository.save(usuario);
     }
@@ -83,6 +111,16 @@ public class FotoPerfilService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
+        if (usuario.getFoto() == null) {
+            return null;
+        }
+
+        // Se a foto é uma key (não contém http), gera URL pré-assinada
+        if (!usuario.getFoto().startsWith("http")) {
+            return s3MicroserviceClient.generatePresignedUrl(usuario.getFoto());
+        }
+
+        // Se já é uma URL, retorna como está (para compatibilidade com dados antigos)
         return usuario.getFoto();
     }
 }
