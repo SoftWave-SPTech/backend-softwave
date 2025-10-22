@@ -2,16 +2,13 @@ package com.project.softwave.backend_SoftWave.service;
 
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioJuridicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
-import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.AdvogadoFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +29,7 @@ public class AdvogadoFisicoService {
             throw new EntidadeConflitoException("Email, CPF ou RG já existe!");
         }
             advogadoFisico.setRole(Role.ROLE_ADVOGADO);
+            advogadoFisico.setTentativasFalhasLogin(0);
             advogadoFisico.setAtivo(false);
             return   advogadoFisicoRepository.save(advogadoFisico);
     }
@@ -43,7 +41,7 @@ public class AdvogadoFisicoService {
             throw new NoContentException("Nenhum advogado jurídico encontrado!");
         }
 
-            return advogadosFisicos;
+        return advogadosFisicos;
     }
 
     @Transactional
