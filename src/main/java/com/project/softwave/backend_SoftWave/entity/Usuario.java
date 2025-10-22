@@ -50,6 +50,8 @@ public class Usuario {
 
     private Boolean ativo;
 
+    private Integer tentativaFalhaLogin;
+
     private Boolean statusUsuario;
 
     private String tokenRecuperacaoSenha;
@@ -261,6 +263,14 @@ public class Usuario {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public Integer getTentativaFalhaLogin() {
+        return tentativaFalhaLogin;
+    }
+
+    public void setTentativaFalhaLogin(Integer tentativaFalhaLogin) {
+        this.tentativaFalhaLogin = tentativaFalhaLogin;
     }
 
     public String getTokenRecuperacaoSenha() {
