@@ -227,7 +227,7 @@ public class ProcessoService {
         ProcessoCompletoDTO dto = new ProcessoCompletoDTO(processo);
 
         // 🔸 Busca movimentações no banco
-        List<UltimasMovimentacoes> movimentacoes = movimentacoesRepository.findByProcessoId(processo.getId());
+        List<UltimasMovimentacoes> movimentacoes = movimentacoesRepository.findByProcessoIdOrderByDataDesc(processo.getId());
 
         // 🔸 Converte movimentações para DTO
         List<UltimasMovimentacoesDTO> movimentacoesDTO = movimentacoes.stream()

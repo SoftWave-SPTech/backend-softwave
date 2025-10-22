@@ -8,7 +8,6 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioJuridicoRepositor
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -29,6 +28,7 @@ public class UsuarioJuridicoService {
                 throw new EntidadeConflitoException("Email ou CNPJ já cadastrado.");
             }
             usuarioJuridico.setRole(Role.ROLE_USUARIO);
+            usuarioJuridico.setTentativasFalhasLogin(0);
             usuarioJuridico.setAtivo(false);
             UsuarioJuridico usuarioJuridicoCadastrado = usuariosJuridicosRepository.save(usuarioJuridico);
             return usuarioJuridicoCadastrado;
@@ -65,6 +65,7 @@ public class UsuarioJuridicoService {
         usuarioJuridico.setCidade(dto.getCidade());
         usuarioJuridico.setNumero(dto.getNumero());
         usuarioJuridico.setRepresentante(dto.getRepresentante());
+        usuarioJuridico.setComplemento(dto.getComplemento());
 
         return usuariosJuridicosRepository.save(usuarioJuridico);
     }

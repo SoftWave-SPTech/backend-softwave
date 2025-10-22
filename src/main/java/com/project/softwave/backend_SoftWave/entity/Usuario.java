@@ -50,6 +50,8 @@ public class Usuario {
 
     private Boolean ativo;
 
+    private Integer tentativasFalhasLogin;
+
     private String tokenRecuperacaoSenha;
     private String tokenPrimeiroAcesso;
 
@@ -315,5 +317,13 @@ public class Usuario {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Integer getTentativasFalhasLogin() {
+        return tentativasFalhasLogin;
+    }
+
+    public void setTentativasFalhasLogin(Integer tentativasFalhasLogin) {
+        this.tentativasFalhasLogin = tentativasFalhasLogin;
     }
 }

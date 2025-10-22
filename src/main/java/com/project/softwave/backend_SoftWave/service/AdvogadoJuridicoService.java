@@ -8,7 +8,6 @@ import com.project.softwave.backend_SoftWave.repository.AdvogadoJuridicoReposito
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -28,6 +27,7 @@ public class AdvogadoJuridicoService {
             throw new EntidadeConflitoException("Email ou CNPJ já existe!");
         }
         advogadoJuridico.setRole(Role.ROLE_ADVOGADO);
+        advogadoJuridico.setTentativasFalhasLogin(0);
         advogadoJuridico.setAtivo(false);
         return advogadoJuridicoRepository.save(advogadoJuridico);
     }
@@ -58,6 +58,7 @@ public class AdvogadoJuridicoService {
         advogado.setCidade(dto.getCidade());
         advogado.setNumero(dto.getNumero());
         advogado.setRepresentante(dto.getRepresentante());
+        advogado.setComplemento(dto.getComplemento());
 
         return advogadoJuridicoRepository.save(advogado);
     }

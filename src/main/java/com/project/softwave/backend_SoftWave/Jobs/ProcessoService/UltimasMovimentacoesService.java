@@ -34,7 +34,7 @@ public class UltimasMovimentacoesService {
     }
 
     public List<UltimasMovimentacoes> buscarPorIdProcesso(Integer processoId) {
-        List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesRepository.findByProcessoId(processoId);
+        List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesRepository.findByProcessoIdOrderByDataDesc(processoId);
         if (movimentacoes.isEmpty()) {
             throw new NoContentException("Nenhuma movimentação encontrada para este processo!");
         }
