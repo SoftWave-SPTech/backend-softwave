@@ -57,10 +57,7 @@ public class SecurityConfiguracao {
             ,new AntPathRequestMatcher("/h2-console/**")
             ,new AntPathRequestMatcher("/h2-console/**/**")
             ,new AntPathRequestMatcher("/error/**")
-            ,new AntPathRequestMatcher("/analise-processo/**")
-            ,new AntPathRequestMatcher("/analise-processo/por-movimentacao/**")
-            ,new AntPathRequestMatcher("/ultimas-movimentacoes/**")
-            ,new AntPathRequestMatcher(("/**"))
+            ,new AntPathRequestMatcher("/**")// Libera todo o acesso (apenas para desenvolvimento, remover em produção)
 
     };
 
@@ -118,6 +115,8 @@ public class SecurityConfiguracao {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
         configuracao.applyPermitDefaultValues();
+        configuracao.setAllowCredentials(true);
+        configuracao.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:3000"));// URL do frontend
         configuracao.setAllowedMethods(
                 Arrays.asList(
                         HttpMethod.GET.name(),

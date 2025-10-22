@@ -10,6 +10,8 @@ public class DocumentoProcessoDto {
     private String nomeArquivo;
     @NotBlank
     private String urlArquivo;
+    private String s3Key;
+
 
     public DocumentoProcessoDto() {
     }
@@ -40,9 +42,11 @@ public class DocumentoProcessoDto {
         dto.setId(documento.getId());
         dto.setNomeArquivo(documento.getNomeArquivo());
         dto.setUrlArquivo(documento.getUrlArquivo());
+        dto.setS3Key(documento.getS3Key());
 //        dto.setFkCliente(documento.getFkCliente());
         return dto;
     }
+
 
     public Integer getId() {
         return id;
@@ -66,5 +70,13 @@ public class DocumentoProcessoDto {
 
     public void setUrlArquivo(String urlArquivo) {
         this.urlArquivo = urlArquivo;
+    }
+
+    public String getS3Key() {
+        return s3Key;
+    }
+
+    public void setS3Key(String s3Key) {
+        this.s3Key = s3Key;
     }
 }

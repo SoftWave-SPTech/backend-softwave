@@ -35,6 +35,7 @@ public class UsuarioController {
             description = "Retorna uma lista de advogados cadastrados no sistema."
     )
     @GetMapping("/listar-advogados")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<AdvogadosResponseDTO>> listarAdvogados() {
         List<AdvogadosResponseDTO> advogados = pesquisaService.listarAdvogados();
 
@@ -46,6 +47,7 @@ public class UsuarioController {
             description = "Atualiza o email do usuário e reenvia o token de autenticação."
     )
     @PutMapping("/editar-email/{email}/{novoEmail}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Void> editarEmailEReenviarToken(
             @PathVariable String email,
             @PathVariable String novoEmail
@@ -54,7 +56,8 @@ public class UsuarioController {
         return ResponseEntity.status(200).build();
     }
 
-    @GetMapping("/listar-usuarios-e-processos")
+    @GetMapping("/listar-usarios-e-procesos")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuarioProcessosDTO>> listarUsuariosEProcessos() {
         List<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos();
 
@@ -66,6 +69,7 @@ public class UsuarioController {
             description = "Retorna uma lista de clientes cadastrados no sistema."
     )
     @GetMapping("/listar-clientes")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuariosResponseDTO>> listarClientes() {
         List<UsuariosResponseDTO> clientes = pesquisaService.listarClientes();
 
@@ -94,7 +98,7 @@ public class UsuarioController {
 
         fotoPerfilService.deletarFotoPerfil(id);
 
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body("Foto deletada com sucesso");
     }
 
     @Operation(summary = "Buscar a foto de perfil dos usuários", method = "GET")
@@ -107,6 +111,7 @@ public class UsuarioController {
     }
 
     @PutMapping("atualizar-role/{id}/{role}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> atualizarRole(
             @PathVariable Integer id,
             @PathVariable Integer role
@@ -116,6 +121,7 @@ public class UsuarioController {
     }
 
     @PutMapping("atualizar-status/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> atualizarRole(
             @PathVariable Integer id
     ){
@@ -124,6 +130,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/usuario-documentos/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioDocumentosDTO> trazerUsuarioDocumentos(
             @PathVariable Integer id
     ){

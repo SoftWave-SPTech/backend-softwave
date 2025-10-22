@@ -30,6 +30,7 @@ public class UltimasMovimentacoesController {
             @ApiResponse(responseCode = "200", description = "Listagem realizada com sucesso"),
     })
     @GetMapping("/ordenadas")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UltimasMovimentacoesDTO>> listarMovimentacoesOrdenadasPorData() {
         List<UltimasMovimentacoes> movimentacoes = ultimasMovimentacoesService.listarMovimentacoesOrdenadasPorData();
         List<UltimasMovimentacoesDTO> movimentacoesDTO = movimentacoes.stream()
