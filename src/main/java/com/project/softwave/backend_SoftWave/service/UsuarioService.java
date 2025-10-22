@@ -58,6 +58,8 @@ public class UsuarioService {
     @Autowired
     private DocumentoPessoalRepository documentoPessoalRepository;
 
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
 
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
         try {
@@ -94,16 +96,17 @@ public class UsuarioService {
                     .map(GrantedAuthority::getAuthority)
                     .orElse("ROLE_USER");
 
-            return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
-
-        } catch (AuthenticationException e) {
-            // Senha incorreta → incrementa contador
-            usuarioRepository.findByEmail(usuarioLoginDto.getEmail()).ifPresent(usuario -> {
-                usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
-                usuarioRepository.save(usuario);
-            });
-            throw new TooManyRequestsException("Muitas tentativas de login! Por favor, faça o reset de senha!");
+        // Busca a foto atual do S3 se existir
+        String fotoUrl = null;
+        if (usuarioAutenticado.getFoto() != null) {
+            try {
+                fotoUrl = fotoPerfilService.buscarPorId(usuarioAutenticado.getId());
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+            }
         }
+        
+        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, fotoUrl);
     }
 
 
@@ -294,6 +297,16 @@ public class UsuarioService {
             nome = null;
         }
 
+        // Busca a foto atual do S3 se existir
+        String fotoUrl = null;
+        if (usuario.getFoto() != null) {
+            try {
+                fotoUrl = fotoPerfilService.buscarPorId(usuario.getId());
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+            }
+        }
+
         return new UsuarioDocumentosDTO(
                 usuario.getId(),
                 nome,
@@ -301,7 +314,7 @@ public class UsuarioService {
                 usuario.getAtivo(),
                 usuario.getTelefone(),
                 usuario.getEmail(),
-                usuario.getFoto(),
+                fotoUrl,
                 documentosDTO
         );
     }

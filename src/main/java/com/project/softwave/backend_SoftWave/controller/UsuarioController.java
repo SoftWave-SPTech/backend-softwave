@@ -98,7 +98,7 @@ public class UsuarioController {
 
         fotoPerfilService.deletarFotoPerfil(id);
 
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body("Foto deletada com sucesso");
     }
 
     @Operation(summary = "Buscar a foto de perfil dos usuários", method = "GET")
