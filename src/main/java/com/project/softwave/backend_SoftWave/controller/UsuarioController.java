@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,10 +56,12 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar-usuarios-e-processos")
-    public ResponseEntity<List<UsuarioProcessosDTO>> listarUsuariosEProcessos() {
-        List<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos();
-
-        return ResponseEntity.status(200).body(listaUsuarios);
+    public ResponseEntity<Page<UsuarioProcessosDTO>> listarUsuariosEProcessos(
+            @RequestParam(defaultValue = "0") int page, // Página padrão 0
+            @RequestParam(defaultValue = "6") int size)
+    { // Tamanho padrão 10
+        Page<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos(page, size);
+        return ResponseEntity.ok(listaUsuarios); // Retorna a lista paginada
     }
 
     @Operation(

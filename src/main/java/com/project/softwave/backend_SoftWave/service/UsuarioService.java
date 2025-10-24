@@ -12,6 +12,9 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -253,19 +256,18 @@ public class UsuarioService {
         }
     }
 
-    public List<UsuarioProcessosDTO> listarUsuariosEProcessos(){
+    public Page<UsuarioProcessosDTO> listarUsuariosEProcessos(int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page, size); // Cria um objeto Pageable
+        Page<Usuario> todos = usuarioRepository.findAll(pageable); // Busca usuários paginados
 
-        List<Usuario> todos = usuarioRepository.findAll();
-
-        List<UsuarioProcessosDTO> usuarios = todos.stream()
-                .map(UsuarioProcessosDTO::new)
-                .toList();
-
-        for (UsuarioProcessosDTO usuarioDaVez : usuarios){
-            usuarioDaVez.setProcesos(processoService.listarProcessoPorIdUsuario(usuarioDaVez.getId()));
-        }
-
-        return  usuarios;
+        // Mapeia os usuários para DTO e carrega os processos
+        return todos.map(usuario ->
+        {
+            UsuarioProcessosDTO usuarioDTO = new UsuarioProcessosDTO(usuario); // Mapeia para DTO
+            usuarioDTO.setProcesos(processoService.listarProcessoPorIdUsuario(usuario.getId())); // Carrega processos
+            return usuarioDTO;
+        });
     }
 
     public UsuarioDocumentosDTO buscarUsuarioComDocumentos(Integer idUsuario) {
