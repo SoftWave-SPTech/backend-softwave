@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.AdvogadoFisicoRepository;
+import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,16 @@ public class AdvogadoFisicoService {
     @Autowired
     private UserValidator validarUsuarios;
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
     public AdvogadoFisico cadastrar(AdvogadoFisico advogadoFisico) {
         if (advogadoFisicoRepository.findByEmailEqualsOrCpfEqualsOrRgEquals(
                 advogadoFisico.getEmail(), advogadoFisico.getCpf(), advogadoFisico.getRg()).isPresent()){
             throw new EntidadeConflitoException("Email, CPF ou RG já existe!");
+        }
+        if (usuarioRepository.oabExistente(advogadoFisico.getOab()).isPresent()) {
+            throw new EntidadeConflitoException("OAB já cadastrada!");
         }
             advogadoFisico.setRole(Role.ROLE_ADVOGADO);
             advogadoFisico.setTentativasFalhasLogin(0);
