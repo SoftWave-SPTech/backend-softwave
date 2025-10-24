@@ -14,6 +14,8 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -150,33 +152,35 @@ public class RegistroFinanceiroService {
     }
 
     public List<ReceitaUltimosMesesDTO> getReceitaUltimos6Meses() {
-        List<RegistroFinanceiro> registros = registroFinanceiroRepository.findUltimos6MesesRegistros();
+        List<Object[]> resultados = registroFinanceiroRepository.findUltimos6MesesRegistros();
 
-        // Agrupa os registros por (ano, mes)
-        Map<String, Double> receitaPorMes = new HashMap<>();
+        // Cria mapa ano+mes -> receita
+        Map<String, BigDecimal> mapaReceita = resultados.stream()
+                .collect(Collectors.toMap(
+                        r -> r[1] + "-" + r[0], // mes-ano
+                        r -> (BigDecimal) r[2]
+                ));
 
-        for (RegistroFinanceiro r : registros) {
+        List<ReceitaUltimosMesesDTO> lista = new ArrayList<>();
 
-            Double valorTotalProcesso = r.getValorPagar() + r.getValorPago();
-            Double valorHonorarioSucumbencia = r.getProcesso().getNormalizadoValorAcao() * r.getHonorarioSucumbencia();
-            Double totalReceber = valorTotalProcesso + valorHonorarioSucumbencia;
+        // Pega últimos 6 meses
+        LocalDate hoje = LocalDate.now();
+        for (int i = 5; i >= 0; i--) {
+            LocalDate mesReferencia = hoje.minusMonths(i);
+            int mes = mesReferencia.getMonthValue();
+            int ano = mesReferencia.getYear();
 
-            String chave = r.getAno() + "-" + r.getMes();
-            receitaPorMes.merge(chave, totalReceber, Double::sum);
+            String key = mes + "-" + ano;
+            BigDecimal receita = mapaReceita.getOrDefault(key, BigDecimal.ZERO);
+
+            lista.add(new ReceitaUltimosMesesDTO(
+                    mesReferencia.getMonth().name(), // "JANEIRO", "FEVEREIRO"...
+                    ano,
+                    receita
+            ));
         }
-
-        // Converte o Map em uma lista de DTOs ordenada
-        List<ReceitaUltimosMesesDTO> lista = receitaPorMes.entrySet().stream()
-                .map(entry -> {
-                    String[] partes = entry.getKey().split("-");
-                    Integer ano = Integer.parseInt(partes[0]);
-                    Meses mes = Meses.valueOf(partes[1]);
-                    return new ReceitaUltimosMesesDTO(mes, ano, entry.getValue());
-                })
-                .sorted(Comparator.comparing(ReceitaUltimosMesesDTO::getAno)
-                        .thenComparing(dto -> dto.getMes().ordinal()))
-                .collect(Collectors.toList());
 
         return lista;
     }
+
 }

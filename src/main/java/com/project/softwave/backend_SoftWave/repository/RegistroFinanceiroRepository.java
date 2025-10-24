@@ -9,15 +9,21 @@ import java.util.List;
 public interface RegistroFinanceiroRepository extends JpaRepository<RegistroFinanceiro, Integer> {
 
     @Query(value = """
-    SELECT * FROM registro_financeiro r
-    WHERE (r.ano, r.mes) IN (
-        SELECT ano, mes FROM registro_financeiro
-        GROUP BY ano, mes
-        ORDER BY ano DESC, mes DESC
-        LIMIT 6
-    )
-    ORDER BY ano DESC, mes DESC
+            SELECT\s
+                r.mes,
+                r.ano,
+                SUM(
+                    (COALESCE(r.valor_pago, 0) + COALESCE(r.valor_pagar, 0)) +
+                    (COALESCE(p.normalizado_valor_acao, 0) * COALESCE(r.honorario_sucumbencia, 0))
+                ) AS valor
+            FROM registro_financeiro r
+            JOIN processo p ON r.processo_id = p.id
+            WHERE r.ano = YEAR(CURDATE())  -- ano atual dinamicamente
+            GROUP BY ano, mes
+            ORDER BY ano DESC, mes DESC
+            LIMIT 6;
     """, nativeQuery = true)
-    List<RegistroFinanceiro> findUltimos6MesesRegistros();
+    List<Object[]> findUltimos6MesesRegistros();
+
 
 }
