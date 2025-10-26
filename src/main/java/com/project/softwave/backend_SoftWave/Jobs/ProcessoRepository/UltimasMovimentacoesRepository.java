@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UltimasMovimentacoesRepository extends JpaRepository<UltimasMovimentacoes, Integer> {
-    Optional<UltimasMovimentacoes> findByMovimentoAndData(String movimento, String data);
+    Optional<UltimasMovimentacoes> findByMovimentoAndData(String movimento, LocalDate data);
 
     @Query("SELECT u FROM UltimasMovimentacoes u ORDER BY u.data DESC")
     List<UltimasMovimentacoes> findAllOrderedByDataDesc();

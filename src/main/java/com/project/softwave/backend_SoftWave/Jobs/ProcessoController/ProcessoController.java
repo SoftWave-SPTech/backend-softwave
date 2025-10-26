@@ -58,21 +58,21 @@ public class ProcessoController {
         return ResponseEntity.ok("Usuário removido do processo com sucesso.");
     }
 
-    @PostMapping
-    public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
-        String numeroProcesso = novoProcesso.getNumeroProcesso();
-        ParametrosAPI.resetParametros();
-        ParametrosAPI.setParametroProcesso(numeroProcesso);
-        try {
-            processoGrau1API.getApiParams();
-            Processo processoAtual = processoService.buscarPorNumeroProcesso(numeroProcesso);
-            processoService.atualizarProcessoComUsuarios(processoAtual, novoProcesso);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado com sucesso!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar o processo: " + e.getMessage());
-        }
-
-    }
+//    @PostMapping
+//    public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
+//        String numeroProcesso = novoProcesso.getNumeroProcesso();
+//        ParametrosAPI.resetParametros();
+//        ParametrosAPI.setParametroProcesso(numeroProcesso);
+//        try {
+//            processoGrau1API.getApiParams();
+//            Processo processoAtual = processoService.buscarPorNumeroProcesso(numeroProcesso);
+//            processoService.atualizarProcessoComUsuarios(processoAtual, novoProcesso);
+//            return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado com sucesso!");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar o processo: " + e.getMessage());
+//        }
+//
+//    }
     //===========================
 
 //    @GetMapping("/usuario-id/{id}")

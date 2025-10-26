@@ -2,6 +2,8 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 public class UltimasMovimentacoes {
 //    {
@@ -13,7 +15,7 @@ public class UltimasMovimentacoes {
     @Column(name = "id", nullable = false)
     private Integer id;
     // @Many to one (fk_processo)
-    private String data;
+    private LocalDate data;
 
     @Column(columnDefinition = "MEDIUMTEXT")
     private String movimento;
@@ -38,11 +40,11 @@ public class UltimasMovimentacoes {
         this.id = id;
     }
 
-    public String getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(LocalDate data) {
         this.data = data;
     }
 
