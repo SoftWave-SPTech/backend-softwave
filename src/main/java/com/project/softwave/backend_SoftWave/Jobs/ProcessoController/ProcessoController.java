@@ -1,17 +1,12 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoController;
 
-import com.project.softwave.backend_SoftWave.Jobs.ParametrosAPI;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDTO;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
 import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoCompletoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
-import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,11 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-import java.util.stream.Collectors;
-
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/processos")
@@ -35,8 +25,6 @@ public class ProcessoController {
     @Autowired
     private ProcessoService processoService;
 
-    @Autowired
-    private ProcessoGrau1API processoGrau1API;
 
     @Operation(summary = "Vinculação de usuarios aos processos", method = "POST")
     @ApiResponses(value = {

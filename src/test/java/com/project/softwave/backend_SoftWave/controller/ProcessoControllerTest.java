@@ -1,10 +1,8 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDTO;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
-import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
@@ -18,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -39,9 +36,6 @@ class ProcessoControllerTest {
     @MockBean
     private ProcessoService processoService;
 
-    @SuppressWarnings("removal")
-    @MockBean
-    private ProcessoGrau1API processoGrau1API;
 
     @Test
     void vincularUsuarios_ComDadosValidos_DeveRetornar200() throws Exception {
