@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoController;
 
+import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDTO;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
 import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
@@ -46,9 +47,9 @@ public class ProcessoController {
         return ResponseEntity.ok("Usuário removido do processo com sucesso.");
     }
 
-//    @PostMapping
-//    public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
-//        String numeroProcesso = novoProcesso.getNumeroProcesso();
+    @PostMapping
+    public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
+        String numeroProcesso = novoProcesso.getNumeroProcesso();
 //        ParametrosAPI.resetParametros();
 //        ParametrosAPI.setParametroProcesso(numeroProcesso);
 //        try {
@@ -59,9 +60,9 @@ public class ProcessoController {
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar o processo: " + e.getMessage());
 //        }
-//
-//    }
-    //===========================
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado com sucesso!");
+    }
 
 //    @GetMapping("/usuario-id/{id}")
 //    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
@@ -72,9 +73,8 @@ public class ProcessoController {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 //        }
 //    }
-//
 
-    //===========================
+
   @Operation(summary = "Buscar processo por ID", method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
