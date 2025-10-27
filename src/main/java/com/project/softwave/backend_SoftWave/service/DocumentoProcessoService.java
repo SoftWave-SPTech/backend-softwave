@@ -10,13 +10,8 @@ import com.project.softwave.backend_SoftWave.repository.DocumentoProcessoReposit
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -27,6 +22,10 @@ public class DocumentoProcessoService {
 
     @Autowired
     private ProcessoRepository processoRepository;
+
+    @Autowired
+    private com.project.softwave.backend_SoftWave.integracao.S3MicroserviceClient s3MicroserviceClient;
+
 
     @Value("${file.PASTA_DOCUMENTOS_PROCESSOS}")
     private String PASTA_DOCUMENTOS_PROCESSOS;
@@ -47,35 +46,43 @@ public class DocumentoProcessoService {
         );
     }
 
-    public String cadastrarDocumento(DocumentoProcessoCadastroDto documento) throws IOException {File diretorio = new File(PASTA_DOCUMENTOS_PROCESSOS);
-       if (!diretorio.exists()) {
-            diretorio.mkdirs();
-       }
+    public String cadastrarDocumento(DocumentoProcessoCadastroDto documento) throws IOException {
+        // Upload via microserviço
+        var uploadResponse = s3MicroserviceClient.uploadFile("docs/processos", documento.getDocumentoProcesso());
+        String url = uploadResponse.getUrl();
+        String key = uploadResponse.getKey();
 
-        String nomeOriginalArquivo = documento.getDocumentoProcesso().getOriginalFilename();
-        Path caminhoCompletoDocumento = Paths.get(diretorio.toString(), nomeOriginalArquivo);
-        Files.write(caminhoCompletoDocumento, documento.getDocumentoProcesso().getBytes());
 
         Processo processo = processoRepository.findById(documento.getIdProcesso())
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado!"));
 
         DocumentosProcesso documentoParaSalvar = new DocumentosProcesso(
                 documento.getNomeArquivo(),
-                caminhoCompletoDocumento.toString(),
+                url,
+                key,
                 processo
         );
         repository.save(documentoParaSalvar);
 
-        return caminhoCompletoDocumento.toString();
+        return url;
     }
 
-    public void deletarDocumento(Integer id) throws IOException{
+
+    public void deletarDocumento(Integer id) throws IOException {
         DocumentosProcesso documentoProcesso = repository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Documento não encontrado!"));
 
-        Files.deleteIfExists(Paths.get(documentoProcesso.getUrlArquivo()));
+        // Extrai a key a partir da URL pública
+        String key = documentoProcesso.getUrlArquivo()
+                .replace("https://softwave-arquivos-prod.s3.amazonaws.com/", "");
+
+        // Solicita exclusão ao microserviço
+        s3MicroserviceClient.deleteFile(key);
+
+        // Remove o registro do banco
         repository.deleteById(id);
     }
+
 
     public List<DocumentosProcesso> buscarDocumentosProcesso(Integer id){
         if(processoRepository.findById(id).isPresent()){
@@ -84,4 +91,9 @@ public class DocumentoProcessoService {
             throw new EntidadeNaoEncontradaException("Processo não encontrado!");
         }
     }
+
+    public String gerarPresignedUrl(String key) {
+        return s3MicroserviceClient.generatePresignedUrl(key);
+    }
+
 }

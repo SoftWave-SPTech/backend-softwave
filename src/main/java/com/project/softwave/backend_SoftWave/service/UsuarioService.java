@@ -61,19 +61,19 @@ public class UsuarioService {
     @Autowired
     private DocumentoPessoalRepository documentoPessoalRepository;
 
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
 
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
         try {
             final UsernamePasswordAuthenticationToken credentials =
                     new UsernamePasswordAuthenticationToken(usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
 
-            final Authentication authentication = this.authenticationManager.authenticate(credentials);
-
             Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
-                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado!"));
+                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado! verifique com o administrador."));
 
             if (!usuarioAutenticado.getAtivo()) {
-                throw new ForbiddenException("Usuário inativo!");
+                throw new ForbiddenException("Usuário inativo!, realize o primeiro acesso ou verifique com o administrador.");
             }
 
             if(usuarioAutenticado.getTentativasFalhasLogin() >= 3){
@@ -81,6 +81,8 @@ public class UsuarioService {
             }
 
             // Login bem-sucedido → zera contador
+            final Authentication authentication = this.authenticationManager.authenticate(credentials);
+
             usuarioAutenticado.setTentativasFalhasLogin(0);
             usuarioRepository.save(usuarioAutenticado);
 
@@ -97,16 +99,30 @@ public class UsuarioService {
                     .map(GrantedAuthority::getAuthority)
                     .orElse("ROLE_USER");
 
+            String fotoUrl = null;
+              if (usuarioAutenticado.getFoto() != null) {
+                try {
+                    fotoUrl = fotoPerfilService.buscarPorId(usuarioAutenticado.getId());
+                } catch (Exception e) {
+                    System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+                }
+              }
+
             return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
 
-        } catch (AuthenticationException e) {
-            // Senha incorreta → incrementa contador
-            usuarioRepository.findByEmail(usuarioLoginDto.getEmail()).ifPresent(usuario -> {
-                usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
-                usuarioRepository.save(usuario);
-            });
-            throw new TooManyRequestsException("Muitas tentativas de login! Por favor, faça o reset de senha!");
-        }
+        } catch (Exception e) {
+            if(e.equals(AuthenticationException.class)){
+                // Senha incorreta → incrementa contador
+                Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioLoginDto.getEmail());
+                if (usuarioOpt.isPresent()) {
+                    Usuario usuario = usuarioOpt.get();
+                    usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
+                    usuarioRepository.save(usuario);
+                }
+                throw new LoginIncorretoException("Email ou senha inválidos!");
+            }
+            throw e;
+         }
     }
 
 
@@ -120,6 +136,8 @@ public class UsuarioService {
                             usuario.getEmail(),usuario.getTokenPrimeiroAcesso());
         if (possivelUsuario.isEmpty()) {
             throw new LoginIncorretoException("Email ou chave de acesso inválido");
+        }else {
+            possivelUsuario.get().setTentativasFalhasLogin(0);
         }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
@@ -155,15 +173,14 @@ public class UsuarioService {
     public void editarEmail(String EmailAntigo, String novoEmail) {
         Usuario usuario = usuarioRepository.findByEmail(EmailAntigo)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
-//        System.out.println("Email antigo: " + EmailAntigo);
-//        System.out.println("Novo email: " + novoEmail);
         if (usuarioRepository.existsByEmail(novoEmail)) {
             throw new EntidadeConflitoException("Já existe um usuário cadastrado com este email!");
         }
 
-
         usuario.setEmail(novoEmail);
+        //TODO Chamar endpoint API EMAIL para Envair Token de Primeiro Acesso novamente para novo Email
         emailService.enviarEmailPrimeiroAcesso(novoEmail, usuario.getTokenPrimeiroAcesso());
+        //
         usuarioRepository.save(usuario);
     }
 
@@ -171,7 +188,9 @@ public class UsuarioService {
     public void solicitarResetSenha(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
-
+        if(!usuario.getAtivo()){
+            throw new ForbiddenException("Usuário inativo!, realize o primeiro acesso ou verifique com o administrador.");
+        }
        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
         usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
@@ -210,7 +229,7 @@ public class UsuarioService {
 
     public List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo(){
 
-        List<Usuario> all = usuarioRepository.findAll();
+        List<Usuario> all = usuarioRepository.findClientes();
         List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo = new ArrayList<>();
         Integer ativos = 0;
         Integer inativos = 0;
@@ -219,11 +238,12 @@ public class UsuarioService {
 
         if(!all.isEmpty()){
             for(Usuario usuarioDaVez : all){
-                if (usuarioDaVez.getSenha().length() <= 8 && usuarioDaVez.getSenha().length() > 0){
-                    inativos++;
-                }else if(usuarioDaVez.getSenha().length() > 8){
-                    ativos++;
-                }
+               if(usuarioDaVez.getTokenPrimeiroAcesso() == null || usuarioDaVez.getTokenPrimeiroAcesso().isEmpty()){
+                   ativos++;
+               }else{
+                   inativos++;
+               }
+
             }
         }
 
@@ -296,6 +316,16 @@ public class UsuarioService {
             nome = null;
         }
 
+        // Busca a foto atual do S3 se existir
+        String fotoUrl = null;
+        if (usuario.getFoto() != null) {
+            try {
+                fotoUrl = fotoPerfilService.buscarPorId(usuario.getId());
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+            }
+        }
+
         return new UsuarioDocumentosDTO(
                 usuario.getId(),
                 nome,
@@ -303,7 +333,7 @@ public class UsuarioService {
                 usuario.getAtivo(),
                 usuario.getTelefone(),
                 usuario.getEmail(),
-                usuario.getFoto(),
+                fotoUrl,
                 documentosDTO
         );
     }

@@ -28,7 +28,7 @@ public class ParametrosAPI {
     }
 
     public static String getTOKEN() {
-        return "Oi6gXepBu6xDwEIxXHZxUDYL5zcAtapRZWk43ooJ";
+        return "OC49dhz5P96D0Er_N4VCaeg3e-YRa6Z02DX_e3MW";
     }
 
     public static String getTIMEOUT() {
