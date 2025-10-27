@@ -7,11 +7,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,27 +20,33 @@ public class PesquisaController {
     @Autowired
     private PesquisaService pesquisaService;
 
-  @io.swagger.v3.oas.annotations.Operation(
-    summary = "Lista todos os clientes com processos pelo ID do advogado vinculado",
-    description = "Retorna uma lista de clientes que possuem processos cadastrados."
-)
+
+    @Operation(
+            summary = "Lista todos os clientes com processos pelo ID do advogado vinculado",
+            description = "Retorna uma lista de clientes que possuem processos cadastrados."
+    )
     @GetMapping("/com-processos/advogado/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(@Valid @PathVariable Integer id) {
-        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesPorAdvogado(id);
+    public ResponseEntity<Page<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(
+            @Valid @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+
+        Page<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesPorAdvogado(id, page, size);
         return ResponseEntity.ok(clientes);
     }
 
-@io.swagger.v3.oas.annotations.Operation(
-    summary = "Lista todos os clientes com processos",
-    description = "Retorna uma lista de clientes que possuem processos cadastrados."
-)
-@GetMapping("/com-processos")
-@SecurityRequirement(name = "Bearer")
-public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesComProcessos() {
-    List<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesComProcessos();
-    return ResponseEntity.ok(clientes);
-}
+    @Operation(
+            summary = "Lista todos os clientes com processos",
+            description = "Retorna uma lista de clientes que possuem processos cadastrados."
+    )
+    @GetMapping("/com-processos")
+    public ResponseEntity<Page<ClienteComProcessosResponseDTO>> listarClientesComProcessos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+
+        Page<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesComProcessos(page, size);
+        return ResponseEntity.ok(clientes);
+    }
 
 @Operation(
     summary = "Filtra clientes por termo",

@@ -14,6 +14,10 @@ import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -29,17 +33,19 @@ public class PesquisaService {
     @Autowired
     private ProcessoRepository processoRepository;
 
-    public List<ClienteComProcessosResponseDTO> buscarClientesComProcessos() {
-        List<ClienteComProcessosResponseDTO> todos = usuarioRepository.findClientesComProcessos()
-                .stream()
+    public Page<ClienteComProcessosResponseDTO> buscarClientesComProcessos(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Usuario> usuariosPage = usuarioRepository.findClientesComProcessos(pageable);
+
+        List<ClienteComProcessosResponseDTO> clientes = usuariosPage.stream()
                 .map(ClienteComProcessosResponseDTO::toClienteComProcessosResponseDTO)
                 .toList();
 
-        if(todos.isEmpty()){
-            throw new NoContentException("Nenhuma pesquisa encontrado!");
+        if (clientes.isEmpty()) {
+            throw new NoContentException("Nenhuma pesquisa encontrada!");
         }
 
-        return todos;
+        return new PageImpl<>(clientes, pageable, usuariosPage.getTotalElements());
     }
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorSetor(String setor) {
@@ -117,7 +123,9 @@ public class PesquisaService {
         return todos;
     }
 
-    public List<ClienteComProcessosResponseDTO> buscarClientesPorAdvogado(Integer advogadoId) {
+
+    public Page<ClienteComProcessosResponseDTO> buscarClientesPorAdvogado(Integer advogadoId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         Usuario advogado = usuarioRepository.findById(advogadoId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Advogado não encontrado!"));
 
@@ -135,20 +143,16 @@ public class PesquisaService {
                 }
             }
         }
+
         // Remove advogados e mapeia para DTO
         List<ClienteComProcessosResponseDTO> todos = clientesUnicos.stream()
                 .filter(u -> !(u instanceof AdvogadoFisico || u instanceof AdvogadoJuridico))
                 .map(cliente -> ClienteComProcessosResponseDTO.toClienteComProcessosVinculadosAdvogadoResponseDTO(cliente, advogadoId))
                 .toList();
 
-        if(todos.isEmpty()){
-            throw new NoContentException("Nenhuma pesquisa encontrado!");
-        }
-
-        return todos;
+        // Transformar a lista em uma página
+        return new PageImpl<>(todos, pageable, todos.size());
     }
-
-
 
     public List<ClienteComProcessosResponseDTO> filtrarClientesPorStatus(String statusDescritivo) {
         String status;
@@ -194,7 +198,7 @@ public class PesquisaService {
                 .toList();
 
         if(todos.isEmpty()){
-            throw new NoContentException("Nenhuma pesquisa encontrado!");
+            throw new NoContentException("Nenhuma pesquisa encontrada!");
         }
 
         return todos;
