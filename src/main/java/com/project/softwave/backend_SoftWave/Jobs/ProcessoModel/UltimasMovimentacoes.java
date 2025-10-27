@@ -1,7 +1,6 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity

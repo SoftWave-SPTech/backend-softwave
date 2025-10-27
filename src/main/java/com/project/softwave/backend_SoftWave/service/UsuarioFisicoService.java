@@ -5,11 +5,11 @@ import com.project.softwave.backend_SoftWave.entity.Role;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioFisicoRepository;
 import com.project.softwave.backend_SoftWave.util.UserValidator;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -23,13 +23,16 @@ public class UsuarioFisicoService {
     private UserValidator validarUsuarios;
 
     public UsuarioFisico cadastrar(UsuarioFisico usuarioFisico) {
-        if (usuariosFisicosRepository.findByEmailEqualsOrCpfEqualsOrRgEquals(
-                usuarioFisico.getEmail(),usuarioFisico.getCpf(), usuarioFisico.getRg()).isPresent()) {
+        if (
+                usuariosFisicosRepository.findByEmailEqualsOrCpfEqualsOrRgEquals(
+                    usuarioFisico.getEmail(),usuarioFisico.getCpf(), usuarioFisico.getRg()
+                ).isPresent()
+        ) {
             throw new EntidadeConflitoException("Email, CPF ou RG já existe");
         }
         usuarioFisico.setRole(Role.ROLE_USUARIO);
+        usuarioFisico.setTentativasFalhasLogin(0);
         usuarioFisico.setAtivo(false);
-        usuarioFisico.setStatusUsuario(true);
         UsuarioFisico usuarioFisicoCadastrado = usuariosFisicosRepository.save(usuarioFisico);
         return usuarioFisicoCadastrado;
     }
@@ -39,7 +42,7 @@ public class UsuarioFisicoService {
         List<UsuarioFisico> usuariosFisicos = usuariosFisicosRepository.findAll();
 
         if (usuariosFisicos.isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Nenhum usuário encontrado");
+            throw new NoContentException("Nenhum usuário encontrado!");
         }
 
         return usuariosFisicos;
@@ -47,14 +50,14 @@ public class UsuarioFisicoService {
 
     public UsuarioFisico buscarPorId(Integer id) {
         return usuariosFisicosRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário Físico com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário Físico não encontrado!"));
     }
 
     @Transactional
     public UsuarioFisico atualizar(Integer id, UsuarioFisicoAtualizacaoDTO dto) {
 
         UsuarioFisico usuarioFisico = usuariosFisicosRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado com id: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         usuarioFisico.setNome(dto.getNome());
         usuarioFisico.setEmail(dto.getEmail());
@@ -64,6 +67,7 @@ public class UsuarioFisicoService {
         usuarioFisico.setBairro(dto.getBairro());
         usuarioFisico.setCidade(dto.getCidade());
         usuarioFisico.setNumero(dto.getNumero());
+        usuarioFisico.setComplemento(dto.getComplemento());
 
         return usuariosFisicosRepository.save(usuarioFisico);
     }

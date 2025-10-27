@@ -30,7 +30,7 @@ public class DocumentoPessoalController {
             @ApiResponse(responseCode = "409", description = "Documento pessoal já cadastrado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> cadastrarDocumento(
             @RequestParam("nomeArquivo") String nomeArquivo,
@@ -115,5 +115,19 @@ public class DocumentoPessoalController {
         service.deletarDocumento(id);
         return ResponseEntity.status(204).build();
     }
+
+    @Operation(summary = "Gera uma URL temporária para download do documento pessoal", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "URL temporária gerada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Documento não encontrado")
+    })
+    @GetMapping("/{id}/download")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> gerarPresignedUrl(@PathVariable Integer id) {
+        DocumentoPessoal documento = service.buscarPorId(id);
+        String presignedUrl = service.gerarPresignedUrl(documento.getS3Key());
+        return ResponseEntity.ok(presignedUrl);
+    }
+
 }
 

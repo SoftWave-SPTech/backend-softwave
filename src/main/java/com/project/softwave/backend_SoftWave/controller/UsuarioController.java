@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,17 +36,34 @@ public class UsuarioController {
             description = "Retorna uma lista de advogados cadastrados no sistema."
     )
     @GetMapping("/listar-advogados")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<AdvogadosResponseDTO>> listarAdvogados() {
         List<AdvogadosResponseDTO> advogados = pesquisaService.listarAdvogados();
 
         return ResponseEntity.status(200).body(advogados);
     }
 
-    @GetMapping("/listar-usarios-e-procesos")
-    public ResponseEntity<List<UsuarioProcessosDTO>> listarUsuariosEProcessos() {
-        List<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos();
+    @Operation(
+            summary = "Editar Email e ReenviarToken",
+            description = "Atualiza o email do usuário e reenvia o token de autenticação."
+    )
+    @PutMapping("/editar-email/{email}/{novoEmail}")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> editarEmailEReenviarToken(
+            @PathVariable String email,
+            @PathVariable String novoEmail
+    ) {
+        usuarioService.editarEmail(email, novoEmail);
+        return ResponseEntity.status(200).build();
+    }
 
-        return ResponseEntity.status(200).body(listaUsuarios);
+    @GetMapping("/listar-usuarios-e-processos")
+    public ResponseEntity<Page<UsuarioProcessosDTO>> listarUsuariosEProcessos(
+            @RequestParam(defaultValue = "0") int page, // Página padrão 0
+            @RequestParam(defaultValue = "6") int size)
+    { // Tamanho padrão 10
+        Page<UsuarioProcessosDTO> listaUsuarios = usuarioService.listarUsuariosEProcessos(page, size);
+        return ResponseEntity.ok(listaUsuarios); // Retorna a lista paginada
     }
 
     @Operation(
@@ -53,6 +71,7 @@ public class UsuarioController {
             description = "Retorna uma lista de clientes cadastrados no sistema."
     )
     @GetMapping("/listar-clientes")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<UsuariosResponseDTO>> listarClientes() {
         List<UsuariosResponseDTO> clientes = pesquisaService.listarClientes();
 
@@ -81,7 +100,7 @@ public class UsuarioController {
 
         fotoPerfilService.deletarFotoPerfil(id);
 
-        return ResponseEntity.status(200).build();
+        return ResponseEntity.status(200).body("Foto deletada com sucesso");
     }
 
     @Operation(summary = "Buscar a foto de perfil dos usuários", method = "GET")
@@ -94,6 +113,7 @@ public class UsuarioController {
     }
 
     @PutMapping("atualizar-role/{id}/{role}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> atualizarRole(
             @PathVariable Integer id,
             @PathVariable Integer role
@@ -103,6 +123,7 @@ public class UsuarioController {
     }
 
     @PutMapping("atualizar-status/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> atualizarRole(
             @PathVariable Integer id
     ){
@@ -111,6 +132,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/usuario-documentos/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<UsuarioDocumentosDTO> trazerUsuarioDocumentos(
             @PathVariable Integer id
     ){

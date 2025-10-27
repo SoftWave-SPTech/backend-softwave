@@ -4,27 +4,25 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoServic
 import com.project.softwave.backend_SoftWave.config.GerenciadorTokenJwt;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdClienteInativoAndAtivo;
 import com.project.softwave.backend_SoftWave.dto.DocumentoPessoalDTO;
-import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
 import com.project.softwave.backend_SoftWave.entity.*;
-import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
-import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
-import com.project.softwave.backend_SoftWave.exception.LoginIncorretoException;
+import com.project.softwave.backend_SoftWave.exception.*;
 import com.project.softwave.backend_SoftWave.repository.DocumentoPessoalRepository;
-import com.project.softwave.backend_SoftWave.exception.TokenExpiradoInvalidoException;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 
 import java.time.LocalDateTime;
@@ -63,53 +61,92 @@ public class UsuarioService {
     @Autowired
     private DocumentoPessoalRepository documentoPessoalRepository;
 
+    @Autowired
+    private FotoPerfilService fotoPerfilService;
+
     public UsuarioTokenDTO autenticar(UsuarioLoginDto usuarioLoginDto) {
-        final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(
-                usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
+        try {
+            final UsernamePasswordAuthenticationToken credentials =
+                    new UsernamePasswordAuthenticationToken(usuarioLoginDto.getEmail(), usuarioLoginDto.getSenha());
 
-        final Authentication authentication = this.authenticationManager.authenticate(credentials);
+            Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
+                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Email do usuário não cadastrado! verifique com o administrador."));
 
-        Usuario usuarioAutenticado = usuarioRepository.findByEmail(usuarioLoginDto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
+            if (!usuarioAutenticado.getAtivo()) {
+                throw new ForbiddenException("Usuário inativo!, realize o primeiro acesso ou verifique com o administrador.");
+            }
 
-        if (!usuarioAutenticado.getAtivo()) {
-            throw new ResponseStatusException(403, "Usuário inativo", null);
-        }
+            if(usuarioAutenticado.getTentativasFalhasLogin() >= 3){
+                throw new TooManyRequestsException("Muitas tentativas de login! Por favor, faça o reset de senha!");
+            }
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            // Login bem-sucedido → zera contador
+            final Authentication authentication = this.authenticationManager.authenticate(credentials);
 
-        String tipoUsuario = usuarioAutenticado.getClass().getSimpleName();
+            usuarioAutenticado.setTentativasFalhasLogin(0);
+            usuarioRepository.save(usuarioAutenticado);
 
-        final String token = gerenciadorTokenJwt.generateToken(authentication, tipoUsuario);
-        String role = authentication.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .orElse("ROLE_USER");
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String nome = "";
-        if (usuarioAutenticado instanceof UsuarioFisico){
-             nome = ((UsuarioFisico) usuarioAutenticado).getNome();
-        }else {
-             nome = ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
-        }
+            String tipoUsuario = usuarioAutenticado.getClass().getSimpleName();
+            String nome = usuarioAutenticado instanceof UsuarioFisico
+                    ? ((UsuarioFisico) usuarioAutenticado).getNome()
+                    : ((UsuarioJuridico) usuarioAutenticado).getNomeFantasia();
 
-        return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
+            final String token = gerenciadorTokenJwt.generateToken(authentication, tipoUsuario, nome, usuarioAutenticado.getId());
+            String role = authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElse("ROLE_USER");
+
+            String fotoUrl = null;
+              if (usuarioAutenticado.getFoto() != null) {
+                try {
+                    fotoUrl = fotoPerfilService.buscarPorId(usuarioAutenticado.getId());
+                } catch (Exception e) {
+                    System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+                }
+              }
+
+            return UsuarioTokenDTO.toDTO(usuarioAutenticado, token, role, nome, usuarioAutenticado.getFoto());
+
+        } catch (Exception e) {
+            if(e.equals(AuthenticationException.class)){
+                // Senha incorreta → incrementa contador
+                Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(usuarioLoginDto.getEmail());
+                if (usuarioOpt.isPresent()) {
+                    Usuario usuario = usuarioOpt.get();
+                    usuario.setTentativasFalhasLogin(usuario.getTentativasFalhasLogin() + 1);
+                    usuarioRepository.save(usuario);
+                }
+                throw new LoginIncorretoException("Email ou senha inválidos!");
+            }
+            throw e;
+         }
     }
 
-    public UsuarioLoginDto primeiroAcesso(UsuarioLoginDto usuario) {
-        if (usuario.getEmail() == null || usuario.getSenha() == null) {
+
+    public UsuarioLoginDto primeiroAcesso(UsuarioPrimeiroAcessoDTO usuario) {
+        if (usuario.getEmail() == null || usuario.getTokenPrimeiroAcesso() == null) {
             throw new LoginIncorretoException("Email e chave de acesso não podem ser nulos");
         }
 
         Optional<Usuario> possivelUsuario =
-                usuarioRepository.findByEmailEqualsAndSenhaEquals(
-                            usuario.getEmail(),usuario.getSenha());
+                usuarioRepository.findByEmailEqualsAndTokenPrimeiroAcessoEquals(
+                            usuario.getEmail(),usuario.getTokenPrimeiroAcesso());
         if (possivelUsuario.isEmpty()) {
             throw new LoginIncorretoException("Email ou chave de acesso inválido");
+        }else {
+            possivelUsuario.get().setTentativasFalhasLogin(0);
         }
         UsuarioLoginDto primeiroAcesso = new UsuarioLoginDto(
                 possivelUsuario.get().getEmail(),
                 possivelUsuario.get().getSenha());
+
+        Boolean usuarioAtivo = usuarioRepository.existsByEmailAndAtivoIsTrue(usuario.getEmail());
+        if (usuarioAtivo) {
+            throw new ForbiddenException("Usuário Já Ativo!");
+        }
 
         return primeiroAcesso;
         }
@@ -121,11 +158,11 @@ public class UsuarioService {
         String confirmaSenha = usuarioSenhaDto.getConfirmaSenha();
 
         if (senha == null || confirmaSenha == null) {
-            throw new ResponseStatusException(400, "Senha e confirmação de senha não podem ser nulas", null);
+            throw new CorpoRequisicaoVazioException("Senha e confirmação de senha não podem ser nulas!");
         }
 
         if (!senha.equals(confirmaSenha)) {
-            throw new ResponseStatusException(400, "As senhas não coincidem", null);
+            throw new DadosInvalidosException("As senhas não coincidem!");
         }
 
         String senhaCriptografada = passwordEncoder.encode(senha);
@@ -133,14 +170,31 @@ public class UsuarioService {
     }
 
     @Transactional
+    public void editarEmail(String EmailAntigo, String novoEmail) {
+        Usuario usuario = usuarioRepository.findByEmail(EmailAntigo)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
+        if (usuarioRepository.existsByEmail(novoEmail)) {
+            throw new EntidadeConflitoException("Já existe um usuário cadastrado com este email!");
+        }
+
+        usuario.setEmail(novoEmail);
+        //TODO Chamar endpoint API EMAIL para Envair Token de Primeiro Acesso novamente para novo Email
+        emailService.enviarEmailPrimeiroAcesso(novoEmail, usuario.getTokenPrimeiroAcesso());
+        //
+        usuarioRepository.save(usuario);
+    }
+
+    @Transactional
     public void solicitarResetSenha(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
-
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
+        if(!usuario.getAtivo()){
+            throw new ForbiddenException("Usuário inativo!, realize o primeiro acesso ou verifique com o administrador.");
+        }
        String token = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
         usuario.setTokenRecuperacaoSenha(token);
         usuario.setDataCriacaoTokenRecuperacaoSenha(LocalDateTime.now());
-        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusMinutes(1));
+        usuario.setDataExpiracaoTokenRecuperacaoSenha(LocalDateTime.now().plusMinutes(5));
         usuarioRepository.save(usuario);
 
         emailService.enviarEmailResetSenha(usuario.getEmail(), token);
@@ -149,20 +203,24 @@ public class UsuarioService {
     @Transactional
     public void resetarSenha(String token, String novaSenha, String novaSenhaConfirma) {
         Usuario usuario = usuarioRepository.findByTokenRecuperacaoSenha(token)
-                .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido"));
+                .orElseThrow(() -> new TokenExpiradoInvalidoException("Token inválido!"));
+
+
+
 
         if (novaSenha == null || novaSenhaConfirma == null) {
-            throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas");
+            throw new DadosInvalidosException("Senha e confirmação de senha não podem ser nulas!");
         }
 
         if (!novaSenha.equals(novaSenhaConfirma)) {
-            throw new DadosInvalidosException("As senhas não coincidem");
+            throw new DadosInvalidosException("As senhas não coincidem!");
         }
 
         if (LocalDateTime.now().isAfter(usuario.getDataExpiracaoTokenRecuperacaoSenha())) {
-            throw new TokenExpiradoInvalidoException("Token expirado");
+            throw new TokenExpiradoInvalidoException("Token expirado!");
         }
 
+        usuario.setTentativasFalhasLogin(0);
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuario.setTokenRecuperacaoSenha(null);
         usuario.setDataExpiracaoTokenRecuperacaoSenha(null);
@@ -171,7 +229,7 @@ public class UsuarioService {
 
     public List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo(){
 
-        List<Usuario> all = usuarioRepository.findAll();
+        List<Usuario> all = usuarioRepository.findClientes();
         List<QtdClienteInativoAndAtivo> quantidadeClienteInativoAndInativo = new ArrayList<>();
         Integer ativos = 0;
         Integer inativos = 0;
@@ -180,11 +238,12 @@ public class UsuarioService {
 
         if(!all.isEmpty()){
             for(Usuario usuarioDaVez : all){
-                if (usuarioDaVez.getSenha().length() <= 8 && usuarioDaVez.getSenha().length() > 0){
-                    inativos++;
-                }else if(usuarioDaVez.getSenha().length() > 8){
-                    ativos++;
-                }
+               if(usuarioDaVez.getTokenPrimeiroAcesso() == null || usuarioDaVez.getTokenPrimeiroAcesso().isEmpty()){
+                   ativos++;
+               }else{
+                   inativos++;
+               }
+
             }
         }
 
@@ -217,20 +276,18 @@ public class UsuarioService {
         }
     }
 
-    public List<UsuarioProcessosDTO> listarUsuariosEProcessos(){
+    public Page<UsuarioProcessosDTO> listarUsuariosEProcessos(int page, int size)
+    {
+        Pageable pageable = PageRequest.of(page, size); // Cria um objeto Pageable
+        Page<Usuario> todos = usuarioRepository.findAll(pageable); // Busca usuários paginados
 
-        List<Usuario> todos = usuarioRepository.findAll();
-
-
-        List<UsuarioProcessosDTO> usuarios = todos.stream()
-                .map(UsuarioProcessosDTO::new)
-                .toList();
-
-        for (UsuarioProcessosDTO usuarioDaVez : usuarios){
-            usuarioDaVez.setProcesos(processoService.listarProcessoPorIdUsuario(usuarioDaVez.getId()));
-        }
-
-        return  usuarios;
+        // Mapeia os usuários para DTO e carrega os processos
+        return todos.map(usuario ->
+        {
+            UsuarioProcessosDTO usuarioDTO = new UsuarioProcessosDTO(usuario); // Mapeia para DTO
+            usuarioDTO.setProcesos(processoService.listarProcessoPorIdUsuario(usuario.getId())); // Carrega processos
+            return usuarioDTO;
+        });
     }
 
     public UsuarioDocumentosDTO buscarUsuarioComDocumentos(Integer idUsuario) {
@@ -259,6 +316,16 @@ public class UsuarioService {
             nome = null;
         }
 
+        // Busca a foto atual do S3 se existir
+        String fotoUrl = null;
+        if (usuario.getFoto() != null) {
+            try {
+                fotoUrl = fotoPerfilService.buscarPorId(usuario.getId());
+            } catch (Exception e) {
+                System.err.println("Erro ao buscar foto do usuário: " + e.getMessage());
+            }
+        }
+
         return new UsuarioDocumentosDTO(
                 usuario.getId(),
                 nome,
@@ -266,7 +333,7 @@ public class UsuarioService {
                 usuario.getAtivo(),
                 usuario.getTelefone(),
                 usuario.getEmail(),
-                usuario.getFoto(),
+                fotoUrl,
                 documentosDTO
         );
     }
@@ -286,9 +353,9 @@ public class UsuarioService {
 
     public void atualizarStatusUsuario(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
-        usuario.setStatusUsuario(!usuario.getStatusUsuario());
+        usuario.setAtivo(!usuario.getAtivo());
 
         usuarioRepository.save(usuario);
     }

@@ -22,7 +22,6 @@ public class UsuarioLoginDto {
 
     public UsuarioLoginDto(String email, String senha) {
         this.email = email;
-        this.senha = senha;
     }
 
     public String getEmail() {
@@ -40,5 +39,4 @@ public class UsuarioLoginDto {
     public void setSenha(String senha) {
         this.senha = senha;
     }
-
 }

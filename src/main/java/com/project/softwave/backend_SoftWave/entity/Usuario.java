@@ -50,9 +50,7 @@ public class Usuario {
 
     private Boolean ativo;
 
-    private Integer tentativaFalhaLogin;
-
-    private Boolean statusUsuario;
+    private Integer tentativasFalhasLogin;
 
     private String tokenRecuperacaoSenha;
     private String tokenPrimeiroAcesso;
@@ -96,14 +94,6 @@ public class Usuario {
         this.cidade = cidade;
         this.complemento = complemento;
         this.telefone = telefone;
-    }
-
-    public Boolean getStatusUsuario() {
-        return statusUsuario;
-    }
-
-    public void setStatusUsuario(Boolean statusUsuario) {
-        this.statusUsuario = statusUsuario;
     }
 
     public Usuario(String senha, String email, String cep, String logradouro, String bairro, String cidade, String complemento, String telefone) {
@@ -265,12 +255,12 @@ public class Usuario {
         this.ativo = ativo;
     }
 
-    public Integer getTentativaFalhaLogin() {
-        return tentativaFalhaLogin;
+    public Integer getTentativasFalhasLogin() {
+        return tentativasFalhasLogin;
     }
 
-    public void setTentativaFalhaLogin(Integer tentativaFalhaLogin) {
-        this.tentativaFalhaLogin = tentativaFalhaLogin;
+    public void setTentativasFalhasLogin(Integer tentativaFalhaLogin) {
+        this.tentativasFalhasLogin = tentativaFalhaLogin;
     }
 
     public String getTokenRecuperacaoSenha() {

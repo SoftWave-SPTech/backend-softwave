@@ -8,7 +8,9 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.UltimasMovimen
 import com.project.softwave.backend_SoftWave.dto.ComentarioProcessoDTO;
 import com.project.softwave.backend_SoftWave.entity.ComentarioProcesso;
 import com.project.softwave.backend_SoftWave.entity.Usuario;
+import com.project.softwave.backend_SoftWave.exception.DadosInvalidosException;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
+import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import jakarta.validation.Valid;
@@ -36,14 +38,14 @@ public class ComentarioProcessoService {
 
     public ComentarioProcessoDTO criarComentarioUltimaMovimentacao(ComentarioProcessoDTO dto) {
         if (dto.getUltimaMovimentacaoID() == null){
-            throw new EntidadeNaoEncontradaException("ID da movimentação não pode ser nulo");
+            throw new DadosInvalidosException("ID da movimentação não pode ser nulo");
         }
 
         UltimasMovimentacoes ultimaMovimentacao = ultimasMovimentacoesRepository.findById(dto.getUltimaMovimentacaoID())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Última movimentação não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Última movimentação não encontrada!"));
 
         Usuario usuarioAutor = usuarioRepository.findById(dto.getUsuarioID())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         ComentarioProcesso comentario = new ComentarioProcesso();
         comentario.setComentario(dto.getComentario());
@@ -58,14 +60,14 @@ public class ComentarioProcessoService {
 
     public ComentarioProcessoDTO criarComentarioProcesso(ComentarioProcessoDTO dto) {
         if (dto.getProcessoID() == null) {
-            throw new EntidadeNaoEncontradaException("ID do processo não pode ser nulo");
+            throw new DadosInvalidosException("ID do processo não pode ser nulo!");
         }
 
         Processo processo = processoRepository.findById( (dto.getProcessoID().intValue()))
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Processo não encontrado!"));
 
         Usuario usuarioAutor = usuarioRepository.findById(dto.getUsuarioID())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
 
         ComentarioProcesso comentario = new ComentarioProcesso();
         comentario.setComentario(dto.getComentario());
@@ -79,15 +81,21 @@ public class ComentarioProcessoService {
     }
 
     public List<ComentarioProcessoDTO> listarComentarios() {
-        return comentarioProcessoRepository.findAll()
+        List<ComentarioProcessoDTO> todos = comentarioProcessoRepository.findAll()
                 .stream()
                 .map(comentario -> new ComentarioProcessoDTO(
                         comentario.getId(),
                         comentario.getComentario(),
                         comentario.getDataCriacao(),
                         comentario.getUltimaMovimentacao().getId())
-                        )
+                )
                 .collect(Collectors.toList());
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhum comentário encontrado!");
+        }
+
+        return todos;
     }
 
     public ComentarioProcessoDTO buscarComentarioPorId(Long id) {
@@ -98,16 +106,16 @@ public class ComentarioProcessoService {
                         comentario.getComentario(),
                         comentario.getDataCriacao(),
                         comentario.getUltimaMovimentacao().getId()))
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Comentário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Comentário não encontrado!"));
     }
 
     public ComentarioProcessoDTO atualizarComentario(Long id, ComentarioProcessoDTO dto) {
         Optional<ComentarioProcesso> comentarioOptional = comentarioProcessoRepository.findById(id);
         if (comentarioOptional.isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Comentário não encontrado");
+            throw new EntidadeNaoEncontradaException("Comentário não encontrado!");
         }
         UltimasMovimentacoes ultimaMovimentacao = ultimasMovimentacoesRepository.findById(dto.getUltimaMovimentacaoID())
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Última movimentação não encontrada"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Última movimentação não encontrada!"));
 
 
         ComentarioProcesso comentario = comentarioOptional.get();
@@ -121,24 +129,30 @@ public class ComentarioProcessoService {
 
     public void deletarComentario(Long id) {
         if (!comentarioProcessoRepository.existsById(id)) {
-            throw new EntidadeNaoEncontradaException("Comentário não encontrado");
+            throw new EntidadeNaoEncontradaException("Comentário não encontrado!");
         }
         comentarioProcessoRepository.deleteById(id);
     }
 
     public List<ComentarioProcesso> listarComentariosPorUltimaMovimentacaoId(Integer ultimaMovimentacaoId) {
-            return comentarioProcessoRepository.findByUltimaMovimentacaoId(ultimaMovimentacaoId)
-                    .stream()
-                    .map(comentario -> new ComentarioProcesso(comentario.getId(),
-                            comentario.getComentario(),
-                            comentario.getDataCriacao(),
-                            comentario.getUltimaMovimentacao(),
-                            comentario.getUsuario()))
-                    .collect(Collectors.toList());
+        List<ComentarioProcesso> todos = comentarioProcessoRepository.findByUltimaMovimentacaoId(ultimaMovimentacaoId)
+                .stream()
+                .map(comentario -> new ComentarioProcesso(comentario.getId(),
+                        comentario.getComentario(),
+                        comentario.getDataCriacao(),
+                        comentario.getUltimaMovimentacao(),
+                        comentario.getUsuario()))
+                .collect(Collectors.toList());
+
+        if(todos.isEmpty()){
+            throw new NoContentException("Nenhum comentário encontrado!");
+        }
+
+            return todos;
     }
 
     public List<ComentarioProcesso> listarComentariosPorProcessoId(Long processoId) {
-        return comentarioProcessoRepository.findByProcessoId(processoId)
+        List<ComentarioProcesso> todos = comentarioProcessoRepository.findByProcessoId(processoId)
                 .stream()
                 .map(comentario -> new ComentarioProcesso(comentario.getId(),
                         comentario.getComentario(),
@@ -146,5 +160,11 @@ public class ComentarioProcessoService {
                         comentario.getProcesso(),
                         comentario.getUsuario()))
                 .collect(Collectors.toList());
+
+        if(todos.isEmpty()){
+            throw  new NoContentException("Nenhum comentário encontrado!");
+        }
+
+        return todos;
     }
 }

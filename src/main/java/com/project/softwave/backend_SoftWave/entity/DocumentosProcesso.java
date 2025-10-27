@@ -10,27 +10,40 @@ public class DocumentosProcesso {
     private Integer id;
     private String nomeArquivo;
     private String urlArquivo;
+    @Column(name = "s3_key", length = 500)
+    private String s3Key;
+
+    public String getS3Key() {
+        return s3Key;
+    }
+
+    public void setS3Key(String s3Key) {
+        this.s3Key = s3Key;
+    }
 
     @ManyToOne
     private Processo fkProcesso;
 
     public DocumentosProcesso() {}
 
-    public DocumentosProcesso(String nomeArquivo, String urlArquivo) {
+    public DocumentosProcesso(String nomeArquivo, String urlArquivo,  String s3Key) {
         this.nomeArquivo = nomeArquivo;
         this.urlArquivo = urlArquivo;
+        this.s3Key = s3Key;
     }
 
-    public DocumentosProcesso(String nomeArquivo, String urlArquivo, Processo fkProcesso) {
+    public DocumentosProcesso(String nomeArquivo, String urlArquivo,String s3Key, Processo fkProcesso) {
         this.nomeArquivo = nomeArquivo;
         this.urlArquivo = urlArquivo;
+        this.s3Key = s3Key;
         this.fkProcesso = fkProcesso;
     }
 
-    public DocumentosProcesso(Integer id, String nomeArquivo, String urlArquivo, Processo fkProcesso) {
+    public DocumentosProcesso(Integer id, String nomeArquivo, String urlArquivo,String s3Key, Processo fkProcesso) {
         this.id = id;
         this.nomeArquivo = nomeArquivo;
         this.urlArquivo = urlArquivo;
+        this.s3Key = s3Key;
         this.fkProcesso = fkProcesso;
     }
 

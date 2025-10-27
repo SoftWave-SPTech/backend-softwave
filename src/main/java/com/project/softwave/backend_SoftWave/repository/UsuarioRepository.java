@@ -8,6 +8,8 @@ import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,17 +25,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findByEmail(String email);
 
-    Optional<Usuario> findByEmailEqualsAndSenhaEquals(String email, String senha);
+    Optional<Usuario> findByEmailEqualsAndTokenPrimeiroAcessoEquals(String email, String senha);
 
     @Transactional
     @Modifying
-    @Query("UPDATE Usuario u SET u.senha = :senha, u.ativo = true WHERE u.email = :email")
+    @Query("UPDATE Usuario u SET u.senha = :senha, u.ativo = true, u.tokenPrimeiroAcesso = null WHERE u.email = :email")
     void updateSenhaByEmail(String senha, String email);
 
     @Transactional
     @Query("SELECT u FROM Usuario u JOIN FETCH u.processos p " +
-            "WHERE (u.tipoUsuario = 'usuario_fisico' OR u.tipoUsuario = 'usuario_juridico') " )
-    List<Usuario> findClientesComProcessos();
+            "WHERE (u.tipoUsuario = 'usuario_fisico' OR u.tipoUsuario = 'usuario_juridico')")
+    Page<Usuario> findClientesComProcessos(Pageable pageable);
 
     @Transactional
     @Query("SELECT DISTINCT u FROM Usuario u JOIN FETCH u.processos p " +
@@ -114,7 +116,33 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
       AND (u.tipo_usuario = 'usuario_juridico' OR u.tipo_usuario = 'usuario_fisico')
     """, nativeQuery = true)
     List<Usuario> findClientesComProcessosPorStatus(@Param("status") String status);
+           
+    // IDs dos ADVOGADOS vinculados a um processo
+    @Query(value = """
+    SELECT u.id
+    FROM usuario u
+    JOIN usuarios_processos up ON up.usuario_id = u.id
+    WHERE up.processo_id = :processoId
+      AND u.tipo_usuario IN ('advogado_fisico','advogado_juridico')
+    """, nativeQuery = true)
+    List<Integer> findAdvogadosIdsByProcesso(@Param("processoId") Integer processoId);
 
+    // IDs dos CLIENTES vinculados a um processo
+    @Query(value = """
+    SELECT u.id
+    FROM usuario u
+    JOIN usuarios_processos up ON up.usuario_id = u.id
+    WHERE up.processo_id = :processoId
+      AND u.tipo_usuario IN ('usuario_fisico','usuario_juridico')
+    """, nativeQuery = true)
+    List<Integer> findClientesIdsByProcesso(@Param("processoId") Integer processoId);
 
+    Boolean existsByEmailAndAtivoIsTrue(String email);
 
+    Boolean existsByEmail(String email);
+
+    @Query("SELECT u FROM Usuario u WHERE " +
+           "((TYPE(u) = AdvogadoFisico AND TREAT(u AS AdvogadoFisico).oab = :oab) " +
+           "OR (TYPE(u) = AdvogadoJuridico AND TREAT(u AS AdvogadoJuridico).oab = :oab))")
+    Optional<Usuario> oabExistente(@Param("oab") Integer oab);
 }

@@ -30,7 +30,7 @@ public class GerenciadorTokenJwt {
         return getClaimForToken(token, Claims::getExpiration);
     }
 
-    public String generateToken(final Authentication authentication, String tipoUsuario) {
+    public String generateToken(final Authentication authentication, String tipoUsuario, String nome,Integer id) {
         // Para verificacoes de permissões;
         final String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -39,7 +39,9 @@ public class GerenciadorTokenJwt {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim("authorities", authorities)   // Aqui adiciona as roles
-                .claim("tipoUsuario", tipoUsuario)   // Aqui adiciona o tipo de usuário
+                .claim("tipoUsuario", tipoUsuario)
+                .claim("nome", nome)
+                .claim("id", id)
                 .signWith(parseSecret())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1_000))

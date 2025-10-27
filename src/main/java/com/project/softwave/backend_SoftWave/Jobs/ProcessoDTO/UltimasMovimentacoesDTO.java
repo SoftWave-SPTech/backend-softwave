@@ -2,7 +2,6 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import jakarta.validation.constraints.NotBlank;
-
 import java.time.LocalDate;
 
 public class UltimasMovimentacoesDTO {

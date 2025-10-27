@@ -23,8 +23,8 @@ public class AdvogadoFisicoRequestDTO{
     private String email;
 
     @NotBlank
-    @Schema(description = "Senha de acesso ao sistema", example = "SenhaSegura@2024")
-    private String senha;
+    @Schema(description = "Token de primeiro acesso", example = "49454487")
+    private String tokenPrimeiroAcesso;
 
     @CPF(message= "O CPF informado não é válido")
     @Schema(description = "CPF do advogado", example = "90869258044")
@@ -64,11 +64,11 @@ public class AdvogadoFisicoRequestDTO{
     public AdvogadoFisicoRequestDTO() {
     }
 
-    public AdvogadoFisicoRequestDTO(String oab, String nome, String email, String senha, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String numero, String telefone) {
+    public AdvogadoFisicoRequestDTO(String oab, String nome, String email, String tokenPrimeiroAcesso, String cpf, String rg, String cep, String logradouro, String bairro, String cidade, String complemento, String numero, String telefone) {
         this.oab = oab;
         this.nome = nome;
         this.email = email;
-        this.senha = senha;
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
         this.cpf = cpf;
         this.rg = rg;
         this.cep = cep;
@@ -87,7 +87,8 @@ public class AdvogadoFisicoRequestDTO{
         AdvogadoFisico advogadoFisico = new AdvogadoFisico();
         advogadoFisico.setNome(dto.getNome());
         advogadoFisico.setEmail(dto.getEmail());
-        advogadoFisico.setSenha(dto.getSenha());
+        advogadoFisico.setSenha("SenhaTemporaria123!");
+        advogadoFisico.setTokenPrimeiroAcesso(dto.getTokenPrimeiroAcesso());
         advogadoFisico.setCpf(dto.getCpf());
         advogadoFisico.setRg(dto.getRg());
         advogadoFisico.setOab(Integer.parseInt(dto.getOab()));
@@ -138,12 +139,12 @@ public class AdvogadoFisicoRequestDTO{
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getTokenPrimeiroAcesso() {
+        return tokenPrimeiroAcesso;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setTokenPrimeiroAcesso(String tokenPrimeiroAcesso) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
     }
 
     public String getCpf() {
