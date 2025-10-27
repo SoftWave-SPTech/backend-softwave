@@ -2,6 +2,8 @@ package com.project.softwave.backend_SoftWave.service;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoRepository.ProcessoRepository;
 import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.FinanceiroDadosTelaDTO;
+import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.ReceitaUltimosMesesDTO;
+import com.project.softwave.backend_SoftWave.entity.Meses;
 import com.project.softwave.backend_SoftWave.entity.RegistroFinanceiro;
 import com.project.softwave.backend_SoftWave.entity.StatusFinanceiro;
 import com.project.softwave.backend_SoftWave.exception.CorpoRequisicaoVazioException;
@@ -12,8 +14,10 @@ import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -147,4 +151,101 @@ public class RegistroFinanceiroService {
 
         return dadosTela;
     }
+
+    public List<ReceitaUltimosMesesDTO> getReceitaUltimos6Meses() {
+        int anoAtual = LocalDate.now().getYear();
+        List<RegistroFinanceiro> ultimos6 = registroFinanceiroRepository.findByAnoOrderByAnoDescMesDesc(anoAtual);
+
+        Double receitaJaneiro = 0.0;
+        ReceitaUltimosMesesDTO dadosJaneiro = new ReceitaUltimosMesesDTO(Meses.JANEIRO, anoAtual);
+
+        Double receitaFevereiro = 0.0;
+        ReceitaUltimosMesesDTO dadosFevereiro = new ReceitaUltimosMesesDTO(Meses.FEVEREIRO, anoAtual);
+
+        Double receitaMarco = 0.0;
+        ReceitaUltimosMesesDTO dadosMarco = new ReceitaUltimosMesesDTO(Meses.MARCO, anoAtual);
+
+        Double receitaAbril = 0.0;
+        ReceitaUltimosMesesDTO dadosAbril = new ReceitaUltimosMesesDTO(Meses.ABRIL, anoAtual);
+
+        Double receitaMaio = 0.0;
+        ReceitaUltimosMesesDTO dadosMaio = new ReceitaUltimosMesesDTO(Meses.MAIO, anoAtual);
+
+        Double receitaJunho = 0.0;
+        ReceitaUltimosMesesDTO dadosJunho = new ReceitaUltimosMesesDTO(Meses.JUNHO, anoAtual);
+
+        Double receitaJulho = 0.0;
+        ReceitaUltimosMesesDTO dadosJulho = new ReceitaUltimosMesesDTO(Meses.JULHO, anoAtual);
+
+        Double receitaAgosto = 0.0;
+        ReceitaUltimosMesesDTO dadosAgosto = new ReceitaUltimosMesesDTO(Meses.AGOSTO, anoAtual);
+
+        Double receitaSetembro = 0.0;
+        ReceitaUltimosMesesDTO dadosSetembro = new ReceitaUltimosMesesDTO(Meses.SETEMBRO, anoAtual);
+
+        Double receitaOutubro = 0.0;
+        ReceitaUltimosMesesDTO dadosOutubro = new ReceitaUltimosMesesDTO(Meses.OUTUBRO, anoAtual);
+
+        Double receitaNovembro = 0.0;
+        ReceitaUltimosMesesDTO dadosNovembro = new ReceitaUltimosMesesDTO(Meses.NOVEMBRO, anoAtual);
+
+        Double receitaDezembro = 0.0;
+        ReceitaUltimosMesesDTO dadosDezembro = new ReceitaUltimosMesesDTO(Meses.DEZEMBRO, anoAtual);
+
+        List<ReceitaUltimosMesesDTO> lista = new ArrayList<>();
+
+        for (RegistroFinanceiro registroFinanceiroDavez : ultimos6) {
+            Meses mes = registroFinanceiroDavez.getMes();
+            Double valorReceita = (
+                    (registroFinanceiroDavez.getValorPagar() + registroFinanceiroDavez.getValorPago())
+                            +
+                            (registroFinanceiroDavez.getProcesso().getNormalizadoValorAcao() * registroFinanceiroDavez.getHonorarioSucumbencia())
+            );
+
+            switch (mes) {
+                case JANEIRO -> receitaJaneiro += valorReceita;
+                case FEVEREIRO -> receitaFevereiro += valorReceita;
+                case MARCO -> receitaMarco += valorReceita;
+                case ABRIL -> receitaAbril += valorReceita;
+                case MAIO -> receitaMaio += valorReceita;
+                case JUNHO -> receitaJunho += valorReceita;
+                case JULHO -> receitaJulho += valorReceita;
+                case AGOSTO -> receitaAgosto += valorReceita;
+                case SETEMBRO -> receitaSetembro += valorReceita;
+                case OUTUBRO -> receitaOutubro += valorReceita;
+                case NOVEMBRO -> receitaNovembro += valorReceita;
+                case DEZEMBRO -> receitaDezembro += valorReceita;
+            }
+        }
+
+        dadosJaneiro.setReceita(BigDecimal.valueOf(receitaJaneiro).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosFevereiro.setReceita(BigDecimal.valueOf(receitaFevereiro).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosMarco.setReceita(BigDecimal.valueOf(receitaMarco).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosAbril.setReceita(BigDecimal.valueOf(receitaAbril).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosMaio.setReceita(BigDecimal.valueOf(receitaMaio).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosJunho.setReceita(BigDecimal.valueOf(receitaJunho).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosJulho.setReceita(BigDecimal.valueOf(receitaJulho).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosAgosto.setReceita(BigDecimal.valueOf(receitaAgosto).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosSetembro.setReceita(BigDecimal.valueOf(receitaSetembro).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosOutubro.setReceita(BigDecimal.valueOf(receitaOutubro).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosNovembro.setReceita(BigDecimal.valueOf(receitaNovembro).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        dadosDezembro.setReceita(BigDecimal.valueOf(receitaDezembro).setScale(2, RoundingMode.HALF_UP).doubleValue());
+
+        lista.addAll(Arrays.asList(
+                dadosJaneiro, dadosFevereiro, dadosMarco, dadosAbril,
+                dadosMaio, dadosJunho, dadosJulho, dadosAgosto,
+                dadosSetembro, dadosOutubro, dadosNovembro, dadosDezembro
+        ));
+        List<ReceitaUltimosMesesDTO> mesesComReceita = lista.stream()
+                .filter(dto -> dto.getReceita() > 0)
+                .sorted(Comparator.comparing(ReceitaUltimosMesesDTO::getAno)
+                        .thenComparing(dto -> dto.getMes().ordinal()))
+                .collect(Collectors.toList());
+
+        int total = mesesComReceita.size();
+        return mesesComReceita.subList(Math.max(total - 6, 0), total);
+
+    }
+
+
 }
