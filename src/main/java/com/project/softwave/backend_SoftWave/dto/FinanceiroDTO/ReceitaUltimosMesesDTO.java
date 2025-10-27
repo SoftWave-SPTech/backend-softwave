@@ -7,10 +7,15 @@ public class ReceitaUltimosMesesDTO {
     private Integer ano;
     private Double receita;
 
-    public ReceitaUltimosMesesDTO(Meses mes, Integer ano, Double receita) {
+    public ReceitaUltimosMesesDTO() {
+    }
+
+    public ReceitaUltimosMesesDTO(
+            Meses mes,
+            Integer ano
+    ) {
         this.mes = mes;
         this.ano = ano;
-        this.receita = receita;
     }
 
     public Meses getMes() {
@@ -23,5 +28,17 @@ public class ReceitaUltimosMesesDTO {
 
     public Double getReceita() {
         return receita;
+    }
+
+    public void setMes(Meses mes) {
+        this.mes = mes;
+    }
+
+    public void setReceita(Double receita) {
+        this.receita = receita;
+    }
+
+    public void setAno(Integer ano) {
+        this.ano = ano;
     }
 }
