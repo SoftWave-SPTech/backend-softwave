@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -61,18 +63,29 @@ public class ProcessoController {
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
         String numeroProcesso = novoProcesso.getNumeroProcesso();
-//        ParametrosAPI.resetParametros();
-//        ParametrosAPI.setParametroProcesso(numeroProcesso);
-//        try {
-//            processoGrau1API.getApiParams();
-//            Processo processoAtual = processoService.buscarPorNumeroProcesso(numeroProcesso);
-//            processoService.atualizarProcessoComUsuarios(processoAtual, novoProcesso);
-//            return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado com sucesso!");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar o processo: " + e.getMessage());
-//        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado com sucesso!");
+        try {
+            // Cria o objeto que será enviado no corpo da requisição
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("numeroProcesso", numeroProcesso);
+
+            // Configura o RestTemplate
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://localhost:8084/api/processos/consulta-numero";
+
+            // Faz o POST enviando apenas o número do processo
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestBody, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado e consultado com sucesso!");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erro ao consultar processo: " + response.getBody());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao criar o processo: " + e.getMessage());
+        }
     }
 
 //    @GetMapping("/usuario-id/{id}")
