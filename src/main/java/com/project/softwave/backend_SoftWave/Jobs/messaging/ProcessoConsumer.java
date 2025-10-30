@@ -10,6 +10,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,15 +30,20 @@ public class ProcessoConsumer {
 
     @RabbitListener(queues = "${broker.queue.name}")
     public void receberProcessos(List<Object> objetosRecebidos) {
-        System.out.println("📥 Recebidos " + objetosRecebidos.size() + " objetos via RabbitMQ");
+        System.out.println("Recebidos " + objetosRecebidos.size() + " objetos via RabbitMQ");
 
         try {
             for (Object obj : objetosRecebidos) {
                 // Converter JSON para DTO
                 ProcessoResponse response = objectMapper.convertValue(obj, ProcessoResponse.class);
 
-                // Criar entidade Processo
                 Processo processo = new Processo();
+
+                if(processoRepository.findProcessoByNumeroProcesso(response.getNumeroProcesso()).isPresent()){
+                    Optional<Processo> optionalProcesso = processoRepository.findProcessoByNumeroProcesso(response.getNumeroProcesso());
+                    processo = optionalProcesso.get();
+                }
+
                 processo.setNumeroProcesso(response.getNumeroProcesso());
                 processo.setClasse(response.getClasse());
                 processo.setAssunto(response.getAssunto());
@@ -51,7 +57,6 @@ public class ProcessoConsumer {
                 processo.setValorAcao(response.getValorAcao());
                 processo.setNormalizadoValorAcao(response.getNormalizadoValorAcao());
                 processo.setAutor(response.getAutor());
-                processo.setDescricao(response.getDescricao());
                 processo.setExecutado(response.getExecutado());
                 processo.setRequerente(response.getRequerente());
                 processo.setRequerido(response.getRequerido());

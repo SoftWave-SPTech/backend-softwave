@@ -265,4 +265,18 @@ public class ProcessoService {
         return processos;
     }
 
+    public void cadastrar(CadastroProcessoDTO processoDTO){
+        Processo processoCadastro = new Processo();
+
+        processoCadastro.setNumeroProcesso(processoDTO.getNumeroProcesso());
+        processoCadastro.setDescricao(processoDTO.getDescricao());
+
+        if(!processoDTO.getUsuarios().isEmpty()){
+            VincularUsuariosProcessoDTO novoVinculo = new VincularUsuariosProcessoDTO(processoCadastro.getId(), processoDTO.getUsuarios());
+            vincularUsuariosAoProcesso(novoVinculo);
+        }
+
+
+        processoRepository.save(processoCadastro);
+    }
 }

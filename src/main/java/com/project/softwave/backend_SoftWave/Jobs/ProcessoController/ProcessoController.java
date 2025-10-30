@@ -64,6 +64,8 @@ public class ProcessoController {
     public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
         String numeroProcesso = novoProcesso.getNumeroProcesso();
 
+        processoService.cadastrar(novoProcesso);
+
         try {
             // Cria o objeto que será enviado no corpo da requisição
             Map<String, String> requestBody = new HashMap<>();
