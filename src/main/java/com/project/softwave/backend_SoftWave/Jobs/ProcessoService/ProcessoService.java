@@ -268,15 +268,20 @@ public class ProcessoService {
     public void cadastrar(CadastroProcessoDTO processoDTO){
         Processo processoCadastro = new Processo();
 
+        if(processoRepository.findProcessoByNumeroProcesso(processoDTO.getNumeroProcesso()).isPresent()){
+            throw new EntidadeConflitoException("Processo já existe!");
+        }
+
         processoCadastro.setNumeroProcesso(processoDTO.getNumeroProcesso());
         processoCadastro.setDescricao(processoDTO.getDescricao());
+
+        processoRepository.save(processoCadastro);
+
+        processoCadastro = processoRepository.findProcessoByNumeroProcesso(processoDTO.getNumeroProcesso()).get();
 
         if(!processoDTO.getUsuarios().isEmpty()){
             VincularUsuariosProcessoDTO novoVinculo = new VincularUsuariosProcessoDTO(processoCadastro.getId(), processoDTO.getUsuarios());
             vincularUsuariosAoProcesso(novoVinculo);
         }
-
-
-        processoRepository.save(processoCadastro);
     }
 }
