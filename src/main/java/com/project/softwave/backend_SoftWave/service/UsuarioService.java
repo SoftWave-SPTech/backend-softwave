@@ -351,12 +351,20 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
-    public void atualizarStatusUsuario(Integer id){
+//    public void atualizarStatusUsuario(Integer id){
+//        Usuario usuario = usuarioRepository.findById(id)
+//                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
+//
+//        usuario.setAtivo(!usuario.getAtivo());
+//
+//        usuarioRepository.save(usuario);
+//    }
+
+    public Usuario atualizarStatusUsuario(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado!"));
-
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         usuario.setAtivo(!usuario.getAtivo());
-
         usuarioRepository.save(usuario);
+        return usuario;
     }
 }

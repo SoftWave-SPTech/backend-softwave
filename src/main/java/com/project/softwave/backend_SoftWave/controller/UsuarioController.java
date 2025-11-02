@@ -2,6 +2,7 @@ package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
+import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.service.FotoPerfilService;
 import com.project.softwave.backend_SoftWave.service.PesquisaService;
@@ -121,14 +122,25 @@ public class UsuarioController {
         usuarioService.atualizarRoleUsuario(id,role);
         return ResponseEntity.status(200).build();
     }
+//
+//    @PutMapping("atualizar-status/{id}")
+//    @SecurityRequirement(name = "Bearer")
+//    public ResponseEntity<String> atualizarRole(
+//            @PathVariable Integer id
+//    ){
+//        usuarioService.atualizarStatusUsuario(id);
+//        return ResponseEntity.status(200).build();
+//    }
+
 
     @PutMapping("atualizar-status/{id}")
     @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> atualizarRole(
+    public ResponseEntity<UsuarioProcessosDTO> atualizarStatus(
             @PathVariable Integer id
     ){
-        usuarioService.atualizarStatusUsuario(id);
-        return ResponseEntity.status(200).build();
+        Usuario usuarioAtualizado = usuarioService.atualizarStatusUsuario(id);
+        UsuarioProcessosDTO dto = new UsuarioProcessosDTO(usuarioAtualizado);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("/usuario-documentos/{id}")
