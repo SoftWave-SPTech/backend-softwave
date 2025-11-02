@@ -362,7 +362,8 @@ public class UsuarioService {
 
     public Usuario atualizarStatusUsuario(Integer id){
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException(
+                        "Usuário não encontrado"));
         usuario.setAtivo(!usuario.getAtivo());
         usuarioRepository.save(usuario);
         return usuario;
