@@ -9,4 +9,6 @@ import java.util.List;
 public interface RegistroFinanceiroRepository extends JpaRepository<RegistroFinanceiro, Integer> {
 
     List<RegistroFinanceiro> findByAnoOrderByAnoDescMesDesc(Integer ano);
+
+    List<RegistroFinanceiro> findByProcessoId(Integer processoId);
 }
