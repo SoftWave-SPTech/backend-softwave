@@ -8,6 +8,8 @@ import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoJuridico;
 import com.project.softwave.backend_SoftWave.entity.AdvogadoFisico;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -32,8 +34,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     @Transactional
     @Query("SELECT u FROM Usuario u JOIN FETCH u.processos p " +
-            "WHERE (u.tipoUsuario = 'usuario_fisico' OR u.tipoUsuario = 'usuario_juridico') " )
-    List<Usuario> findClientesComProcessos();
+            "WHERE (u.tipoUsuario = 'usuario_fisico' OR u.tipoUsuario = 'usuario_juridico')")
+    Page<Usuario> findClientesComProcessos(Pageable pageable);
 
     @Transactional
     @Query("SELECT DISTINCT u FROM Usuario u JOIN FETCH u.processos p " +
@@ -139,5 +141,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Boolean existsByEmail(String email);
 
-
+    @Query("SELECT u FROM Usuario u WHERE " +
+           "((TYPE(u) = AdvogadoFisico AND TREAT(u AS AdvogadoFisico).oab = :oab) " +
+           "OR (TYPE(u) = AdvogadoJuridico AND TREAT(u AS AdvogadoJuridico).oab = :oab))")
+    Optional<Usuario> oabExistente(@Param("oab") Integer oab);
 }

@@ -1,0 +1,77 @@
+name: Deploy Backend SoftWave
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+      - feature/*
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn clean install --batch-mode
+
+      - name: Run tests
+        run: mvn test --batch-mode
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-jar
+          path: target/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Copy files to EC2 via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          source: "."
+          target: "/home/ec2-user/app"
+          
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-jar
+          path: app/
+
+      - name: Run deploy script on EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USER }}
+          key: ${{ secrets.AWS_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/app
+            ./deploy.sh

@@ -19,7 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
-@Controller
+//@Controller
+@RestController("documentos-processos")
 @RequestMapping("documentos-processos")
 public class DocumentoProcessoController {
 
@@ -32,7 +33,7 @@ public class DocumentoProcessoController {
             @ApiResponse(responseCode = "409", description = "Documento do processo já cadastrado"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos")
     })
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> cadastrar(
             @RequestParam("nomeArquivo") String nomeArquivo,
@@ -108,4 +109,43 @@ public class DocumentoProcessoController {
         service.deletarDocumento(id);
         return ResponseEntity.status(204).build();
     }
+
+    @Operation(summary = "Gera uma URL temporária para download do documento", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "URL temporária gerada com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Documento não encontrado")
+    })
+    @GetMapping("/{id}/download")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<String> gerarPresignedUrl(@PathVariable Integer id) {
+        DocumentosProcesso documento = service.buscarPorId(id);
+
+        if (documento == null) {
+            return ResponseEntity.status(404).body("Documento não encontrado.");
+        }
+
+        String s3Key = documento.getS3Key();
+
+        if (s3Key == null || s3Key.isBlank()) {
+            // Documento antigo — abre pela URL pública (caso exista)
+            if (documento.getUrlArquivo() != null && documento.getUrlArquivo().startsWith("https://")) {
+                return ResponseEntity.ok(documento.getUrlArquivo());
+            }
+            return ResponseEntity.badRequest().body("Documento sem chave S3 cadastrada.");
+        }
+
+        try {
+            String presignedUrl = service.gerarPresignedUrl(s3Key);
+            return ResponseEntity.ok(presignedUrl);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erro ao gerar URL temporária: " + e.getMessage());
+        }
+    }
+
+
+
+
 }

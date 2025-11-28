@@ -14,6 +14,9 @@ public class DashboardService {
     private ProcessoService processoService;
 
     @Autowired
+    private RegistroFinanceiroService registroFinanceiroService;
+
+    @Autowired
     private UsuarioService usuarioService;
 
     public DashResponseDTO dadosDash(){
@@ -26,6 +29,7 @@ public class DashboardService {
         dadosDash.setQuantidadeClientes(usuarioService.quantidadeClientes());
         dadosDash.setQuantidadeProcessosTotais(processoService.quantidadeProcessos());
 //        dadosDash.setSetorComMaisProcessos(processoService.setorComMaisProcessos());
+        dadosDash.setReceitaUltimos6Meses(registroFinanceiroService.getReceitaUltimos6Meses());
         dadosDash.setValorTotalProcessos(processoService.valorTotalProcessos());
         dadosDash.setProcessosOrdenadosPorData(processoService.listarProcessosOrdenadosPorDataCriacao().stream()
                 .map(ProcessoSimplesDTO::toProcessoSimplesDTO)

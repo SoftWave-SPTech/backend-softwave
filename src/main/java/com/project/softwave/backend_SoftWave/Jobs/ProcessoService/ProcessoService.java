@@ -20,10 +20,13 @@ import com.project.softwave.backend_SoftWave.exception.EntidadeConflitoException
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import com.project.softwave.backend_SoftWave.exception.NoContentException;
 import com.project.softwave.backend_SoftWave.repository.ComentarioProcessoRepository;
+import com.project.softwave.backend_SoftWave.repository.DocumentoProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.AnaliseProcessoRepository;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import com.project.softwave.backend_SoftWave.repository.RegistroFinanceiroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -53,6 +56,12 @@ public class ProcessoService {
 
     @Autowired
     private AnaliseProcessoRepository analiseProcessoRepository;
+
+    @Autowired
+    private DocumentoProcessoRepository documentoProcessoRepository;
+
+    @Autowired
+    private RegistroFinanceiroRepository registroFinanceiroRepository;
 
     public void vincularUsuariosAoProcesso(VincularUsuariosProcessoDTO dto) {
         Processo processo = processoRepository.findById(dto.getProcessoId())
@@ -138,6 +147,7 @@ public class ProcessoService {
         return processos;
     }
 
+    @Transactional
     public Boolean deletarProcesso(Integer id) {
         Optional<Processo> processoOptional = processoRepository.findById(id);
         if (processoOptional.isPresent()) {
@@ -150,15 +160,40 @@ public class ProcessoService {
             for (UltimasMovimentacoes mov : movimentacoes) {
                 Optional<AnaliseProcesso> analise = analiseProcessoRepository.findByMovimentacoes(mov);
                 analise.ifPresent(analiseProcessoRepository::delete);
+                // Excluir comentários vinculados à última movimentação (se houver)
+                var comentariosMov = comentarioProcessoRepository.findByUltimaMovimentacaoId(mov.getId());
+                if (comentariosMov != null && !comentariosMov.isEmpty()) {
+                    comentarioProcessoRepository.deleteAll(comentariosMov);
+                }
+            }
+            // Excluir comentários vinculados ao processo
+            var comentarios = comentarioProcessoRepository.findByProcessoId(processo.getId().longValue());
+            if (comentarios != null && !comentarios.isEmpty()) {
+                comentarioProcessoRepository.deleteAll(comentarios);
+            }
+            // Excluir documentos vinculados ao processo
+            var documentos = documentoProcessoRepository.findByFkProcessoId(processo.getId());
+            if (documentos != null && !documentos.isEmpty()) {
+                documentoProcessoRepository.deleteAll(documentos);
+            }
+            // Excluir registros financeiros vinculados ao processo
+            var registrosFinanceiros = registroFinanceiroRepository.findByProcessoId(processo.getId());
+            if (registrosFinanceiros != null && !registrosFinanceiros.isEmpty()) {
+                registroFinanceiroRepository.deleteAll(registrosFinanceiros);
             }
             ultimasMovimentacoesRepository.deleteAll(movimentacoes);
 
             // Desvincular usuários do processo
             if (processo.getUsuarios() != null) {
-                for (Usuario usuario : processo.getUsuarios()) {
-                    usuario.getProcessos().remove(processo); // desvincula
+                // faz uma cópia para evitar ConcurrentModification
+                List<Usuario> usuariosVinculados = new ArrayList<>(processo.getUsuarios());
+                for (Usuario usuario : usuariosVinculados) {
+                    usuario.getProcessos().remove(processo);
                 }
-                processo.getUsuarios().clear(); // remove todos os vínculos do lado do processo
+                // persiste a mudança do lado possivelmente proprietário da relação
+                usuarioRepository.saveAll(usuariosVinculados);
+                // limpa vínculos no próprio processo e persiste
+                processo.getUsuarios().clear();
             }
             processoRepository.save(processo); // necessário para persistir desvinculação
             processoRepository.deleteById(id);
@@ -182,6 +217,10 @@ public class ProcessoService {
     public String valorTotalProcessos(){
         BigDecimal valorTotal = processoRepository.valorTotalProcessos();
 
+        if (valorTotal == null) {
+            valorTotal = BigDecimal.ZERO;
+        }
+
         NumberFormat formatador = NumberFormat.getInstance(new Locale("pt", "BR"));
         formatador.setMinimumFractionDigits(1);  // mínimo 1 casa decimal
         formatador.setMaximumFractionDigits(2);  // máximo 2 casas decimais
@@ -193,7 +232,7 @@ public class ProcessoService {
         List<QtdPorSetorDTO> setoresQtdProcessos = processoRepository.qtdProcessosPorSetor();
 
         if(setoresQtdProcessos.isEmpty()){
-            return null;
+            return List.of();
         }
 
         return setoresQtdProcessos;
@@ -259,10 +298,26 @@ public class ProcessoService {
 
     public List<Processo> listarProcessosOrdenadosPorDataCriacao() {
         List<Processo> processos = processoRepository.findAllByOrderByCreatedAtDesc();
-        if (processos.isEmpty()) {
-            throw new EntidadeNaoEncontradaException("Nenhum processo encontrado.");
-        }
         return processos;
     }
 
+    public void cadastrar(CadastroProcessoDTO processoDTO){
+        Processo processoCadastro = new Processo();
+
+        if(processoRepository.findProcessoByNumeroProcesso(processoDTO.getNumeroProcesso()).isPresent()){
+            throw new EntidadeConflitoException("Processo já existe!");
+        }
+
+        processoCadastro.setNumeroProcesso(processoDTO.getNumeroProcesso());
+        processoCadastro.setDescricao(processoDTO.getDescricao());
+
+        processoRepository.save(processoCadastro);
+
+        processoCadastro = processoRepository.findProcessoByNumeroProcesso(processoDTO.getNumeroProcesso()).get();
+
+        if(!processoDTO.getUsuarios().isEmpty()){
+            VincularUsuariosProcessoDTO novoVinculo = new VincularUsuariosProcessoDTO(processoCadastro.getId(), processoDTO.getUsuarios());
+            vincularUsuariosAoProcesso(novoVinculo);
+        }
+    }
 }

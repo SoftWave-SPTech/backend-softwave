@@ -1,30 +1,27 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoController;
 
-import com.project.softwave.backend_SoftWave.Jobs.ParametrosAPI;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO.CadastroProcessoDTO;
-import com.project.softwave.backend_SoftWave.Jobs.ProcessoGrau1API;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoService;
 import com.project.softwave.backend_SoftWave.dto.ProcessoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoCompletoDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import com.project.softwave.backend_SoftWave.dto.RemoverUsuarioProcessoDTO;
-import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.VincularUsuariosProcessoDTO;
-import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
 import com.project.softwave.backend_SoftWave.exception.EntidadeNaoEncontradaException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-import java.util.stream.Collectors;
 import com.project.softwave.backend_SoftWave.repository.UsuarioRepository;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -40,14 +37,12 @@ public class ProcessoController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ProcessoGrau1API processoGrau1API;
-
     @Operation(summary = "Vinculação de usuarios aos processos", method = "POST")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuários vinculados com sucesso ao processo."),
     })
     @PostMapping("/vincular-usuarios")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> vincularUsuarios(@RequestBody VincularUsuariosProcessoDTO dto) {
         processoService.vincularUsuariosAoProcesso(dto);
         return ResponseEntity.ok("Usuários vinculados com sucesso ao processo.");
@@ -58,27 +53,42 @@ public class ProcessoController {
             @ApiResponse(responseCode = "200", description = "Usuário removido do processo com sucesso."),
     })
     @DeleteMapping("/remover-usuario")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> removerUsuarioDoProcesso(@RequestBody RemoverUsuarioProcessoDTO dto) {
         processoService.removerUsuarioDoProcesso(dto);
         return ResponseEntity.ok("Usuário removido do processo com sucesso.");
     }
 
     @PostMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<String> criarProcesso(@RequestBody CadastroProcessoDTO novoProcesso) {
         String numeroProcesso = novoProcesso.getNumeroProcesso();
-        ParametrosAPI.resetParametros();
-        ParametrosAPI.setParametroProcesso(numeroProcesso);
-        try {
-            processoGrau1API.getApiParams();
-            Processo processoAtual = processoService.buscarPorNumeroProcesso(numeroProcesso);
-            processoService.atualizarProcessoComUsuarios(processoAtual, novoProcesso);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado com sucesso!");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar o processo: " + e.getMessage());
-        }
 
+        processoService.cadastrar(novoProcesso);
+
+        try {
+            // Cria o objeto que será enviado no corpo da requisição
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("numeroProcesso", numeroProcesso);
+
+            // Configura o RestTemplate
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "http://localhost:8084/api/processos/consulta-numero";
+
+            // Faz o POST enviando apenas o número do processo
+            ResponseEntity<String> response = restTemplate.postForEntity(url, requestBody, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return ResponseEntity.status(HttpStatus.CREATED).body("Processo criado e consultado com sucesso!");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Erro ao consultar processo: " + response.getBody());
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao criar o processo: " + e.getMessage());
+        }
     }
-    //===========================
 
 //    @GetMapping("/usuario-id/{id}")
 //    public ResponseEntity<List<ProcessoSimplesDTO>> listarProcessoPorIdUsuario(@PathVariable Integer id) {
@@ -89,15 +99,15 @@ public class ProcessoController {
 //            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 //        }
 //    }
-//
 
-    //===========================
+
   @Operation(summary = "Buscar processo por ID", method = "GET")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
             @ApiResponse(responseCode = "404", description = "Processo não encontrado."),
     })
     @GetMapping("/{id}")
+  @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProcessoSimplesDTO> listarProcessoPorId(@PathVariable Integer id) {
         try {
                 Processo processo = processoService.listarProcessoPorId(id);
@@ -115,6 +125,7 @@ public class ProcessoController {
             @ApiResponse(responseCode = "404", description = "Processo não encontrado."),
     })
     @GetMapping("/usuario-id/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProcessoDTO>> listarProcessosPorUsuarioId(@PathVariable Integer id) {
         try {
             List<Processo> processos = processoService.listarProcessosPorUsuarioId(id);
@@ -136,6 +147,7 @@ public class ProcessoController {
             @ApiResponse(responseCode = "404", description = "Nenhum processo encontrado.")
     })
     @GetMapping
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ProcessoDTO>> listarProcessos(){
         List<Processo> processos = processoService.listarProcessos();
 
@@ -176,6 +188,7 @@ public class ProcessoController {
             @ApiResponse(responseCode = "404", description = "Processo não encontrado.")
     })
     @GetMapping("visualizar-processo/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProcessoCompletoDTO> buscarProcessoPorId(@PathVariable Integer id){
         try {
             ProcessoCompletoDTO processoCompleto = processoService.buscarProcessoPorId(id);
@@ -193,6 +206,7 @@ public class ProcessoController {
             @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso."),
     })
     @GetMapping("/{id}/vinculos")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Map<String, Object>> listarVinculos(@PathVariable Integer id) {
         var advs = usuarioRepository.findAdvogadosIdsByProcesso(id);
         var clientes = usuarioRepository.findClientesIdsByProcesso(id);

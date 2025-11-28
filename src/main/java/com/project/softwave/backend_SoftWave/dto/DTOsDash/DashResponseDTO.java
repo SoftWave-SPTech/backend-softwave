@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto.DTOsDash;
 
+import com.project.softwave.backend_SoftWave.dto.FinanceiroDTO.ReceitaUltimosMesesDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 
 import java.util.List;
@@ -14,8 +15,29 @@ public class DashResponseDTO {
     private List<QtdPorSetorDTO> qtdProcessosPorSetor;
     private List<ProcessoSimplesDTO> processosOrdenadosPorData;
     private Integer quantidadeProcessosTotais;
+    private List<ReceitaUltimosMesesDTO> receitaUltimos6Meses;
 
     public DashResponseDTO() {
+    }
+
+    public DashResponseDTO(
+            String valorTotalProcessos,
+            Integer quantidadeAdvogados,
+            Integer quantidadeClientes,
+            List<QtdClienteInativoAndAtivo> clientesInativosAndAtivos,
+            List<QtdPorSetorDTO> qtdProcessosPorSetor,
+            List<ProcessoSimplesDTO> processosOrdenadosPorData,
+            Integer quantidadeProcessosTotais,
+            List<ReceitaUltimosMesesDTO> receitaUltimos6Meses
+    ) {
+        this.valorTotalProcessos = valorTotalProcessos;
+        this.quantidadeAdvogados = quantidadeAdvogados;
+        this.quantidadeClientes = quantidadeClientes;
+        this.clientesInativosAndAtivos = clientesInativosAndAtivos;
+        this.qtdProcessosPorSetor = qtdProcessosPorSetor;
+        this.processosOrdenadosPorData = processosOrdenadosPorData;
+        this.quantidadeProcessosTotais = quantidadeProcessosTotais;
+        this.receitaUltimos6Meses = receitaUltimos6Meses;
     }
 
     public DashResponseDTO(
@@ -32,6 +54,14 @@ public class DashResponseDTO {
         this.clientesInativosAndAtivos = clientesInativosAndAtivos;
         this.qtdProcessosPorSetor = qtdProcessosPorSetor;
         this.quantidadeProcessosTotais = quantidadeProcessosTotais;
+    }
+
+    public List<ReceitaUltimosMesesDTO> getReceitaUltimos6Meses() {
+        return receitaUltimos6Meses;
+    }
+
+    public void setReceitaUltimos6Meses(List<ReceitaUltimosMesesDTO> receitaUltimos6Meses) {
+        this.receitaUltimos6Meses = receitaUltimos6Meses;
     }
 
     public String getValorTotalProcessos() {

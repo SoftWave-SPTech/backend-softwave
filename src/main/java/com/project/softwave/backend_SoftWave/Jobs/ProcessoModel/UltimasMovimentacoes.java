@@ -1,9 +1,7 @@
 package com.project.softwave.backend_SoftWave.Jobs.ProcessoModel;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 @Entity
 public class UltimasMovimentacoes {
@@ -16,7 +14,7 @@ public class UltimasMovimentacoes {
     @Column(name = "id", nullable = false)
     private Integer id;
     // @Many to one (fk_processo)
-    private LocalDateTime data;
+    private LocalDate data;
 
     @Column(columnDefinition = "MEDIUMTEXT")
     private String movimento;
@@ -41,22 +39,12 @@ public class UltimasMovimentacoes {
         this.id = id;
     }
 
-    public LocalDateTime getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(String data) {
-        // Espera receber data no formato "dd/MM/yyyy" ou "dd/MM/yyyy HH:mm"
-        DateTimeFormatter formatter;
-        if (data.trim().length() > 10) {
-            formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm").withLocale(new java.util.Locale("pt", "BR"));
-        } else {
-            formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").withLocale(new java.util.Locale("pt", "BR"));
-        }
-        this.data = LocalDateTime.parse(
-            data.trim().length() > 10 ? data.trim() : data.trim() + " 00:00",
-            formatter
-        );
+    public void setData(LocalDate data) {
+        this.data = data;
     }
 
     public String getMovimento() {

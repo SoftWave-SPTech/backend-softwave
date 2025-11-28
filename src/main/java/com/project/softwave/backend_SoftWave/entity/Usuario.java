@@ -255,6 +255,14 @@ public class Usuario {
         this.ativo = ativo;
     }
 
+    public Integer getTentativasFalhasLogin() {
+        return tentativasFalhasLogin;
+    }
+
+    public void setTentativasFalhasLogin(Integer tentativaFalhaLogin) {
+        this.tentativasFalhasLogin = tentativaFalhaLogin;
+    }
+
     public String getTokenRecuperacaoSenha() {
         return tokenRecuperacaoSenha;
     }
@@ -317,13 +325,5 @@ public class Usuario {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Integer getTentativasFalhasLogin() {
-        return tentativasFalhasLogin;
-    }
-
-    public void setTentativasFalhasLogin(Integer tentativasFalhasLogin) {
-        this.tentativasFalhasLogin = tentativasFalhasLogin;
     }
 }
