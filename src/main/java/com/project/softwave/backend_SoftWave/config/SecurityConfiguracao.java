@@ -47,7 +47,6 @@ public class SecurityConfiguracao {
             ,new AntPathRequestMatcher("/configuration/security")
             ,new AntPathRequestMatcher("/api/public/**")
             ,new AntPathRequestMatcher("/api/public/authenticate")
-            ,new AntPathRequestMatcher("/api/processo/**")
             ,new AntPathRequestMatcher("/webjars/**")
             ,new AntPathRequestMatcher("/v3/api-docs/**")
             ,new AntPathRequestMatcher("/actuator/*")
@@ -57,7 +56,7 @@ public class SecurityConfiguracao {
             ,new AntPathRequestMatcher("/h2-console/**")
             ,new AntPathRequestMatcher("/h2-console/**/**")
             ,new AntPathRequestMatcher("/error/**")
-            ,new AntPathRequestMatcher("/**")// Libera todo o acesso (apenas para desenvolvimento, remover em produção)
+//            ,new AntPathRequestMatcher("/**")// Libera todo o acesso (apenas para desenvolvimento, remover em produção)
 
     };
 

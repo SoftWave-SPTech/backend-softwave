@@ -58,6 +58,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar-usuarios-e-processos")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Page<UsuarioProcessosDTO>> listarUsuariosEProcessos(
             @RequestParam(defaultValue = "0") int page, // Página padrão 0
             @RequestParam(defaultValue = "6") int size)

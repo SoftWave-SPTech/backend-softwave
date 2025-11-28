@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class UsuarioMapper {
 
-    @Autowired
     private static UsuarioRepository usuarioRepository;
+
+    public UsuarioMapper(UsuarioRepository usuarioRepository) {
+        UsuarioMapper.usuarioRepository = usuarioRepository;
+    }
 
     public static Usuario of(UsuarioLoginDto usuarioLoginDto) {
         if (usuarioLoginDto == null) {

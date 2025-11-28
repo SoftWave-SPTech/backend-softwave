@@ -1,0 +1,201 @@
+oab,nome,email,tokenPrimeiroAcesso,cpf,rg,cep,logradouro,bairro,cidade,complemento,numero,telefone
+532436,João Carlos Mendes,joao.mendes001@advocacia.com,49454487,90869258044,12.345.678-9,04567000,Rua das Laranjeiras,Jardim Paulista,São Paulo,Apto 102 Bloco B,123,(11) 98765-4321
+532437,Maria Silva Santos,maria.silva002@advocacia.com,49454488,12345678901,23.456.789-0,01234567,Av. Paulista,Bela Vista,São Paulo,Sala 1001,456,(11) 99876-5432
+532438,Pedro Oliveira Lima,pedro.oliveira003@advocacia.com,49454489,23456789012,34.567.890-1,12345678,Rua Augusta,Consolação,São Paulo,Conj 205,789,(11) 91234-5678
+532439,Ana Paula Costa,ana.costa004@advocacia.com,49454490,34567890123,45.678.901-2,23456789,Rua Oscar Freire,Jardins,São Paulo,Loja 15,321,(11) 92345-6789
+532440,Carlos Eduardo Rocha,carlos.rocha005@advocacia.com,49454491,45678901234,56.789.012-3,34567890,Alameda Santos,Jardins,São Paulo,Ed. Corporate 8º andar,654,(11) 93456-7890
+532441,Fernanda Alves Pereira,fernanda.pereira006@advocacia.com,49454492,56789012345,67.890.123-4,45678901,Rua Consolação,República,São Paulo,Apto 304,987,(11) 94567-8901
+532442,Ricardo Barbosa Nunes,ricardo.nunes007@advocacia.com,49454493,67890123456,78.901.234-5,56789012,Rua da Liberdade,Liberdade,São Paulo,Casa 2,159,(11) 95678-9012
+532443,Juliana Campos Martins,juliana.martins008@advocacia.com,49454494,78901234567,89.012.345-6,67890123,Av. Brigadeiro Faria Lima,Itaim Bibi,São Paulo,Torre Norte 12º,753,(11) 96789-0123
+532444,Roberto Silva Araújo,roberto.araujo009@advocacia.com,49454495,89012345678,90.123.456-7,78901234,Rua Vergueiro,Vila Mariana,São Paulo,Bloco A Apto 501,852,(11) 97890-1234
+532445,Mariana Santos Ferreira,mariana.ferreira010@advocacia.com,49454496,90123456789,01.234.567-8,89012345,Av. Ibirapuera,Moema,São Paulo,Ed. Premium 20º andar,147,(11) 98901-2345
+532446,Alexandre Costa Ribeiro,alexandre.ribeiro011@advocacia.com,49454497,01234567890,12.345.678-9,90123456,Rua Estados Unidos,Jardins,São Paulo,Conj 1505,258,(11) 99012-3456
+532447,Patricia Lima Souza,patricia.souza012@advocacia.com,49454498,12345678902,23.456.789-0,01234568,Alameda Campinas,Jardins,São Paulo,Ed. Business 5º,369,(11) 90123-4567
+532448,Eduardo Mendes Silva,eduardo.silva013@advocacia.com,49454499,23456789013,34.567.890-1,12345679,Rua Pamplona,Jardins,São Paulo,Sala 801,741,(11) 91234-5679
+532449,Camila Rodrigues Lima,camila.lima014@advocacia.com,49454500,34567890124,45.678.901-2,23456780,Av. Nove de Julho,Bela Vista,São Paulo,Torre Sul 15º,852,(11) 92345-6780
+532450,Daniel Santos Costa,daniel.costa015@advocacia.com,49454501,45678901235,56.789.012-3,34567891,Rua Haddock Lobo,Cerqueira César,São Paulo,Apto 1203,963,(11) 93456-7891
+532451,Luciana Pereira Oliveira,luciana.oliveira016@advocacia.com,49454502,56789012346,67.890.123-4,45678902,Alameda Lorena,Jardins,São Paulo,Ed. Excellence 18º,074,(11) 94567-8902
+532452,Marcos Almeida Santos,marcos.santos017@advocacia.com,49454503,67890123457,78.901.234-5,56789013,Rua Bela Cintra,Consolação,São Paulo,Conj 702,185,(11) 95678-9013
+532453,Isabella Costa Martins,isabella.martins018@advocacia.com,49454504,78901234568,89.012.345-6,67890124,Av. Rebouças,Pinheiros,São Paulo,Ed. Metropolitan 22º,296,(11) 96789-0124
+532454,Gabriel Ferreira Lima,gabriel.lima019@advocacia.com,49454505,89012345679,90.123.456-7,78901235,Rua Teodoro Sampaio,Pinheiros,São Paulo,Sala 1401,307,(11) 97890-1235
+532455,Renata Silva Barbosa,renata.barbosa020@advocacia.com,49454506,90123456780,01.234.567-8,89012346,Alameda Franca,Jardins,São Paulo,Torre A 9º andar,418,(11) 98901-2346
+532456,Bruno Oliveira Costa,bruno.costa021@advocacia.com,49454507,01234567891,12.345.678-9,90123457,Rua João Cachoeira,Itaim Bibi,São Paulo,Ed. Platinum 14º,529,(11) 99012-3457
+532457,Carla Mendes Pereira,carla.pereira022@advocacia.com,49454508,12345678903,23.456.789-0,01234569,Av. Juscelino Kubitschek,Vila Nova Conceição,São Paulo,Torre Norte 25º,630,(11) 90123-4568
+532458,Thiago Santos Rocha,thiago.rocha023@advocacia.com,49454509,23456789014,34.567.890-1,12345680,Rua Bandeira Paulista,Itaim Bibi,São Paulo,Conj 1108,741,(11) 91234-5680
+532459,Natália Lima Alves,natalia.alves024@advocacia.com,49454510,34567890125,45.678.901-2,23456781,Alameda Itu,Jardins,São Paulo,Ed. Corporate Plus 7º,852,(11) 92345-6781
+532460,Felipe Costa Santos,felipe.santos025@advocacia.com,49454511,45678901236,56.789.012-3,34567892,Rua Ministro Rocha Azevedo,Cerqueira César,São Paulo,Sala 603,963,(11) 93456-7892
+532461,Adriana Pereira Lima,adriana.lima026@advocacia.com,49454512,56789012347,67.890.123-4,45678903,Av. Europa,Jardins,São Paulo,Ed. Exclusive 11º,074,(11) 94567-8903
+532462,Rodrigo Silva Martins,rodrigo.martins027@advocacia.com,49454513,67890123458,78.901.234-5,56789014,Rua Jerônimo da Veiga,Itaim Bibi,São Paulo,Torre Sul 16º,185,(11) 95678-9014
+532463,Bianca Santos Costa,bianca.costa028@advocacia.com,49454514,78901234569,89.012.345-6,67890125,Alameda Gabriel Monteiro da Silva,Jardins,São Paulo,Conj 904,296,(11) 96789-0125
+532464,Leonardo Oliveira Ferreira,leonardo.ferreira029@advocacia.com,49454515,89012345680,90.123.456-7,78901236,Rua Pedroso Alvarenga,Itaim Bibi,São Paulo,Ed. Premium Tower 19º,307,(11) 97890-1236
+532465,Larissa Costa Ribeiro,larissa.ribeiro030@advocacia.com,49454516,90123456781,01.234.567-8,89012347,Av. Cidade Jardim,Jardins,São Paulo,Torre A 13º andar,418,(11) 98901-2347
+532466,Gustavo Mendes Silva,gustavo.silva031@advocacia.com,49454517,01234567892,12.345.678-9,90123458,Rua Amauri,Itaim Bibi,São Paulo,Sala 1205,529,(11) 99012-3458
+532467,Carolina Santos Lima,carolina.lima032@advocacia.com,49454518,12345678904,23.456.789-0,01234570,Alameda Ministro Rocha Azevedo,Cerqueira César,São Paulo,Ed. Excellence Plus 6º,630,(11) 90123-4569
+532468,Victor Costa Pereira,victor.pereira033@advocacia.com,49454519,23456789015,34.567.890-1,12345681,Rua Funchal,Vila Olímpia,São Paulo,Torre Norte 21º,741,(11) 91234-5681
+532469,Priscila Lima Santos,priscila.santos034@advocacia.com,49454520,34567890126,45.678.901-2,23456782,Av. Nações Unidas,Pinheiros,São Paulo,Ed. World Trade Center 28º,852,(11) 92345-6782
+532470,André Silva Costa,andre.costa035@advocacia.com,49454521,45678901237,56.789.012-3,34567893,Rua Olimpíadas,Vila Olímpia,São Paulo,Conj 1507,963,(11) 93456-7893
+532471,Tatiana Pereira Oliveira,tatiana.oliveira036@advocacia.com,49454522,56789012348,67.890.123-4,45678904,Alameda Santos,Jardins,São Paulo,Ed. Santos Corporate 10º,074,(11) 94567-8904
+532472,Rafael Santos Martins,rafael.martins037@advocacia.com,49454523,67890123459,78.901.234-5,56789015,Rua Gomes de Carvalho,Vila Olímpia,São Paulo,Torre Sul 17º,185,(11) 95678-9015
+532473,Vanessa Costa Lima,vanessa.lima038@advocacia.com,49454524,78901234570,89.012.345-6,67890126,Av. Berrini,Brooklin,São Paulo,Ed. Berrini One 24º,296,(11) 96789-0126
+532474,Diego Oliveira Santos,diego.santos039@advocacia.com,49454525,89012345681,90.123.456-7,78901237,Rua Surubim,Brooklin,São Paulo,Sala 1309,307,(11) 97890-1237
+532475,Juliane Silva Costa,juliane.costa040@advocacia.com,49454526,90123456782,01.234.567-8,89012348,Alameda Ribeirão Preto,Bela Vista,São Paulo,Torre A 12º andar,418,(11) 98901-2348
+532476,Fabiano Mendes Lima,fabiano.lima041@advocacia.com,49454527,01234567893,12.345.678-9,90123459,Rua Leopoldo Couto Magalhães Jr,Itaim Bibi,São Paulo,Ed. Eldorado Business Tower 15º,529,(11) 99012-3459
+532477,Simone Santos Pereira,simone.pereira042@advocacia.com,49454528,12345678905,23.456.789-0,01234571,Av. Marginal Pinheiros,Brooklin,São Paulo,Conj 2003,630,(11) 90123-4570
+532478,Maurício Costa Silva,mauricio.silva043@advocacia.com,49454529,23456789016,34.567.890-1,12345682,Rua Alexandre Dumas,Chácara Santo Antônio,São Paulo,Torre Norte 18º,741,(11) 91234-5682
+532479,Eliana Lima Oliveira,eliana.oliveira044@advocacia.com,49454530,34567890127,45.678.901-2,23456783,Alameda Jauaperi,Moema,São Paulo,Ed. Moema Corporate 8º,852,(11) 92345-6783
+532480,Henrique Santos Costa,henrique.costa045@advocacia.com,49454531,45678901238,56.789.012-3,34567894,Rua Joaquim Floriano,Itaim Bibi,São Paulo,Sala 1410,963,(11) 93456-7894
+532481,Débora Pereira Santos,debora.santos046@advocacia.com,49454532,56789012349,67.890.123-4,45678905,Av. Santo Amaro,Brooklin,São Paulo,Torre Sul 22º,074,(11) 94567-8905
+532482,Leandro Silva Lima,leandro.lima047@advocacia.com,49454533,67890123460,78.901.234-5,56789016,Rua Henrique Schaumann,Pinheiros,São Paulo,Ed. Pinheiros Plaza 14º,185,(11) 95678-9016
+532483,Cristiane Costa Martins,cristiane.martins048@advocacia.com,49454534,78901234571,89.012.345-6,67890127,Alameda Maracatins,Moema,São Paulo,Conj 1106,296,(11) 96789-0127
+532484,Paulo Oliveira Costa,paulo.costa049@advocacia.com,49454535,89012345682,90.123.456-7,78901238,Rua Boqueirão,Santo Amaro,São Paulo,Torre A 9º andar,307,(11) 97890-1238
+532485,Fernanda Santos Lima,fernanda.lima050@advocacia.com,49454536,90123456783,01.234.567-8,89012349,Av. Washington Luís,Brooklin,São Paulo,Ed. Washington Corporate 26º,418,(11) 98901-2349
+532486,Alessandro Mendes Costa,alessandro.costa051@advocacia.com,49454537,01234567894,12.345.678-9,90123460,Rua Pequetita,Vila Olímpia,São Paulo,Sala 1512,529,(11) 99012-3460
+532487,Roberta Lima Santos,roberta.santos052@advocacia.com,49454538,12345678906,23.456.789-0,01234572,Alameda Araguaia,Alphaville,Barueri,Torre Norte 11º,630,(11) 90123-4571
+532488,Cláudio Costa Oliveira,claudio.oliveira053@advocacia.com,49454539,23456789017,34.567.890-1,12345683,Rua Fidêncio Ramos,Vila Olímpia,São Paulo,Ed. Birmann 21 - 19º,741,(11) 91234-5683
+532489,Mônica Santos Costa,monica.costa054@advocacia.com,49454540,34567890128,45.678.901-2,23456784,Av. das Nações Unidas,Vila Gertrudes,São Paulo,Torre Sul 23º,852,(11) 92345-6784
+532490,Antônio Lima Silva,antonio.silva055@advocacia.com,49454541,45678901239,56.789.012-3,34567895,Rua Arquiteto Olavo Redig de Campos,Vila Olímpia,São Paulo,Conj 1208,963,(11) 93456-7895
+532491,Sônia Pereira Costa,sonia.costa056@advocacia.com,49454542,56789012350,67.890.123-4,45678906,Alameda Tocantins,Alphaville,Barueri,Ed. Alphaville Corporate 7º,074,(11) 94567-8906
+532492,Jorge Santos Lima,jorge.lima057@advocacia.com,49454543,67890123461,78.901.234-5,56789017,Rua Helena,Vila Olímpia,São Paulo,Torre Norte 16º,185,(11) 95678-9017
+532493,Regina Costa Santos,regina.santos058@advocacia.com,49454544,78901234572,89.012.345-6,67890128,Av. Engenheiro Luís Carlos Berrini,Cidade Monções,São Paulo,Ed. Berrini Corporate 25º,296,(11) 96789-0128
+532494,Márcio Oliveira Lima,marcio.lima059@advocacia.com,49454545,89012345683,90.123.456-7,78901239,Rua Iguatemi,Itaim Bibi,São Paulo,Sala 1314,307,(11) 97890-1239
+532495,Valéria Santos Costa,valeria.costa060@advocacia.com,49454546,90123456784,01.234.567-8,89012350,Alameda Rio Negro,Alphaville,Barueri,Torre A 10º andar,418,(11) 98901-2350
+532496,Edson Mendes Santos,edson.santos061@advocacia.com,49454547,01234567895,12.345.678-9,90123461,Rua Doutor Renato Paes de Barros,Itaim Bibi,São Paulo,Ed. Renato Paes de Barros 13º,529,(11) 99012-3461
+532497,Lúcia Lima Costa,lucia.costa062@advocacia.com,49454548,12345678907,23.456.789-0,01234573,Av. Presidente Juscelino Kubitschek,Vila Nova Conceição,São Paulo,Torre Norte 27º,630,(11) 90123-4572
+532498,Nelson Costa Lima,nelson.lima063@advocacia.com,49454549,23456789018,34.567.890-1,12345684,Rua Morumbi,Brooklin,São Paulo,Conj 1509,741,(11) 91234-5684
+532499,Célia Santos Oliveira,celia.oliveira064@advocacia.com,49454550,34567890129,45.678.901-2,23456785,Alameda Campinas,Jardins,São Paulo,Ed. Campinas Corporate 12º,852,(11) 92345-6785
+532500,Francisco Lima Santos,francisco.santos065@advocacia.com,49454551,45678901240,56.789.012-3,34567896,Rua Clodomiro Amazonas,Vila Olímpia,São Paulo,Torre Sul 20º,963,(11) 93456-7896
+532501,Silvia Costa Lima,silvia.lima066@advocacia.com,49454552,56789012351,67.890.123-4,45678907,Av. Brigadeiro Faria Lima,Jardins,São Paulo,Ed. Faria Lima Corporate 18º,074,(11) 94567-8907
+532502,Rogério Santos Costa,rogerio.costa067@advocacia.com,49454553,67890123462,78.901.234-5,56789018,Rua Ramos Batista,Vila Olímpia,São Paulo,Sala 1416,185,(11) 95678-9018
+532503,Ângela Lima Santos,angela.santos068@advocacia.com,49454554,78901234573,89.012.345-6,67890129,Alameda Ministro Rocha Azevedo,Cerqueira César,São Paulo,Torre Norte 15º,296,(11) 96789-0129
+532504,Geraldo Costa Oliveira,geraldo.oliveira069@advocacia.com,49454555,89012345684,90.123.456-7,78901240,Rua Tabapuã,Itaim Bibi,São Paulo,Ed. Tabapuã Corporate 24º,307,(11) 97890-1240
+532505,Marta Santos Lima,marta.lima070@advocacia.com,49454556,90123456785,01.234.567-8,89012351,Av. Cidade Jardim,Itaim Bibi,São Paulo,Torre A 17º andar,418,(11) 98901-2351
+532506,Sérgio Lima Costa,sergio.costa071@advocacia.com,49454557,01234567896,12.345.678-9,90123462,Rua Coronel Oscar Porto,Paraíso,São Paulo,Conj 805,529,(11) 99012-3462
+532507,Rosana Costa Santos,rosana.santos072@advocacia.com,49454558,12345678908,23.456.789-0,01234574,Alameda Lorena,Jardins,São Paulo,Ed. Lorena Corporate 9º,630,(11) 90123-4573
+532508,José Lima Oliveira,jose.oliveira073@advocacia.com,49454559,23456789019,34.567.890-1,12345685,Rua Padre João Manuel,Cerqueira César,São Paulo,Torre Sul 14º,741,(11) 91234-5685
+532509,Ivone Santos Costa,ivone.costa074@advocacia.com,49454560,34567890130,45.678.901-2,23456786,Av. Rebouças,Pinheiros,São Paulo,Ed. Rebouças Corporate 19º,852,(11) 92345-6786
+532510,Valdir Costa Lima,valdir.lima075@advocacia.com,49454561,45678901241,56.789.012-3,34567897,Rua Padre Carvalho,Pinheiros,São Paulo,Sala 1118,963,(11) 93456-7897
+532511,Marlene Lima Santos,marlene.santos076@advocacia.com,49454562,56789012352,67.890.123-4,45678908,Alameda Franca,Jardins,São Paulo,Torre Norte 22º,074,(11) 94567-8908
+532512,Wilson Santos Costa,wilson.costa077@advocacia.com,49454563,67890123463,78.901.234-5,56789019,Rua Groenlândia,Jardins,São Paulo,Ed. Groenlândia Corporate 16º,185,(11) 95678-9019
+532513,Conceição Costa Lima,conceicao.lima078@advocacia.com,49454564,78901234574,89.012.345-6,67890130,Av. Paulista,Paraíso,São Paulo,Torre Sul 26º,296,(11) 96789-0130
+532514,Raimundo Lima Santos,raimundo.santos079@advocacia.com,49454565,89012345685,90.123.456-7,78901241,Rua Augusta,Consolação,São Paulo,Conj 1210,307,(11) 97890-1241
+532515,Terezinha Santos Costa,terezinha.costa080@advocacia.com,49454566,90123456786,01.234.567-8,89012352,Alameda Santos,Jardins,São Paulo,Ed. Santos Plaza 13º,418,(11) 98901-2352
+532516,Benedito Costa Santos,benedito.santos081@advocacia.com,49454567,01234567897,12.345.678-9,90123463,Rua Oscar Freire,Jardins,São Paulo,Torre A 11º andar,529,(11) 99012-3463
+532517,Aparecida Lima Costa,aparecida.costa082@advocacia.com,49454568,12345678909,23.456.789-0,01234575,Av. Angélica,Higienópolis,São Paulo,Ed. Angélica Corporate 18º,630,(11) 90123-4574
+532518,Sebastião Santos Lima,sebastiao.lima083@advocacia.com,49454569,23456789020,34.567.890-1,12345686,Rua Martins Fontes,República,São Paulo,Sala 907,741,(11) 91234-5686
+532519,Nair Costa Santos,nair.santos084@advocacia.com,49454570,34567890131,45.678.901-2,23456787,Alameda Barão de Limeira,Santa Cecília,São Paulo,Torre Norte 15º,852,(11) 92345-6787
+532520,Domingos Lima Costa,domingos.costa085@advocacia.com,49454571,45678901242,56.789.012-3,34567898,Rua General Jardim,Vila Buarque,São Paulo,Ed. General Jardim Corporate 21º,963,(11) 93456-7898
+532521,Francisca Santos Lima,francisca.lima086@advocacia.com,49454572,56789012353,67.890.123-4,45678909,Av. São Luís,República,São Paulo,Torre Sul 17º,074,(11) 94567-8909
+532522,Antônia Costa Santos,antonia.santos087@advocacia.com,49454573,67890123464,78.901.234-5,56789020,Rua Barão de Itapetininga,República,São Paulo,Conj 1312,185,(11) 95678-9020
+532523,Severino Lima Costa,severino.costa088@advocacia.com,49454574,78901234575,89.012.345-6,67890131,Alameda Ribeiro da Silva,Bela Vista,São Paulo,Ed. Ribeiro Corporate 14º,296,(11) 96789-0131
+532524,Raimunda Santos Lima,raimunda.lima089@advocacia.com,49454575,89012345686,90.123.456-7,78901242,Rua Major Sertório,Vila Buarque,São Paulo,Torre Norte 19º,307,(11) 97890-1242
+532525,Manuel Costa Santos,manuel.santos090@advocacia.com,49454576,90123456787,01.234.567-8,89012353,Av. Ipiranga,Centro,São Paulo,Ed. Ipiranga Corporate 23º,418,(11) 98901-2353
+532526,Joana Lima Costa,joana.costa091@advocacia.com,49454577,01234567898,12.345.678-9,90123464,Rua do Arouche,República,São Paulo,Sala 1014,529,(11) 99012-3464
+532527,Vicente Santos Lima,vicente.lima092@advocacia.com,49454578,12345678910,23.456.789-0,01234576,Alameda Nothmann,Campos Elíseos,São Paulo,Torre Sul 12º,630,(11) 90123-4575
+532528,Luiza Costa Santos,luiza.santos093@advocacia.com,49454579,23456789021,34.567.890-1,12345687,Rua Vitória,Centro,São Paulo,Ed. Vitória Corporate 16º,741,(11) 91234-5687
+532529,Geraldo Lima Costa,geraldo.costa094@advocacia.com,49454580,34567890132,45.678.901-2,23456788,Av. Casper Líbero,Centro,São Paulo,Torre Norte 20º,852,(11) 92345-6788
+532530,Carmem Santos Lima,carmem.lima095@advocacia.com,49454581,45678901243,56.789.012-3,34567899,Rua Senador Feijó,Sé,São Paulo,Conj 1415,963,(11) 93456-7899
+532531,Osvaldo Costa Santos,osvaldo.santos096@advocacia.com,49454582,56789012354,67.890.123-4,45678910,Alameda Eduardo Prado,Campos Elíseos,São Paulo,Ed. Eduardo Prado Corporate 18º,074,(11) 94567-8910
+532532,Neuza Lima Costa,neuza.costa097@advocacia.com,49454583,67890123465,78.901.234-5,56789021,Rua Líbero Badaró,Centro,São Paulo,Torre Sul 24º,185,(11) 95678-9021
+532533,Waldemar Santos Lima,waldemar.lima098@advocacia.com,49454584,78901234576,89.012.345-6,67890132,Av. São João,Centro,São Paulo,Ed. São João Corporate 15º,296,(11) 96789-0132
+532534,Eulália Costa Santos,eulalia.santos099@advocacia.com,49454585,89012345687,90.123.456-7,78901243,Rua Direita,Centro,São Paulo,Sala 1216,307,(11) 97890-1243
+532535,Joaquim Lima Costa,joaquim.costa100@advocacia.com,49454586,90123456788,01.234.567-8,89012354,Alameda Barros,Santa Efigênia,São Paulo,Torre Norte 17º,418,(11) 98901-2354
+532536,Odete Santos Lima,odete.lima101@advocacia.com,49454587,01234567899,12.345.678-9,90123465,Rua General Couto de Magalhães,Centro,São Paulo,Ed. General Couto Corporate 21º,529,(11) 99012-3465
+532537,Valdeci Costa Santos,valdeci.santos102@advocacia.com,49454588,12345678911,23.456.789-0,01234577,Av. Tiradentes,Luz,São Paulo,Torre Sul 13º,630,(11) 90123-4576
+532538,Dirceu Lima Costa,dirceu.costa103@advocacia.com,49454589,23456789022,34.567.890-1,12345688,Rua Mauá,Luz,São Paulo,Conj 1017,741,(11) 91234-5688
+532539,Zilda Santos Lima,zilda.lima104@advocacia.com,49454590,34567890133,45.678.901-2,23456789,Alameda Cleveland,Campos Elíseos,São Paulo,Ed. Cleveland Corporate 19º,852,(11) 92345-6789
+532540,Mário Costa Santos,mario.santos105@advocacia.com,49454591,45678901244,56.789.012-3,34567800,Rua Brigadeiro Tobias,Luz,São Paulo,Torre Norte 22º,963,(11) 93456-7800
+532541,Lourdes Lima Costa,lourdes.costa106@advocacia.com,49454592,56789012355,67.890.123-4,45678911,Av. Duque de Caxias,Santa Efigênia,São Paulo,Ed. Duque Corporate 16º,074,(11) 94567-8911
+532542,Expedito Santos Lima,expedito.lima107@advocacia.com,49454593,67890123466,78.901.234-5,56789022,Rua Santa Ifigênia,Santa Efigênia,São Paulo,Sala 1318,185,(11) 95678-9022
+532543,Alzira Costa Santos,alzira.santos108@advocacia.com,49454594,78901234577,89.012.345-6,67890133,Alameda Ribeiro da Silva,Bela Vista,São Paulo,Torre Sul 25º,296,(11) 96789-0133
+532544,Olavo Lima Costa,olavo.costa109@advocacia.com,49454595,89012345688,90.123.456-7,78901244,Rua José Bonifácio,Centro,São Paulo,Ed. José Bonifácio Corporate 18º,307,(11) 97890-1244
+532545,Dalva Santos Lima,dalva.lima110@advocacia.com,49454596,90123456789,01.234.567-8,89012355,Av. Rangel Pestana,Brás,São Paulo,Torre Norte 14º,418,(11) 98901-2355
+532546,Nilton Costa Santos,nilton.santos111@advocacia.com,49454597,01234567800,12.345.678-9,90123466,Rua do Gasômetro,Brás,São Paulo,Conj 1119,529,(11) 99012-3466
+532547,Edna Lima Costa,edna.costa112@advocacia.com,49454598,12345678912,23.456.789-0,01234578,Alameda Nothmann,Campos Elíseos,São Paulo,Ed. Nothmann Corporate 20º,630,(11) 90123-4577
+532548,Ademir Santos Lima,ademir.lima113@advocacia.com,49454599,23456789023,34.567.890-1,12345689,Rua Oriente,Brás,São Paulo,Torre Sul 17º,741,(11) 91234-5689
+532549,Cleonice Costa Santos,cleonice.santos114@advocacia.com,49454600,34567890134,45.678.901-2,23456790,Av. Mercúrio,Brás,São Paulo,Ed. Mercúrio Corporate 23º,852,(11) 92345-6790
+532550,Waldir Lima Costa,waldir.costa115@advocacia.com,49454601,45678901245,56.789.012-3,34567801,Rua Monsenhor Andrade,Centro,São Paulo,Sala 1420,963,(11) 93456-7801
+532551,Creusa Santos Lima,creusa.lima116@advocacia.com,49454602,56789012356,67.890.123-4,45678912,Alameda Barão de Piracicaba,Campos Elíseos,São Paulo,Torre Norte 19º,074,(11) 94567-8912
+532552,João Lima Costa,joao.costa117@advocacia.com,49454603,67890123467,78.901.234-5,56789023,Rua Brigadeiro Galvão,Barra Funda,São Paulo,Ed. Brigadeiro Galvão Corporate 15º,185,(11) 95678-9023
+532553,Dirce Santos Lima,dirce.lima118@advocacia.com,49454604,78901234578,89.012.345-6,67890134,Av. Francisco Matarazzo,Água Branca,São Paulo,Torre Sul 21º,296,(11) 96789-0134
+532554,Altair Costa Santos,altair.santos119@advocacia.com,49454605,89012345689,90.123.456-7,78901245,Rua Turiassu,Perdizes,São Paulo,Conj 1221,307,(11) 97890-1245
+532555,Neusa Lima Costa,neusa.costa120@advocacia.com,49454606,90123456790,01.234.567-8,89012356,Alameda Eduardo Prado,Campos Elíseos,São Paulo,Ed. Eduardo Prado Plus 18º,418,(11) 98901-2356
+532556,Erasmo Santos Lima,erasmo.lima121@advocacia.com,49454607,01234567801,12.345.678-9,90123467,Rua Monte Alegre,Perdizes,São Paulo,Torre Norte 16º,529,(11) 99012-3467
+532557,Noemia Costa Santos,noemia.santos122@advocacia.com,49454608,12345678913,23.456.789-0,01234579,Av. Pompéia,Pompéia,São Paulo,Ed. Pompéia Corporate 22º,630,(11) 90123-4578
+532558,Arlindo Lima Costa,arlindo.costa123@advocacia.com,49454609,23456789024,34.567.890-1,12345690,Rua Clélia,Água Branca,São Paulo,Torre Sul 14º,741,(11) 91234-5690
+532559,Adelina Santos Lima,adelina.lima124@advocacia.com,49454610,34567890135,45.678.901-2,23456791,Alameda Glete,Campos Elíseos,São Paulo,Ed. Glete Corporate 17º,852,(11) 92345-6791
+532560,Lindolfo Costa Santos,lindolfo.santos125@advocacia.com,49454611,45678901246,56.789.012-3,34567802,Rua Cardeal Arcoverde,Pinheiros,São Paulo,Sala 1522,963,(11) 93456-7802
+532561,Iracy Lima Costa,iracy.costa126@advocacia.com,49454612,56789012357,67.890.123-4,45678913,Av. Pedroso de Morais,Pinheiros,São Paulo,Torre Norte 20º,074,(11) 94567-8913
+532562,Helio Santos Lima,helio.lima127@advocacia.com,49454613,67890123468,78.901.234-5,56789024,Rua dos Pinheiros,Pinheiros,São Paulo,Ed. Pinheiros Business 24º,185,(11) 95678-9024
+532563,Olga Costa Santos,olga.santos128@advocacia.com,49454614,78901234579,89.012.345-6,67890135,Alameda Ministro Rocha Azevedo,Cerqueira César,São Paulo,Torre Sul 18º,296,(11) 96789-0135
+532564,Arnaldo Lima Costa,arnaldo.costa129@advocacia.com,49454615,89012345690,90.123.456-7,78901246,Rua Fidalga,Vila Madalena,São Paulo,Conj 1323,307,(11) 97890-1246
+532565,Nilda Santos Lima,nilda.lima130@advocacia.com,49454616,90123456791,01.234.567-8,89012357,Av. Sumaré,Sumaré,São Paulo,Ed. Sumaré Corporate 19º,418,(11) 98901-2357
+532566,Jair Costa Santos,jair.santos131@advocacia.com,49454617,01234567802,12.345.678-9,90123468,Rua Wisard,Vila Madalena,São Paulo,Torre Norte 15º,529,(11) 99012-3468
+532567,Glória Lima Costa,gloria.costa132@advocacia.com,49454618,12345678914,23.456.789-0,01234580,Alameda Franca,Jardins,São Paulo,Ed. Franca Elite 21º,630,(11) 90123-4579
+532568,Reinaldo Santos Lima,reinaldo.lima133@advocacia.com,49454619,23456789025,34.567.890-1,12345691,Rua Harmonia,Vila Madalena,São Paulo,Torre Sul 16º,741,(11) 91234-5691
+532569,Áurea Costa Santos,aurea.santos134@advocacia.com,49454620,34567890136,45.678.901-2,23456792,Av. Dr. Arnaldo,Sumaré,São Paulo,Ed. Dr. Arnaldo Corporate 23º,852,(11) 92345-6792
+532570,Alfredo Lima Costa,alfredo.costa135@advocacia.com,49454621,45678901247,56.789.012-3,34567803,Rua Girassol,Vila Madalena,São Paulo,Sala 1124,963,(11) 93456-7803
+532571,Norma Santos Lima,norma.lima136@advocacia.com,49454622,56789012358,67.890.123-4,45678914,Alameda Campinas,Jardins,São Paulo,Torre Norte 22º,074,(11) 94567-8914
+532572,Saul Costa Santos,saul.santos137@advocacia.com,49454623,67890123469,78.901.234-5,56789025,Rua Aspicuelta,Vila Madalena,São Paulo,Ed. Aspicuelta Business 17º,185,(11) 95678-9025
+532573,Diva Lima Costa,diva.costa138@advocacia.com,49454624,78901234580,89.012.345-6,67890136,Av. Paulista,Paraíso,São Paulo,Torre Sul 25º,296,(11) 96789-0136
+532574,Rubens Santos Lima,rubens.lima139@advocacia.com,49454625,89012345691,90.123.456-7,78901247,Rua Mourato Coelho,Vila Madalena,São Paulo,Conj 1425,307,(11) 97890-1247
+532575,Alba Costa Santos,alba.santos140@advocacia.com,49454626,90123456792,01.234.567-8,89012358,Alameda Lorena,Jardins,São Paulo,Ed. Lorena Elite 20º,418,(11) 98901-2358
+532576,Ivo Lima Costa,ivo.costa141@advocacia.com,49454627,01234567803,12.345.678-9,90123469,Rua Purpurina,Vila Madalena,São Paulo,Torre Norte 18º,529,(11) 99012-3469
+532577,Suzana Santos Lima,suzana.lima142@advocacia.com,49454628,12345678915,23.456.789-0,01234581,Av. Europa,Jardins,São Paulo,Ed. Europa Premium 24º,630,(11) 90123-4580
+532578,Valdenir Costa Santos,valdenir.santos143@advocacia.com,49454629,23456789026,34.567.890-1,12345692,Rua Fradique Coutinho,Vila Madalena,São Paulo,Torre Sul 19º,741,(11) 91234-5692
+532579,Dulce Lima Costa,dulce.costa144@advocacia.com,49454630,34567890137,45.678.901-2,23456793,Alameda Santos,Jardins,São Paulo,Ed. Santos Premium 16º,852,(11) 92345-6793
+532580,Valdomiro Santos Lima,valdomiro.lima145@advocacia.com,49454631,45678901248,56.789.012-3,34567804,Rua Belmiro Braga,Vila Madalena,São Paulo,Sala 1226,963,(11) 93456-7804
+532581,Inês Costa Santos,ines.santos146@advocacia.com,49454632,56789012359,67.890.123-4,45678915,Av. Rebouças,Pinheiros,São Paulo,Torre Norte 21º,074,(11) 94567-8915
+532582,Décio Lima Costa,decio.costa147@advocacia.com,49454633,67890123470,78.901.234-5,56789026,Rua Capote Valente,Pinheiros,São Paulo,Ed. Capote Corporate 23º,185,(11) 95678-9026
+532583,Vera Santos Lima,vera.lima148@advocacia.com,49454634,78901234581,89.012.345-6,67890137,Alameda Itu,Jardins,São Paulo,Torre Sul 17º,296,(11) 96789-0137
+532584,Adalto Costa Santos,adalto.santos149@advocacia.com,49454635,89012345692,90.123.456-7,78901248,Rua Ferreira de Araújo,Pinheiros,São Paulo,Conj 1527,307,(11) 97890-1248
+532585,Dalila Lima Costa,dalila.costa150@advocacia.com,49454636,90123456793,01.234.567-8,89012359,Av. Cidade Jardim,Itaim Bibi,São Paulo,Ed. Cidade Jardim Elite 22º,418,(11) 98901-2359
+532586,Durval Santos Lima,durval.lima151@advocacia.com,49454637,01234567804,12.345.678-9,90123470,Rua Cunha Gago,Pinheiros,São Paulo,Torre Norte 19º,529,(11) 99012-3470
+532587,Elza Costa Santos,elza.santos152@advocacia.com,49454638,12345678916,23.456.789-0,01234582,Alameda Gabriel Monteiro da Silva,Jardins,São Paulo,Ed. Gabriel Monteiro Premium 25º,630,(11) 90123-4581
+532588,Nestor Lima Costa,nestor.costa153@advocacia.com,49454639,23456789027,34.567.890-1,12345693,Rua Martim Carrasco,Vila Olímpia,São Paulo,Torre Sul 20º,741,(11) 91234-5693
+532589,Eunice Santos Lima,eunice.lima154@advocacia.com,49454640,34567890138,45.678.901-2,23456794,Av. Berrini,Brooklin,São Paulo,Ed. Berrini Elite 18º,852,(11) 92345-6794
+532590,Palmira Costa Santos,palmira.santos155@advocacia.com,49454641,45678901249,56.789.012-3,34567805,Rua Canário,Moema,São Paulo,Sala 1328,963,(11) 93456-7805
+532591,Laércio Lima Costa,laercio.costa156@advocacia.com,49454642,56789012360,67.890.123-4,45678916,Alameda dos Jurupis,Moema,São Paulo,Torre Norte 24º,074,(11) 94567-8916
+532592,Yara Santos Lima,yara.lima157@advocacia.com,49454643,67890123471,78.901.234-5,56789027,Rua Bem-te-vi,Moema,São Paulo,Ed. Bem-te-vi Corporate 16º,185,(11) 95678-9027
+532593,Agenor Costa Santos,agenor.santos158@advocacia.com,49454644,78901234582,89.012.345-6,67890138,Av. Santo Amaro,Brooklin,São Paulo,Torre Sul 23º,296,(11) 96789-0138
+532594,Vilma Lima Costa,vilma.costa159@advocacia.com,49454645,89012345693,90.123.456-7,78901249,Rua Borges Lagoa,Vila Clementino,São Paulo,Conj 1229,307,(11) 97890-1249
+532595,Batista Santos Lima,batista.lima160@advocacia.com,49454646,90123456794,01.234.567-8,89012360,Alameda Campinas,Jardins,São Paulo,Ed. Campinas Elite 21º,418,(11) 98901-2360
+532596,Mirian Costa Santos,mirian.santos161@advocacia.com,49454647,01234567805,12.345.678-9,90123471,Rua Botucatu,Vila Clementino,São Paulo,Torre Norte 17º,529,(11) 99012-3471
+532597,Odilon Lima Costa,odilon.costa162@advocacia.com,49454648,12345678917,23.456.789-0,01234583,Av. Ibirapuera,Moema,São Paulo,Ed. Ibirapuera Premium 26º,630,(11) 90123-4582
+532598,Leda Santos Lima,leda.lima163@advocacia.com,49454649,23456789028,34.567.890-1,12345694,Rua Sena Madureira,Vila Mariana,São Paulo,Torre Sul 18º,741,(11) 91234-5694
+532599,Joaquina Costa Santos,joaquina.santos164@advocacia.com,49454650,34567890139,45.678.901-2,23456795,Alameda dos Aicás,Moema,São Paulo,Ed. Aicás Corporate 22º,852,(11) 92345-6795
+532600,Silvio Lima Costa,silvio.costa165@advocacia.com,49454651,45678901250,56.789.012-3,34567806,Rua Domingos de Morais,Vila Mariana,São Paulo,Sala 1430,963,(11) 93456-7806
+532601,Hilda Santos Lima,hilda.lima166@advocacia.com,49454652,56789012361,67.890.123-4,45678917,Av. Lins de Vasconcelos,Vila Mariana,São Paulo,Torre Norte 25º,074,(11) 94567-8917
+532602,Mauro Costa Santos,mauro.santos167@advocacia.com,49454653,67890123472,78.901.234-5,56789028,Rua Pelotas,Vila Mariana,São Paulo,Ed. Pelotas Business 19º,185,(11) 95678-9028
+532603,Cida Lima Costa,cida.costa168@advocacia.com,49454654,78901234583,89.012.345-6,67890139,Alameda Jaú,Jardins,São Paulo,Torre Sul 24º,296,(11) 96789-0139
+532604,Genésio Santos Lima,genesio.lima169@advocacia.com,49454655,89012345694,90.123.456-7,78901250,Rua Tutóia,Paraíso,São Paulo,Conj 1331,307,(11) 97890-1250
+532605,Dirce Costa Santos,dirce.santos170@advocacia.com,49454656,90123456795,01.234.567-8,89012361,Av. Paulista,Paraíso,São Paulo,Ed. Paulista Elite 20º,418,(11) 98901-2361
+532606,Guerino Lima Costa,guerino.costa171@advocacia.com,49454657,01234567806,12.345.678-9,90123472,Rua Martiniano de Carvalho,Paraíso,São Paulo,Torre Norte 18º,529,(11) 99012-3472
+532607,Olinda Santos Lima,olinda.lima172@advocacia.com,49454658,12345678918,23.456.789-0,01234584,Alameda Franca,Jardins,São Paulo,Ed. Franca Premium 23º,630,(11) 90123-4583
+532608,Plínio Costa Santos,plinio.santos173@advocacia.com,49454659,23456789029,34.567.890-1,12345695,Rua Abílio Soares,Paraíso,São Paulo,Torre Sul 21º,741,(11) 91234-5695
+532609,Clélia Lima Costa,clelia.costa174@advocacia.com,49454660,34567890140,45.678.901-2,23456796,Av. Brigadeiro Luís Antônio,Paraíso,São Paulo,Ed. Brigadeiro Corporate 17º,852,(11) 92345-6796
+532610,Osvaldo Santos Lima,osvaldo.lima175@advocacia.com,49454661,45678901251,56.789.012-3,34567807,Rua Joaquim Eugênio de Lima,Jardins,São Paulo,Sala 1532,963,(11) 93456-7807
+532611,Carminda Costa Santos,carminda.santos176@advocacia.com,49454662,56789012362,67.890.123-4,45678918,Alameda Campinas,Jardins,São Paulo,Torre Norte 26º,074,(11) 94567-8918
+532612,Leonel Lima Costa,leonel.costa177@advocacia.com,49454663,67890123473,78.901.234-5,56789029,Rua Bela Cintra,Consolação,São Paulo,Ed. Bela Cintra Elite 22º,185,(11) 95678-9029
+532613,Celina Santos Lima,celina.lima178@advocacia.com,49454664,78901234584,89.012.345-6,67890140,Av. Consolação,Consolação,São Paulo,Torre Sul 19º,296,(11) 96789-0140
+532614,Alcides Costa Santos,alcides.santos179@advocacia.com,49454665,89012345695,90.123.456-7,78901251,Rua Augusta,Consolação,São Paulo,Conj 1433,307,(11) 97890-1251
+532615,Marlise Lima Costa,marlise.costa180@advocacia.com,49454666,90123456796,01.234.567-8,89012362,Alameda Lorena,Jardins,São Paulo,Ed. Lorena Premium 25º,418,(11) 98901-2362
+532616,Evaristo Santos Lima,evaristo.lima181@advocacia.com,49454667,01234567807,12.345.678-9,90123473,Rua Oscar Freire,Jardins,São Paulo,Torre Norte 21º,529,(11) 99012-3473
+532617,Bernadete Costa Santos,bernadete.santos182@advocacia.com,49454668,12345678919,23.456.789-0,01234585,Av. Europa,Jardins,São Paulo,Ed. Europa Elite 27º,630,(11) 90123-4584
+532618,Alceu Lima Costa,alceu.costa183@advocacia.com,49454669,23456789030,34.567.890-1,12345696,Rua Ministro Rocha Azevedo,Cerqueira César,São Paulo,Torre Sul 20º,741,(11) 91234-5696
+532619,Natalina Santos Lima,natalina.lima184@advocacia.com,49454670,34567890141,45.678.901-2,23456797,Alameda Santos,Jardins,São Paulo,Ed. Santos Elite 18º,852,(11) 92345-6797
+532620,Sebastião Costa Santos,sebastiao.santos185@advocacia.com,49454671,45678901252,56.789.012-3,34567808,Rua Groenlândia,Jardins,São Paulo,Sala 1634,963,(11) 93456-7808
+532621,Teresinha Lima Costa,teresinha.costa186@advocacia.com,49454672,56789012363,67.890.123-4,45678919,Av. Paulista,Paraíso,São Paulo,Torre Norte 23º,074,(11) 94567-8919
+532622,Djalma Santos Lima,djalma.lima187@advocacia.com,49454673,67890123474,78.901.234-5,56789030,Rua Dr. Melo Alves,Jardins,São Paulo,Ed. Dr. Melo Alves Premium 24º,185,(11) 95678-9030
+532623,Edite Costa Santos,edite.santos188@advocacia.com,49454674,78901234585,89.012.345-6,67890141,Alameda Itu,Jardins,São Paulo,Torre Sul 22º,296,(11) 96789-0141
+532624,Hilário Lima Costa,hilario.costa189@advocacia.com,49454675,89012345696,90.123.456-7,78901252,Rua Padre João Manuel,Cerqueira César,São Paulo,Conj 1535,307,(11) 97890-1252
+532625,Zélia Santos Lima,zelia.lima190@advocacia.com,49454676,90123456797,01.234.567-8,89012363,Av. Angélica,Higienópolis,São Paulo,Ed. Angélica Elite 21º,418,(11) 98901-2363
+532626,Américo Costa Santos,americo.santos191@advocacia.com,49454677,01234567808,12.345.678-9,90123474,Rua Sergipe,Higienópolis,São Paulo,Torre Norte 19º,529,(11) 99012-3474
+532627,Graça Lima Costa,graca.costa192@advocacia.com,49454678,12345678920,23.456.789-0,01234586,Alameda Barão de Limeira,Santa Cecília,São Paulo,Ed. Barão de Limeira Premium 26º,630,(11) 90123-4585
+532628,Lázaro Santos Lima,lazaro.lima193@advocacia.com,49454679,23456789031,34.567.890-1,12345697,Rua General Jardim,Vila Buarque,São Paulo,Torre Sul 23º,741,(11) 91234-5697
+532629,Cidinha Costa Santos,cidinha.santos194@advocacia.com,49454680,34567890142,45.678.901-2,23456798,Av. São Luís,República,São Paulo,Ed. São Luís Corporate 20º,852,(11) 92345-6798
+532630,Adamastor Lima Costa,adamastor.costa195@advocacia.com,49454681,45678901253,56.789.012-3,34567809,Rua Barão de Itapetininga,República,São Paulo,Sala 1736,963,(11) 93456-7809
+532631,Vanda Santos Lima,vanda.lima196@advocacia.com,49454682,56789012364,67.890.123-4,45678920,Alameda Ribeiro da Silva,Bela Vista,São Paulo,Torre Norte 27º,074,(11) 94567-8920
+532632,Agnaldo Costa Santos,agnaldo.santos197@advocacia.com,49454683,67890123475,78.901.234-5,56789031,Rua Major Sertório,Vila Buarque,São Paulo,Ed. Major Sertório Elite 25º,185,(11) 95678-9031
+532633,Lúcio Lima Costa,lucio.costa198@advocacia.com,49454684,78901234586,89.012.345-6,67890142,Av. Ipiranga,Centro,São Paulo,Torre Sul 21º,296,(11) 96789-0142
+532634,Ivete Santos Lima,ivete.lima199@advocacia.com,49454685,89012345697,90.123.456-7,78901253,Rua do Arouche,República,São Paulo,Conj 1637,307,(11) 97890-1253
+532635,Waldecy Costa Santos,waldecy.santos200@advocacia.com,49454686,90123456798,01.234.567-8,89012364,Alameda Nothmann,Campos Elíseos,São Paulo,Ed. Nothmann Elite 24º,418,(11) 98901-2364

@@ -26,6 +26,7 @@ public class PesquisaController {
             description = "Retorna uma lista de clientes que possuem processos cadastrados."
     )
     @GetMapping("/com-processos/advogado/{id}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Page<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(
             @Valid @PathVariable Integer id,
             @RequestParam(defaultValue = "0") int page,
@@ -40,6 +41,7 @@ public class PesquisaController {
             description = "Retorna uma lista de clientes que possuem processos cadastrados."
     )
     @GetMapping("/com-processos")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<Page<ClienteComProcessosResponseDTO>> listarClientesComProcessos(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size) {
