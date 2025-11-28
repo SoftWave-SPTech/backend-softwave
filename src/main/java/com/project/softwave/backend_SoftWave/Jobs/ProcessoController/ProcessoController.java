@@ -165,24 +165,40 @@ public class ProcessoController {
             @ApiResponse(responseCode = "404", description = "Processo não encontrado")
     })
     @DeleteMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<Void> deletarProcesso(@PathVariable Integer id) {
+    public ResponseEntity<Map<String, String>> deletarProcesso(@PathVariable Integer id) {
+        Map<String, String> response = new HashMap<>();
         try {
             processoService.deletarProcesso(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            response.put("message", "Processo excluído com sucesso.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         } catch (EntidadeNaoEncontradaException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            response.put("error", "Processo não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            response.put("error", "Erro interno ao excluir o processo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 
 
+    @Operation(summary = "Visualizar processo completo por ID", method = "GET")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Processo completo retornado com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Processo não encontrado.")
+    })
     @GetMapping("visualizar-processo/{id}")
     @SecurityRequirement(name = "Bearer")
     public ResponseEntity<ProcessoCompletoDTO> buscarProcessoPorId(@PathVariable Integer id){
-        return ResponseEntity.status(200).body(processoService.buscarProcessoPorId(id));
+        try {
+            ProcessoCompletoDTO processoCompleto = processoService.buscarProcessoPorId(id);
+            return ResponseEntity.status(HttpStatus.OK).body(processoCompleto);
+        } catch (EntidadeNaoEncontradaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @Operation(summary = "IDs de advogados e clientes vinculados ao processo", method = "GET")
@@ -208,25 +224,22 @@ public class ProcessoController {
             @ApiResponse(responseCode = "404", description = "Processo não encontrado.")
     })
     @PutMapping("/{id}")
-    @SecurityRequirement(name = "Bearer")
-    public ResponseEntity<String> atualizarProcesso(
+    public ResponseEntity<Map<String, String>> atualizarProcesso(
             @PathVariable Integer id,
             @RequestBody CadastroProcessoDTO dto
     ) {
+        Map<String, String> response = new HashMap<>();
         try {
-            // busca o processo existente pelo ID
             Processo processoAtual = processoService.listarProcessoPorId(id);
-
-            // reaproveita sua lógica já existente que atualiza campos e vínculos
             processoService.atualizarProcessoComUsuarios(processoAtual, dto);
-
-            return ResponseEntity.ok("Processo atualizado com sucesso!");
+            response.put("message", "Processo atualizado com sucesso!");
+            return ResponseEntity.ok(response);
         } catch (EntidadeNaoEncontradaException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Processo não encontrado.");
+            response.put("error", "Processo não encontrado.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao atualizar o processo: " + e.getMessage());
+            response.put("error", "Erro ao atualizar o processo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }
