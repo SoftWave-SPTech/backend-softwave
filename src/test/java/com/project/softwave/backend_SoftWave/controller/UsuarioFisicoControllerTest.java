@@ -1,19 +1,5 @@
 package com.project.softwave.backend_SoftWave.controller;
 
-//import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoRequestDTO;
-//import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
-//import com.project.softwave.backend_SoftWave.service.UsuarioFisicoService;
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.http.MediaType;
-//import org.springframework.test.web.servlet.MockMvc;
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.when;
-
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisico.UsuarioFisicoRequestDTO;
 import com.project.softwave.backend_SoftWave.dto.UsuarioFisicoAtualizacaoDTO;
 import com.project.softwave.backend_SoftWave.entity.UsuarioFisico;
@@ -127,17 +113,6 @@ class UsuarioFisicoControllerTest {
     }
 
     @Test
-    void cadastrarUsuarioFisico_SemSenha_DeveRetornar400() throws Exception {
-        UsuarioFisicoRequestDTO requestDTO = criarRequestValido();
-        requestDTO.setSenha(null);
-
-        mockMvc.perform(post("/usuarios-fisicos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void cadastrarUsuarioFisico_SemTelefone_DeveRetornar400() throws Exception {
         UsuarioFisicoRequestDTO requestDTO = criarRequestValido();
         requestDTO.setTelefone(null);
@@ -222,7 +197,7 @@ class UsuarioFisicoControllerTest {
         UsuarioFisicoRequestDTO requestDTO = new UsuarioFisicoRequestDTO();
         requestDTO.setNome("Maria Helena Costa");
         requestDTO.setEmail("maria.costa@gmail.com");
-        requestDTO.setSenha("Maria123@");
+        requestDTO.setTokenPrimeiroAcesso("12345678");
         requestDTO.setCpf("44868521845");
         requestDTO.setRg("12.345.678-9");
         requestDTO.setCep("03942030");

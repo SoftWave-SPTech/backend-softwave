@@ -57,7 +57,7 @@ public class UsuarioProcessosDTO {
         this.foto = usuario.getFoto();
         this.ativo = usuario.getAtivo();
         this.tokenPrimeiroAcesso = usuario.getTokenPrimeiroAcesso();
-        this.status = usuario.getStatusUsuario();
+        this.status = usuario.getAtivo();
 
 
 

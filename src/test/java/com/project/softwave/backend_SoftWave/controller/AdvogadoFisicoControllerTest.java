@@ -147,17 +147,6 @@ class AdvogadoFisicoControllerTest {
     }
 
     @Test
-    void cadastrarAdvogado_SemSenha_DeveRetornar400() throws Exception {
-        AdvogadoFisicoRequestDTO requestDTO = criarRequestValido();
-        requestDTO.setSenha(null);
-
-        mockMvc.perform(post("/advogados-fisicos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDTO)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void cadastrarAdvogado_SemComplemento_DeveRetornar201() throws Exception {
         AdvogadoFisicoRequestDTO requestDTO = criarRequestValido();
         requestDTO.setComplemento(null);
@@ -248,7 +237,7 @@ class AdvogadoFisicoControllerTest {
         requestDTO.setOab("123456");
         requestDTO.setNome("João Carlos Mendes");
         requestDTO.setEmail("joao.mendes@advocacia.com");
-        requestDTO.setSenha("SenhaSegura@2024");
+        requestDTO.setTokenPrimeiroAcesso("SenhaSegura@2024");
         requestDTO.setCpf("90869258044");
         requestDTO.setRg("123456789");
         requestDTO.setCep("04567000");

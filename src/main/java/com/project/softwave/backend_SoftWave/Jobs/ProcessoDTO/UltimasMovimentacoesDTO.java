@@ -2,12 +2,13 @@ package com.project.softwave.backend_SoftWave.Jobs.ProcessoDTO;
 
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.UltimasMovimentacoes;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 
 public class UltimasMovimentacoesDTO {
 
     private Integer id;
 
-    private String data;
+    private LocalDate data;
 
     @NotBlank(message = "O movimento não pode estar em branco")
     private String movimento;
@@ -17,7 +18,7 @@ public class UltimasMovimentacoesDTO {
     public UltimasMovimentacoesDTO() {
     }
 
-    public UltimasMovimentacoesDTO(Integer id, String data, String movimento, Integer idProcesso) {
+    public UltimasMovimentacoesDTO(Integer id, LocalDate data, String movimento, Integer idProcesso) {
         this.id = id;
         this.data = data;
         this.movimento = movimento;
@@ -60,11 +61,11 @@ public class UltimasMovimentacoesDTO {
         this.id = id;
     }
 
-    public String getData() {
+    public LocalDate getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(LocalDate data) {
         this.data = data;
     }
 

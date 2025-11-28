@@ -1,7 +1,9 @@
 package com.project.softwave.backend_SoftWave.controller;
 
 import com.project.softwave.backend_SoftWave.dto.usuariosDtos.*;
+import com.project.softwave.backend_SoftWave.entity.Usuario;
 import com.project.softwave.backend_SoftWave.service.UsuarioService;
+import com.project.softwave.backend_SoftWave.service.CookieService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,10 @@ public class AuthController {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private CookieService cookieService;
+
+
     @PostMapping("/login")
     @Operation(summary = "Realizar login", description = "Autentica um usuário e retorna um token JWT")
     @ApiResponses(value = {
@@ -32,8 +39,9 @@ public class AuthController {
     })
     public ResponseEntity<UsuarioTokenDTO> login(
             @Parameter(description = "Credenciais do usuário", required = true)
-            @Valid @RequestBody UsuarioLoginDto usuarioLoginDto) {
+            @Valid @RequestBody UsuarioLoginDto usuarioLoginDto, HttpServletResponse response) {
         UsuarioTokenDTO usuarioTokenDto = this.usuarioService.autenticar(usuarioLoginDto);
+        this.cookieService.addJwtCookie(response, usuarioTokenDto.getToken());
         return ResponseEntity.status(200).body(usuarioTokenDto);
     }
 
@@ -47,7 +55,7 @@ public class AuthController {
     })
     public ResponseEntity<UsuarioLoginDto> primeiroAcesso(
             @Parameter(description = "Credenciais do usuário", required = true)
-            @Valid @RequestBody UsuarioLoginDto usuarioLoginDto) {
+            @Valid @RequestBody UsuarioPrimeiroAcessoDTO usuarioLoginDto) {
         UsuarioLoginDto usuarioLogado = this.usuarioService.primeiroAcesso(usuarioLoginDto);
         return ResponseEntity.status(200).body(usuarioLogado);
     }
@@ -91,6 +99,17 @@ public class AuthController {
             @Parameter(description = "Dados para redefinição de senha", required = true)
             @Valid @RequestBody ResetSenhaRequest request) {
         usuarioService.resetarSenha(request.getToken(), request.getNovaSenha(), request.getNovaSenhaConfirma());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Logout", description = "Realiza o logout do usuário removendo o cookie JWT")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Logout realizado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Erro ao realizar logout")
+    })
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        cookieService.clearJwtCookie(response);
         return ResponseEntity.ok().build();
     }
 }

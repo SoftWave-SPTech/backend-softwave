@@ -19,8 +19,8 @@ public class UsuarioFisicoRequestDTO {
     private String email;
 
     @NotBlank
-    @Schema(description = "Senha de acesso", example = "Maria123@")
-    private String senha;
+    @Schema(description = "Token de primeiro acesso", example = "49454487")
+    private String tokenPrimeiroAcesso;
 
     @CPF(message= "O CPF informado não é válido")
     @Schema(description = "CPF do usuário", example = "43293406238")
@@ -64,7 +64,8 @@ public class UsuarioFisicoRequestDTO {
         UsuarioFisico entity = new UsuarioFisico();
         entity.setNome(dto.getNome());
         entity.setEmail(dto.getEmail());
-        entity.setSenha(dto.getSenha());
+        entity.setSenha("SenhaTemporaria123!");
+        entity.setTokenPrimeiroAcesso(dto.getTokenPrimeiroAcesso());
         entity.setCpf(dto.getCpf());
         entity.setRg(dto.getRg());
         entity.setLogradouro(dto.getLogradouro());
@@ -102,12 +103,12 @@ public class UsuarioFisicoRequestDTO {
         this.email = email;
     }
 
-    public String getSenha() {
-        return senha;
+    public String getTokenPrimeiroAcesso() {
+        return tokenPrimeiroAcesso;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setTokenPrimeiroAcesso(String tokenPrimeiroAcesso) {
+        this.tokenPrimeiroAcesso = tokenPrimeiroAcesso;
     }
 
     public String getCpf() {

@@ -13,6 +13,7 @@ public class ClienteComProcessosResponseDTO {
     private Integer id;
     private String nome;
     private String nomeFantasia;
+    private String representante;
     private String email;
     private String telefone;
     private String tipoUsuario;
@@ -21,10 +22,11 @@ public class ClienteComProcessosResponseDTO {
 
     public ClienteComProcessosResponseDTO() {
     }
-    public ClienteComProcessosResponseDTO(Integer id, String nome, String nomeFantasia, String email, String telefone, String tipoUsuario, List<ProcessoSimplesDTO> list) {
+    public ClienteComProcessosResponseDTO(Integer id, String nome, String nomeFantasia, String representante, String email, String telefone, String tipoUsuario, List<ProcessoSimplesDTO> list) {
         this.id = id;
         this.nome = nome;
         this.nomeFantasia = nomeFantasia;
+        this.representante = representante;
         this.email = email;
         this.telefone = telefone;
         this.tipoUsuario = tipoUsuario;
@@ -50,10 +52,13 @@ public class ClienteComProcessosResponseDTO {
             UsuarioFisico fisico = (UsuarioFisico) usuario;
             dto.setNome(fisico.getNome());
             dto.setNomeFantasia(null);
+            dto.setRepresentante(null);
+
         } else if (usuario instanceof UsuarioJuridico) {
             UsuarioJuridico juridico = (UsuarioJuridico) usuario;
             dto.setNome(null);
             dto.setNomeFantasia(juridico.getNomeFantasia());
+            dto.setRepresentante(juridico.getRepresentante());
         }
         return dto;
     }
@@ -76,9 +81,11 @@ public class ClienteComProcessosResponseDTO {
         if (usuario instanceof UsuarioFisico fisico) {
             dto.setNome(fisico.getNome());
             dto.setNomeFantasia(null);
+            dto.setRepresentante(null);
         } else if (usuario instanceof UsuarioJuridico juridico) {
             dto.setNome(null);
             dto.setNomeFantasia(juridico.getNomeFantasia());
+            dto.setRepresentante(juridico.getRepresentante());
         }
 
         return dto;
@@ -139,6 +146,13 @@ public class ClienteComProcessosResponseDTO {
 
     public void setNomeFantasia(String nomeFantasia) {
         this.nomeFantasia = nomeFantasia;
+    }
+
+    public String getRepresentante() {
+        return representante;
+    }
+    public void setRepresentante(String representante) {
+        this.representante = representante;
     }
 
     public Boolean getAtivo() {

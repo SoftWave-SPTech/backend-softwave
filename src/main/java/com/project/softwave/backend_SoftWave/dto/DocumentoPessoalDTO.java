@@ -17,6 +17,9 @@ public class DocumentoPessoalDTO {
     @NotNull
     private Integer fkCliente;
 
+    private String s3Key;
+
+
     public static DocumentoPessoal toEntity(DocumentoPessoalDTO dto) {
         if (dto == null) {
             return null;
@@ -52,6 +55,9 @@ public class DocumentoPessoalDTO {
         dto.setId(documento.getId());
         dto.setNomeArquivo(documento.getNomeArquivo());
         dto.setUrlArquivo(documento.getUrlArquivo());
+        dto.setS3Key(documento.getS3Key());
+
+
 //        dto.setFkCliente(documento.getFkCliente());
         return dto;
     }
@@ -88,5 +94,13 @@ public class DocumentoPessoalDTO {
 
     public void setFkCliente(Integer fkCliente) {
         this.fkCliente = fkCliente;
+    }
+
+    public String getS3Key() {
+        return s3Key;
+    }
+
+    public void setS3Key(String s3Key) {
+        this.s3Key = s3Key;
     }
 }

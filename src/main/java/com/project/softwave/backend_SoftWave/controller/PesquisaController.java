@@ -4,13 +4,12 @@ import com.project.softwave.backend_SoftWave.dto.ClienteComProcessosResponseDTO;
 import com.project.softwave.backend_SoftWave.service.PesquisaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,25 +20,33 @@ public class PesquisaController {
     @Autowired
     private PesquisaService pesquisaService;
 
-  @io.swagger.v3.oas.annotations.Operation(
-    summary = "Lista todos os clientes com processos pelo ID do advogado vinculado",
-    description = "Retorna uma lista de clientes que possuem processos cadastrados."
-)
+
+    @Operation(
+            summary = "Lista todos os clientes com processos pelo ID do advogado vinculado",
+            description = "Retorna uma lista de clientes que possuem processos cadastrados."
+    )
     @GetMapping("/com-processos/advogado/{id}")
-    public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(@Valid @PathVariable Integer id) {
-        List<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesPorAdvogado(id);
+    public ResponseEntity<Page<ClienteComProcessosResponseDTO>> listarClientesPorAdvogado(
+            @Valid @PathVariable Integer id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+
+        Page<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesPorAdvogado(id, page, size);
         return ResponseEntity.ok(clientes);
     }
 
-@io.swagger.v3.oas.annotations.Operation(
-    summary = "Lista todos os clientes com processos",
-    description = "Retorna uma lista de clientes que possuem processos cadastrados."
-)
-@GetMapping("/com-processos")
-public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesComProcessos() {
-    List<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesComProcessos();
-    return ResponseEntity.ok(clientes);
-}
+    @Operation(
+            summary = "Lista todos os clientes com processos",
+            description = "Retorna uma lista de clientes que possuem processos cadastrados."
+    )
+    @GetMapping("/com-processos")
+    public ResponseEntity<Page<ClienteComProcessosResponseDTO>> listarClientesComProcessos(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size) {
+
+        Page<ClienteComProcessosResponseDTO> clientes = pesquisaService.buscarClientesComProcessos(page, size);
+        return ResponseEntity.ok(clientes);
+    }
 
 @Operation(
     summary = "Filtra clientes por termo",
@@ -51,6 +58,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> listarClientesComPro
     required = true
 )
 @GetMapping("/pesquisa/{termo}")
+@SecurityRequirement(name = "Bearer")
 public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorTermo(@Valid @PathVariable String termo) {
     List<ClienteComProcessosResponseDTO> clientes = pesquisaService.pesquisarPorTermo(termo);
     return ResponseEntity.ok(clientes);
@@ -66,6 +74,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorTe
     required = true
 )
 @GetMapping("/filtro-setor/{setor}")
+@SecurityRequirement(name = "Bearer")
 public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorSetor(@Valid @PathVariable String setor) {
     List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorSetor(setor);
     return ResponseEntity.ok(clientes);
@@ -81,6 +90,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorSe
     required = true
 )
 @GetMapping("/filtro-vara/{vara}")
+@SecurityRequirement(name = "Bearer")
 public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorVara(@Valid @PathVariable String vara) {
     List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorVara(vara);
     return ResponseEntity.ok(clientes);
@@ -96,6 +106,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorVa
     required = true
 )
 @GetMapping("/filtro-assunto/{assunto}")
+@SecurityRequirement(name = "Bearer")
 public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorAssunto(@Valid @PathVariable String assunto) {
     List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorAssunto(assunto);
     return ResponseEntity.ok(clientes);
@@ -111,6 +122,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorAs
     required = true
 )
 @GetMapping("/filtro-foro/{foro}")
+@SecurityRequirement(name = "Bearer")
 public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorForo(@Valid @PathVariable String foro) {
     List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorForo(foro);
     return ResponseEntity.ok(clientes);
@@ -127,6 +139,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorFo
     required = true
 )
     @GetMapping("/filtro-descricao/{descricao}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorDescricao(@Valid @PathVariable String descricao) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorDescricao(descricao);
         return ResponseEntity.ok(clientes);
@@ -142,6 +155,7 @@ public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorFo
     required = true
 )
     @GetMapping("/filtro-status-cliente/{status}")
+    @SecurityRequirement(name = "Bearer")
     public ResponseEntity<List<ClienteComProcessosResponseDTO>> filtrarClientesPorStatus(@Valid @PathVariable String status) {
         List<ClienteComProcessosResponseDTO> clientes = pesquisaService.filtrarClientesPorStatus(status);
         return ResponseEntity.ok(clientes);
