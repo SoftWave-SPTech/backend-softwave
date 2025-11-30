@@ -1,5 +1,6 @@
 package com.project.softwave.backend_SoftWave.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.softwave.backend_SoftWave.Jobs.ProcessoModel.Processo;
 
 import java.time.LocalDateTime;
@@ -24,7 +25,10 @@ public class ProcessoSimplesDTO {
     private String requerido;
     private String valor_acao;
     private String vara;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private LocalDateTime dataCriacao;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private LocalDateTime dataAtualizacao;
 
     // Construtor padrão necessário para deserialização do Jackson/Redis

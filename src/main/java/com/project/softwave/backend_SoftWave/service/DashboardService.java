@@ -49,9 +49,6 @@ public class DashboardService {
         return dadosDash;
     }
 
-    @CacheEvict(value = "dashboard", allEntries = true)
-    public void limparCacheDashboard() {
-        // Método para limpar o cache do dashboard
-    }
+
 
 }
