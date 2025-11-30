@@ -4,6 +4,7 @@ import com.project.softwave.backend_SoftWave.Jobs.ProcessoService.ProcessoServic
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.DashResponseDTO;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ public class DashboardService {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Cacheable(value = "dashboard", key = "'dadosDash'")
     public DashResponseDTO dadosDash(){
 
         DashResponseDTO dadosDash = new DashResponseDTO();
