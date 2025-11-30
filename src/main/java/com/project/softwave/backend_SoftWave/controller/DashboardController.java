@@ -27,4 +27,15 @@ public class DashboardController {
     public ResponseEntity<DashResponseDTO> dadosDash(){
         return ResponseEntity.status(200).body(service.dadosDash());
     }
+
+    @Operation(summary = "Limpa o cache do dashboard", method = "DELETE")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cache limpo com sucesso")
+    })
+    @org.springframework.web.bind.annotation.DeleteMapping("/cache")
+    @SecurityRequirement(name = "Bearer")
+    public ResponseEntity<Void> limparCache(){
+        service.limparCacheDashboard();
+        return ResponseEntity.status(200).build();
+    }
 }

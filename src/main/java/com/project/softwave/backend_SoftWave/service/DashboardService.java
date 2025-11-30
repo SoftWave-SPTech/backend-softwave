@@ -6,6 +6,7 @@ import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdPorSetorDTO;
 import com.project.softwave.backend_SoftWave.dto.DTOsDash.QtdPorSetorDTOImpl;
 import com.project.softwave.backend_SoftWave.dto.ProcessoSimplesDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class DashboardService {
     @Autowired
     private UsuarioService usuarioService;
 
-    @Cacheable(value = "dashboard", key = "'dadosDash'")
+    @Cacheable(value = "dashboard", key = "'dadosDash'", unless = "#result == null")
     public DashResponseDTO dadosDash(){
 
         DashResponseDTO dadosDash = new DashResponseDTO();
@@ -46,6 +47,11 @@ public class DashboardService {
                 .map(ProcessoSimplesDTO::toProcessoSimplesDTO)
                 .collect(Collectors.toList()));
         return dadosDash;
+    }
+
+    @CacheEvict(value = "dashboard", allEntries = true)
+    public void limparCacheDashboard() {
+        // Método para limpar o cache do dashboard
     }
 
 }
