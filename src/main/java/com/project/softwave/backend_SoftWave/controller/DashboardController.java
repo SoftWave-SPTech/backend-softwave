@@ -27,4 +27,5 @@ public class DashboardController {
     public ResponseEntity<DashResponseDTO> dadosDash(){
         return ResponseEntity.status(200).body(service.dadosDash());
     }
+
 }

@@ -26,16 +26,71 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/softwave_db
       SPRING_DATASOURCE_USERNAME: softwave
       SPRING_DATASOURCE_PASSWORD: softwave123
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
     ports:
       - "8080:8080"
     volumes:
       - ./target:/app
     working_dir: /app
     command: ["java", "-jar", "BackendSoftWave.jar"]
+    networks:
+      - redis-net
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command:
+      [
+        "redis-server",
+        "--maxmemory", "512mb",
+        "--maxmemory-policy", "allkeys-lfu",
+        "--save", "60", "1",
+        "--loglevel", "warning"
+      ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - redis-net
+    restart: always
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+    networks:
+      - redis-net
+    volumes:
+      - redisinsight_data:/data
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_PASS=secret
+      - RABBITMQ_DEFAULT_USER=myuser
+    ports:
+      - "5672:5672"
+    restart: always
+
+networks:
+  redis-net:
+    driver: bridge
 
 volumes:
   db_data:
+  redis_data:
+  redisinsight_data:
