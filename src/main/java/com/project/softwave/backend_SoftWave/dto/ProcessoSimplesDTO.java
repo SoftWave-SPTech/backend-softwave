@@ -27,6 +27,10 @@ public class ProcessoSimplesDTO {
     private LocalDateTime dataCriacao;
     private LocalDateTime dataAtualizacao;
 
+    // Construtor padrão necessário para deserialização do Jackson/Redis
+    public ProcessoSimplesDTO() {
+    }
+
     public ProcessoSimplesDTO(Integer id, String numeroProcesso, String area, String assunto, String autor, String classe, String controle, String descricao, String distribuicao, String executado, String foro, String indiciado, String juiz, double normalizado_valor_acao, String requerente, String requerido, String valor_acao, String vara, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao) {
         this.id = id;
         this.numeroProcesso = numeroProcesso;
