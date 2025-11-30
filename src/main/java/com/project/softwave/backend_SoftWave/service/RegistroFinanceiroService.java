@@ -243,7 +243,8 @@ public class RegistroFinanceiroService {
                 .collect(Collectors.toList());
 
         int total = mesesComReceita.size();
-        return mesesComReceita.subList(Math.max(total - 6, 0), total);
+        // Criar uma nova ArrayList em vez de retornar SubList (que não pode ser serializado)
+        return new ArrayList<>(mesesComReceita.subList(Math.max(total - 6, 0), total));
 
     }
 
