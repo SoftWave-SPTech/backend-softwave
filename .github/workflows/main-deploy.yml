@@ -2,10 +2,10 @@ name: Deploy Backend Softwave
 
 on:
   push:
-    branches: [ "realese/sprint-final" ]
+    branches: [ "release/sprint-final" ]
     
   pull_request:
-    branches: [ "realese/sprint-final" ]
+    branches: [ "release/sprint-final" ]
 
 jobs:
   build-and-push:
