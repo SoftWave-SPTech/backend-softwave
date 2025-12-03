@@ -50,41 +50,59 @@ jobs:
       - name: Deploy to Private EC2 via Bastion
         uses: appleboy/ssh-action@v1.0.0
         with:
-          # Conexão com o Bastion (Front EC2)
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # ProxyJump para chegar na privada
           proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
           proxy_username: ${{ secrets.EC2_USER }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
-          # O destino final (Private EC2)
           script_stop: true
-          host_fingerprint: ignore
-          # Este comando roda dentro da EC2 Privada:
+          # A linha 'host_fingerprint' foi removida pois causava erro
+          
           script: |
-            # Configurar variaveis de ambiente num .env temporário para o compose ler
+            # 1. Configurar variáveis de ambiente
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
             echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
             echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-            
-            # Garantir Docker instalado na privada
+            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
+            # Adicione as outras variáveis se necessário (GEMINI, MAIL, ETC)
+
+            # 2. Instalação Inteligente do Docker (Ubuntu ou Amazon Linux)
             if ! command -v docker &> /dev/null; then
-                sudo yum update -y
-                sudo yum install docker -y
-                sudo service docker start
+                echo "🐳 Docker não encontrado. Instalando..."
+                
+                # Verifica se é Amazon Linux (usa yum)
+                if command -v yum &> /dev/null; then
+                    sudo yum update -y
+                    sudo yum install docker -y
+                    sudo service docker start
+                # Verifica se é Ubuntu (usa apt-get)
+                elif command -v apt-get &> /dev/null; then
+                    sudo apt-get update
+                    sudo apt-get install docker.io -y
+                    sudo systemctl start docker
+                    sudo systemctl enable docker
+                fi
+                
+                # Adiciona permissão ao usuário
                 sudo usermod -a -G docker ${{ secrets.EC2_USER }}
-                # Instalar Docker Compose
-                sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            fi
+
+            # 3. Instalação do Docker Compose (Versão Standalone)
+            if ! command -v docker-compose &> /dev/null; then
+                echo "🐙 Docker Compose não encontrado. Instalando..."
+                sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
                 sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            # Se o docker-compose.yaml não estiver lá, você precisa criar ou copiar.
-            # Supondo que você já copiou ou que este repo é o principal:
-            # (Se não for o repo principal, pule a criação do arquivo e use o existente)
+            # 4. Deploy
+            echo "🚀 Iniciando Deploy..."
             
-            # Atualizar as imagens
+            # Se o arquivo docker-compose.yaml não existir (primeira execução ou repo satélite), avisa mas tenta seguir
+            if [ ! -f "docker-compose.yaml" ]; then
+                echo "⚠️  AVISO: docker-compose.yaml não encontrado na raiz. Se este for um repo satélite, certifique-se de ter rodado o backend principal antes."
+            fi
+            
+            # Atualiza imagens e reinicia containers
             docker-compose pull
-            
-            # Reiniciar todo o stack na ordem correta
             docker-compose up -d --remove-orphans
