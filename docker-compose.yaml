@@ -1,11 +1,9 @@
 version: '3.8'
 
-# Rede compartilhada para todos os containers
 networks:
   softwave-network:
     driver: bridge
 
-# Volumes para persistir dados (não perder se reiniciar)
 volumes:
   db_data:
   redis_data:
@@ -13,19 +11,18 @@ volumes:
 
 services:
   # ==========================================
-  # NÍVEL 1: INFRAESTRUTURA BÁSICA (Iniciam Juntos)
+  # NÍVEL 1: INFRAESTRUTURA BÁSICA
   # ==========================================
 
-  # 1. Banco de Dados MySQL
   mysql-db:
     image: mysql:8.0
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root         # Senha root
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: softwave_db
-      MYSQL_USER: softwave              # Usuário do App
-      MYSQL_PASSWORD: ${DB_PASSWORD}    # softwave123 (Definir na Secret ou .env)
+      MYSQL_USER: softwave
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -38,7 +35,6 @@ services:
       timeout: 5s
       retries: 10
 
-  # 2. Redis
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -63,7 +59,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # (Opcional) Redis Insight - Visualizador
   redisinsight:
     image: redis/redisinsight:latest
     container_name: redisinsight
@@ -77,9 +72,7 @@ services:
       - redisinsight_data:/data
     restart: always
 
-  # 3. RabbitMQ
   rabbitmq:
-    # Usando a versão management para você ter acesso ao painel visual
     image: rabbitmq:3-management
     container_name: rabbitmq
     restart: always
@@ -87,8 +80,8 @@ services:
       RABBITMQ_DEFAULT_USER: myuser
       RABBITMQ_DEFAULT_PASS: secret
     ports:
-      - "5672:5672"   # Porta da API
-      - "15672:15672" # Porta do Painel de Admin
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - softwave-network
     healthcheck:
@@ -101,20 +94,16 @@ services:
   # NÍVEL 2: BACKEND PRINCIPAL
   # ==========================================
 
-  # 4. Backend Softwave (Aguarda DB, Redis e Rabbit)
   backend-softwave:
     image: ${DOCKERHUB_USERNAME}/backend-softwave:latest
     container_name: backend-softwave
     restart: always
     environment:
-      # Conexão Banco
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/softwave_db
       SPRING_DATASOURCE_USERNAME: softwave
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      # Conexão Redis (Use o nome do container 'redis', não localhost)
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      # Conexão RabbitMQ (Use o nome do container 'rabbitmq')
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_RABBITMQ_PORT: 5672
       SPRING_RABBITMQ_USERNAME: myuser
@@ -131,8 +120,7 @@ services:
     networks:
       - softwave-network
     healthcheck:
-      # Ajuste '/actuator/health' para um endpoint que exista na sua API
-      test: "curl --fail --silent localhost:8080/ || exit 1"
+      test: "curl --fail --silent localhost:8080/actuator/health || exit 1"
       interval: 20s
       retries: 5
       start_period: 40s
@@ -140,15 +128,12 @@ services:
   # ==========================================
   # NÍVEL 3: MICROSSERVIÇOS SATÉLITES
   # ==========================================
-  
-  # Estes serviços iniciam apenas quando o Backend Principal estiver saudável
 
   api-auth-mail:
     image: ${DOCKERHUB_USERNAME}/api-auth-mail:latest
     container_name: api-auth-mail
-    # Se precisar mapear porta, evite usar a 8080 se já usada acima. Ex: 8081:8080
-     ports:
-       - "8083:8080"
+    ports:
+      - "8083:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
@@ -159,7 +144,7 @@ services:
     image: ${DOCKERHUB_USERNAME}/api-bucket-s3:latest
     container_name: api-bucket-s3
     ports:
-       - "8081:8080"
+      - "8081:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
@@ -170,7 +155,7 @@ services:
     image: ${DOCKERHUB_USERNAME}/api-consultas-softwave:latest
     container_name: api-consultas-softwave
     ports:
-       - "8084:8080"
+      - "8084:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
@@ -181,7 +166,7 @@ services:
     image: ${DOCKERHUB_USERNAME}/api-gemini-ia:latest
     container_name: api-gemini-ia
     ports:
-       - "8082:8080"
+      - "8082:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
