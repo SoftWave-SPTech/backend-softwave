@@ -1,77 +1,93 @@
-name: Deploy Backend SoftWave
+name: Deploy Backend Softwave
 
 on:
   push:
-    branches:
-      - main
-      - release/*
-      - feature/*
+    branches: [ "realese/sprint-5" ]
+    
   pull_request:
-    branches:
-      - main
+    branches: [ "realese/sprint-5" ]
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up JDK 21
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '21'
+          java-version: '17'
           distribution: 'temurin'
-
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build with Maven
-        run: mvn clean install --batch-mode
-
-      - name: Run tests
-        run: mvn test --batch-mode
-        
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: backend-jar
-          path: target/*.jar
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Copy files to EC2 via SSH
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USER }}
-          key: ${{ secrets.AWS_SSH_KEY }}
-          source: "."
-          target: "/home/ec2-user/app"
           
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: backend-jar
-          path: app/
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
 
-      - name: Run deploy script on EC2
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
         with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USER }}
-          key: ${{ secrets.AWS_SSH_KEY }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest
+          # Mude o nome da tag acima para cada repositório diferente!
+
+  deploy-private:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout para pegar o docker-compose (Apenas no repo principal)
+        uses: actions/checkout@v3
+        # Se este workflow estiver rodando num repo que NÃO tem o docker-compose, 
+        # você precisará copiar o arquivo via SCP ou tê-lo já na EC2.
+        # Assumindo que o arquivo docker-compose.yaml está neste repo ou na pasta da EC2.
+
+      - name: Deploy to Private EC2 via Bastion
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          # Conexão com o Bastion (Front EC2)
+          host: ${{ secrets.EC2_HOST_PUBLIC }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          # ProxyJump para chegar na privada
+          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
+          proxy_username: ${{ secrets.EC2_USER }}
+          proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          # O destino final (Private EC2)
+          script_stop: true
+          host_fingerprint: ignore
+          # Este comando roda dentro da EC2 Privada:
           script: |
-            cd /home/ec2-user/app
-            ./deploy.sh
+            # Configurar variaveis de ambiente num .env temporário para o compose ler
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
+            
+            # Garantir Docker instalado na privada
+            if ! command -v docker &> /dev/null; then
+                sudo yum update -y
+                sudo yum install docker -y
+                sudo service docker start
+                sudo usermod -a -G docker ${{ secrets.EC2_USER }}
+                # Instalar Docker Compose
+                sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            # Se o docker-compose.yaml não estiver lá, você precisa criar ou copiar.
+            # Supondo que você já copiou ou que este repo é o principal:
+            # (Se não for o repo principal, pule a criação do arquivo e use o existente)
+            
+            # Atualizar as imagens
+            docker-compose pull
+            
+            # Reiniciar todo o stack na ordem correta
+            docker-compose up -d --remove-orphans
