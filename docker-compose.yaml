@@ -147,8 +147,8 @@ services:
     image: ${DOCKERHUB_USERNAME}/api-auth-mail:latest
     container_name: api-auth-mail
     # Se precisar mapear porta, evite usar a 8080 se já usada acima. Ex: 8081:8080
-    # ports:
-    #   - "8081:8080"
+     ports:
+       - "8083:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
@@ -158,6 +158,8 @@ services:
   api-bucket-s3:
     image: ${DOCKERHUB_USERNAME}/api-bucket-s3:latest
     container_name: api-bucket-s3
+    ports:
+       - "8081:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
@@ -167,6 +169,8 @@ services:
   api-consultas-softwave:
     image: ${DOCKERHUB_USERNAME}/api-consultas-softwave:latest
     container_name: api-consultas-softwave
+    ports:
+       - "8084:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
@@ -176,6 +180,8 @@ services:
   api-gemini-ia:
     image: ${DOCKERHUB_USERNAME}/api-gemini-ia:latest
     container_name: api-gemini-ia
+    ports:
+       - "8082:8080"
     depends_on:
       backend-softwave:
         condition: service_healthy
