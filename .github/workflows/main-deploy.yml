@@ -43,9 +43,78 @@ jobs:
     steps:
       - name: Checkout para pegar o docker-compose (Apenas no repo principal)
         uses: actions/checkout@v3
-        # Se este workflow estiver rodando num repo que NÃO tem o docker-compose, 
-        # você precisará copiar o arquivo via SCP ou tê-lo já na EC2.
-        # Assumindo que o arquivo docker-compose.yaml está neste repo ou na pasta da EC2.
+        # ... (Passos anteriores de Build e Login no Docker Hub) ...
+
+      # [NOVO PASSO] 1. Copia o docker-compose.yaml para a EC2 Privada
+      - name: Copy docker-compose to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          # Destino (EC2 Privada via Bastion)
+          host: ${{ secrets.EC2_HOST_PUBLIC }} # O SCP conecta no bastion pra chegar na privada se configurar proxy
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          # Configuração do Proxy Jump (Bastion)
+          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
+          proxy_username: ${{ secrets.EC2_USER }}
+          proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          # O que copiar e para onde
+          source: "docker-compose.yaml"
+          target: "/home/${{ secrets.EC2_USER }}"
+
+      # 2. Conecta via SSH e roda o Deploy
+      - name: Deploy to Private EC2 via Bastion
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST_PUBLIC }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
+          proxy_username: ${{ secrets.EC2_USER }}
+          proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            # Ir para a pasta onde o arquivo foi copiado (Geralmente /home/ubuntu ou /home/ec2-user)
+            cd /home/${{ secrets.EC2_USER }}
+
+            # 1. Configurar variáveis de ambiente
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
+            echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+
+            # 2. Instalação Inteligente do Docker (Já vimos que funcionou no seu log)
+            if ! command -v docker &> /dev/null; then
+                if command -v yum &> /dev/null; then
+                    sudo yum update -y && sudo yum install docker -y && sudo service docker start
+                elif command -v apt-get &> /dev/null; then
+                    sudo apt-get update && sudo apt-get install docker.io -y
+                    sudo systemctl start docker && sudo systemctl enable docker
+                fi
+                sudo usermod -a -G docker ${{ secrets.EC2_USER }}
+            fi
+
+            # 3. Instalação do Docker Compose
+            if ! command -v docker-compose &> /dev/null; then
+                sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
+            fi
+
+            # 4. Deploy
+            echo "🚀 Iniciando Deploy..."
+            
+            # Verificação final
+            if [ ! -f "docker-compose.yaml" ]; then
+                echo "❌ ERRO: O arquivo docker-compose.yaml AINDA não foi encontrado."
+                ls -la
+                exit 1
+            fi
+
+            # Atualiza imagens e reinicia
+            docker-compose pull
+            docker-compose up -d --remove-orphans
 
       - name: Deploy to Private EC2 via Bastion
         uses: appleboy/ssh-action@v1.0.0
