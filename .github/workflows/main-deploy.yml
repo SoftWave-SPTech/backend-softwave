@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Deploy to Private EC2 via Bastion (single SSH)
-        uses: appleboy/ssh-action@v1.7.0
+        uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
