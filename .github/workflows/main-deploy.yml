@@ -7,6 +7,7 @@ on:
     branches: [ "release/sprint-final" ]
 
 jobs:
+
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -35,10 +36,9 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest
 
-  deploy-private:
+  deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     steps:
       - name: Deploy to Private EC2 via Bastion (single SSH)
         uses: appleboy/ssh-action@v0.1.8
@@ -46,172 +46,113 @@ jobs:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
-          proxy_username: ${{ secrets.EC2_USER }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          command_timeout: 60m
+          command_timeout: "1h"
           script_stop: true
           script: |
             set -euo pipefail
-            echo "Iniciando deploy remoto - $(date)"
+            echo "=== Iniciando deploy via bastion -> privada === $(date)"
 
-            # fallback para SSH_PORT
             EC2_USER="${{ secrets.EC2_USER }}"
+            EC2_PRIVATE_IP="${{ secrets.EC2_HOST_PRIVATE }}"
             WORKDIR="/home/${EC2_USER}/backend-compose"
             mkdir -p "$WORKDIR"
             cd "$WORKDIR"
 
-            # --- 1) Baixar docker-compose.yaml direto do GitHub (raw)
-            REPO_OWNER="SoftWave-SPTech"
-            REPO_NAME="backend-softwave"
+            # 1) baixar docker-compose.yaml (do mesmo repo e branch)
             BRANCH="release/sprint-final"
-            RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/docker-compose.yaml"
+            RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${BRANCH}/docker-compose.yaml"
+            echo "[bastion] baixando docker-compose.yaml: $RAW_URL"
+            curl -fSL -o docker-compose.yaml "$RAW_URL" || { echo "Falha ao baixar docker-compose.yaml"; exit 1; }
 
-            echo "[fetch] baixando docker-compose.yaml de: $RAW_URL"
-            if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
-              curl -fSL -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$RAW_URL" -o docker-compose.yaml
-            else
-              curl -fSL "$RAW_URL" -o docker-compose.yaml || {
-                echo "Não conseguiu baixar via raw. Verifique URL/branch/permissões."
-                exit 1
-              }
-            fi
+            # 2) escrever chave temporária de forma segura (sem espaços extras)
+            KEY_FILE="/tmp/deploy_key_$$"
+            printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > "$KEY_FILE"
+            chmod 600 "$KEY_FILE"
 
-            # --- 2) Escrever .env com secrets (idempotente)
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
-            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
-            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
+            # 3) criar pasta remota e copiar arquivos
+            REMOTE_WORKDIR="/home/${EC2_USER}/backend-compose"
+            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${EC2_USER}@${EC2_PRIVATE_IP}" "mkdir -p '$REMOTE_WORKDIR' && chown ${EC2_USER}:${EC2_USER} '$REMOTE_WORKDIR'"
+
+            scp -i "$KEY_FILE" -o StrictHostKeyChecking=no docker-compose.yaml "${EC2_USER}@${EC2_PRIVATE_IP}:$REMOTE_WORKDIR/docker-compose.yaml"
+
+            # 4) gerar .env local (sem espaços extras) e copiar
+            printf '%s\n' "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
+                          "DB_USER=${{ secrets.DB_USER }}" \
+                          "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" \
+                          "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+                          "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+                          "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" > .env
             chmod 600 .env
+            scp -i "$KEY_FILE" -o StrictHostKeyChecking=no .env "${EC2_USER}@${EC2_PRIVATE_IP}:$REMOTE_WORKDIR/.env"
 
-            # ---------------------------
-            # --- INSERT: robust install/check block
-            # ---------------------------
-            echo "[install] inicio do bloco de install/check - $(date)"
-            LOG_INSTALL="install.log"
-            rm -f "$LOG_INSTALL"
-            set +e
+            # 5) Executa deploy na privada (instala docker se necessário; usa sudo)
+            echo "[bastion] executando deploy remoto na privada"
+            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${EC2_USER}@${EC2_PRIVATE_IP}" bash -s <<'REMOTE_SCRIPT'
+            set -euo pipefail
+            echo "=== Deploy na privada (START) === $(date)"
+            WORKDIR="/home/${USER}/backend-compose"
+            cd "$WORKDIR" || { echo "Diretório $WORKDIR não encontrado"; exit 1; }
 
-            # noninteractive for apt
-            export DEBIAN_FRONTEND=noninteractive
-
-            # detect package manager and install docker if missing
+            # instala docker (idempotente)
             if ! command -v docker >/dev/null 2>&1; then
-              echo "[install] docker não encontrado. Instalando..." | tee -a "$LOG_INSTALL"
-              if command -v yum >/dev/null 2>&1; then
-                sudo yum update -y 2>&1 | tee -a "$LOG_INSTALL"
-                sudo yum install -y docker 2>&1 | tee -a "$LOG_INSTALL"
-                sudo systemctl enable --now docker 2>&1 | tee -a "$LOG_INSTALL"
-              elif command -v apt-get >/dev/null 2>&1; then
-                sudo apt-get update -y 2>&1 | tee -a "$LOG_INSTALL"
-                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release 2>&1 | tee -a "$LOG_INSTALL"
-                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg 2>&1 | tee -a "$LOG_INSTALL"
+              echo "[private] docker não encontrado, instalando..."
+              if command -v apt-get >/dev/null 2>&1; then
+                export DEBIAN_FRONTEND=noninteractive
+                sudo apt-get update -y
+                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg
                 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-                sudo apt-get update -y 2>&1 | tee -a "$LOG_INSTALL"
-                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin 2>&1 | tee -a "$LOG_INSTALL"
-                sudo systemctl enable --now docker 2>&1 | tee -a "$LOG_INSTALL"
+                sudo apt-get update -y
+                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                sudo systemctl enable --now docker
+              elif command -v yum >/dev/null 2>&1; then
+                sudo yum update -y
+                sudo yum install -y docker
+                sudo systemctl enable --now docker
               else
-                echo "[install] gerenciador de pacotes não identificado" | tee -a "$LOG_INSTALL"
+                echo "[private] gerenciador de pacotes não identificado"; exit 1
               fi
-
-              # adicionar usuario ao grupo docker (pode exigir reconexão)
-              sudo usermod -aG docker "${EC2_USER}" 2>&1 | tee -a "$LOG_INSTALL" || true
-            else
-              echo "[install] docker já instalado: $(docker --version)" | tee -a "$LOG_INSTALL"
+              sudo usermod -aG docker "${USER}" || true
             fi
 
-            # garantir plugin docker compose
+            # garante plugin docker compose
             if ! docker compose version >/dev/null 2>&1; then
-              echo "[install] instalando docker compose plugin" | tee -a "$LOG_INSTALL"
-              sudo mkdir -p /usr/local/lib/docker/cli-plugins 2>&1 | tee -a "$LOG_INSTALL"
-              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose 2>&1 | tee -a "$LOG_INSTALL"
-              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose 2>&1 | tee -a "$LOG_INSTALL"
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose || true
             fi
 
-            # esperar docker daemon subir
-            echo "[install] aguardando docker daemon..." | tee -a "$LOG_INSTALL"
-            tries=0
-            until sudo systemctl is-active --quiet docker || [ $tries -ge 12 ]; do
-              tries=$((tries+1))
-              echo "[install] aguardando docker... tentativa $tries" | tee -a "$LOG_INSTALL"
-              sleep 5
-            done
-            if ! sudo systemctl is-active --quiet docker; then
-              echo "❌ Docker daemon não está ativo (veja $LOG_INSTALL)" | tee -a "$LOG_INSTALL"
-              sudo journalctl -u docker -n 200 --no-pager | tee -a "$LOG_INSTALL"
-              # não sair: vamos tentar comandos com sudo que podem funcionar
+            # carregar variáveis do .env em runtime (se existir)
+            if [ -f .env ]; then
+              # exporta linhas KEY=VALUE do .env
+              set -o allexport
+              # shellcheck disable=SC1091
+              . .env
+              set +o allexport
             fi
 
-            # checar versões (tenta sem sudo, depois com sudo)
-            docker --version 2>&1 | tee -a "$LOG_INSTALL" || sudo docker --version 2>&1 | tee -a "$LOG_INSTALL"
-            docker compose version 2>&1 | tee -a "$LOG_INSTALL" || sudo docker compose version 2>&1 | tee -a "$LOG_INSTALL"
-
-            set -e
-            echo "[install] bloco de install/check finalizado - $(date)" | tee -a "$LOG_INSTALL"
-            # ---------------------------
-            # --- END INSERT
-            # ---------------------------
-
-            # --- 3.5) Docker login (necessário antes de pull para imagens privadas)
-            echo "[auth] realizando docker login (se estiverem definidos os secrets)"
-            if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ] && [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
-              # tenta login sem sudo primeiro; se falhar, usa sudo
-              if echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin; then
-                echo "[auth] docker login OK (sem sudo)"
-              else
-                echo "[auth] docker login sem sudo falhou, tentando com sudo..."
-                echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin || {
-                  echo "Falha no docker login (verifique credenciais no GitHub Secrets)"
-                  exit 1
-                }
-              fi
-            else
-              echo "[auth] DOCKERHUB_USERNAME/DOCKERHUB_TOKEN não definidos — pulando docker login"
+            # docker login se variáveis existirem
+            if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
+              echo "${DOCKERHUB_TOKEN}" | sudo docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || { echo "[private] docker login falhou"; exit 1; }
             fi
-            
-            # --- 4) Pull with retry + detailed logging
-            echo "[deploy] executando docker compose pull com retries e log"
-            LOGFILE="deploy-docker-pull.log"
-            rm -f "$LOGFILE"
-            set +e
+
+            # pull + up (retries)
             attempts=0
             max_attempts=5
-            until [ $attempts -ge $max_attempts ]
-            do
+            until [ $attempts -ge $max_attempts ]; do
               attempts=$((attempts+1))
-              echo "[deploy] tentativa $attempts de $max_attempts" | tee -a "$LOGFILE"
-              # tenta sem sudo; se falhar com permissão, tenta com sudo
-              if docker compose pull 2>&1 | tee -a "$LOGFILE"; then
-                echo "[deploy] docker compose pull succeeded on attempt $attempts" | tee -a "$LOGFILE"
-                break
-              else
-                echo "[deploy] pull falhou na tentativa $attempts; checando se é problema de permissão..." | tee -a "$LOGFILE"
-                # tenta com sudo (caso o usuário precise)
-                if sudo docker compose pull 2>&1 | tee -a "$LOGFILE"; then
-                  echo "[deploy] docker compose pull (com sudo) succeeded on attempt $attempts" | tee -a "$LOGFILE"
-                  break
-                fi
-              fi
+              echo "[private] tentativa $attempts: docker compose pull"
+              if sudo docker compose pull; then break; fi
               sleep $((attempts * 5))
             done
-            if [ $attempts -ge $max_attempts ]; then
-              echo "Falha ao puxar imagens após $max_attempts tentativas. Conteúdo do log ($LOGFILE):"
-              echo "----- BEGIN LOG -----"
-              sed -n '1,200p' "$LOGFILE" || true
-              echo "----- END LOG -----"
-              # Saída útil para Actions UI; também anexe o arquivo se quiser
-              exit 1
-            fi
-            set -e
-            
-            # --- 5) Up (com sudo fallback)
-            echo "[deploy] subindo containers (docker compose up -d --remove-orphans)"
-            if ! docker compose up -d --remove-orphans 2>&1 | tee -a "$LOGFILE"; then
-              echo "[deploy] tentativa com sudo..."
-              sudo docker compose up -d --remove-orphans 2>&1 | tee -a "$LOGFILE"
-            fi
-            
-            echo "[deploy] operações docker concluídas com sucesso"
+
+            sudo docker compose up -d --remove-orphans
+            echo "=== Deploy na privada (END) === $(date)"
+            REMOTE_SCRIPT
+
+            # cleanup no bastion
+            shred -u "$KEY_FILE" 2>/dev/null || rm -f "$KEY_FILE"
+            rm -f .env
+
+            echo "=== Deploy finalizado com sucesso === $(date)"
