@@ -52,34 +52,33 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - name: Deploy create on private and restart compose (via bastion)
+      - name: Prepare key file from base64 (runner)
+        shell: bash
+        run: |
+          # Decodifica o PEM vindo do secret base64 para um arquivo temporário no runner
+          echo "${{ secrets.EC2_SSH_KEY_B64 }}" | base64 --decode > key_for_action.pem
+          chmod 600 key_for_action.pem
+
+      - name: Deploy via Bastion (appleboy with proxy)
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.EC2_HOST_PUBLIC }}      # bastion public IP
+          # Conecta *diretamente na privada* usando proxy jump no próprio action:
+          host: ${{ secrets.EC2_HOST_PRIVATE }}      # alvo final (instância privada)
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}           # appleboy usará essa chave para conectar na bastion
+          key: ${{ secrets.EC2_SSH_KEY }}             # chave usada para conexão principal (appleboy usa essa para host)
+          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}  # bastion public
+          proxy_username: ${{ secrets.EC2_USER }}
+          proxy_key: ${{ secrets.EC2_SSH_KEY }}       # mesma chave para o proxy (ou outra, se for o caso)
           port: ${{ secrets.SSH_PORT || 22 }}
-          proxy_host: ""                            # não usar proxy_host aqui: vamos operar na bastion e saltar manualmente
           command_timeout: 1h
           script_stop: true
           script: |
             set -euo pipefail
-            echo ">>> Iniciando deploy (bastion) - $(date)"
+            echo ">>> Deploy iniciado via action (proxy jump) - $(date)"
 
-            # --- vars
-            BASTION_USER="${{ secrets.EC2_USER }}"
-            PRIVATE_IP="${{ secrets.EC2_HOST_PRIVATE }}"
-            REMOTE_DIR="/home/${BASTION_USER}/app"   # pasta alvo na instância privada (ajuste se precisar)
-
-            # --- 1) preparar arquivo de chave temporária NA BASTION (para conectar na privada)
-            KEY_FILE="/tmp/deploy_key_$$"
-            # TODO: printf garante preservação de quebras de linha sem adicionar espaços extras
-            printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > "$KEY_FILE"
-            chmod 600 "$KEY_FILE"
-
-            # --- 2) criar .env temporário NA BASTION (idempotente, sem expor em logs)
-            ENV_TMP="/tmp/.env_deploy_$$"
-            cat > "$ENV_TMP" <<EOF
+            REMOTE_DIR="/home/${{ secrets.EC2_USER }}/app"
+            # Cria .env no runner e copia via scp pelo action (opcional) - aqui pegamos secrets e geramos um .env no runner
+            cat > .env.deploy <<EOF
             DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
@@ -88,55 +87,33 @@ jobs:
             AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}
             PROJECT_NAME=${{ secrets.PROJECT_NAME || 'softwave' }}
             EOF
-            chmod 600 "$ENV_TMP"
+            # copia .env para o remoto (o appleboy/ssh-action expõe um SCP nativo por ssh dentro do container)
+            scp -o StrictHostKeyChecking=no -o ProxyJump=${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_PUBLIC }} -i key_for_action.pem .env.deploy ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_PRIVATE }}:${REMOTE_DIR}/.env
 
-            # --- 3) testar conectividade para a privada (porta 22) a partir da bastion
-            echo "[bastion] testando conexão SSH para privada..."
-            if ! ssh -i "$KEY_FILE" -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no "${BASTION_USER}@${PRIVATE_IP}" 'echo ok' >/dev/null 2>&1; then
-              echo "❌ Não foi possível conectar na privada a partir da bastion. Verifique SG/NACL/rota/NAT e autorizações de chave."
-              rm -f "$ENV_TMP"
-              shred -u "$KEY_FILE" 2>/dev/null || rm -f "$KEY_FILE"
-              exit 2
-            fi
-
-            # --- 4) garantir pasta na privada e copiar .env
-            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${BASTION_USER}@${PRIVATE_IP}" "mkdir -p ${REMOTE_DIR} && chown ${BASTION_USER}:${BASTION_USER} ${REMOTE_DIR}"
-
-            scp -i "$KEY_FILE" -o StrictHostKeyChecking=no "$ENV_TMP" "${BASTION_USER}@${PRIVATE_IP}:${REMOTE_DIR}/.env"
-
-            # --- 5) executar docker compose pull + up na privada (com retries)
-            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${BASTION_USER}@${PRIVATE_IP}" bash -s <<'REMOTE'
+            # agora executa comandos remotos (via ssh_action) para pull/up
+            ssh -o StrictHostKeyChecking=no -o ProxyJump=${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_PUBLIC }} -i key_for_action.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_PRIVATE }} bash -s <<'REMOTE'
             set -euo pipefail
-            WORKDIR="${REMOTE_DIR}"
-            cd "$WORKDIR" || { echo "Diretório $WORKDIR não existe"; exit 1; }
-
-            # opcional: garantir Docker instalado (assuma instalado se você já preparou)
-            # pull com retry
-            attempts=0
-            max_attempts=5
+            cd "${REMOTE_DIR}" || { echo "Diretório ${REMOTE_DIR} não encontrado"; exit 1; }
+            
+            # Pull com retry
+            attempts=0; max_attempts=5
             until [ $attempts -ge $max_attempts ]; do
               attempts=$((attempts+1))
               echo "[private] tentativa $attempts: docker compose pull"
-              if docker compose pull; then
-                echo "[private] pull OK"
-                break
-              fi
+              if docker compose pull; then break; fi
               sleep $((attempts * 5))
             done
             if [ $attempts -ge $max_attempts ]; then
-              echo "❌ Falha ao puxar imagens após $max_attempts tentativas"
-              exit 3
+              echo "Falha ao puxar imagens"
+              exit 1
             fi
             
-            # up
             docker compose up -d --remove-orphans
-            
-            # limpa chaves locais (no host remoto)
-            echo "[private] deploy concluído"
+            echo "[private] deploy finalizado"
             REMOTE
 
-            # --- 6) cleanup local (bastion)
-            rm -f "$ENV_TMP"
-            shred -u "$KEY_FILE" 2>/dev/null || rm -f "$KEY_FILE"
+            # cleanup no runner
+            shred -u key_for_action.pem 2>/dev/null || rm -f key_for_action.pem
+            shred -u .env.deploy 2>/dev/null || rm -f .env.deploy
 
             echo ">>> Deploy finalizado - $(date)"
