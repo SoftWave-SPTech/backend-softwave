@@ -120,26 +120,63 @@ jobs:
             fi
             echo "[install] docker compose: $(docker compose version)"
 
-            # --- 4) Pull com retry
-            echo "[deploy] executando docker compose pull com retries"
+            # --- 3.5) Docker login (necessário antes de pull para imagens privadas)
+            echo "[auth] realizando docker login (se estiverem definidos os secrets)"
+            if [ -n "${{ secrets.DOCKERHUB_USERNAME }}" ] && [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+              # tenta login sem sudo primeiro; se falhar, usa sudo
+              if echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin; then
+                echo "[auth] docker login OK (sem sudo)"
+              else
+                echo "[auth] docker login sem sudo falhou, tentando com sudo..."
+                echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin || {
+                  echo "Falha no docker login (verifique credenciais no GitHub Secrets)"
+                  exit 1
+                }
+              fi
+            else
+              echo "[auth] DOCKERHUB_USERNAME/DOCKERHUB_TOKEN não definidos — pulando docker login"
+            fi
+            
+            # --- 4) Pull with retry + detailed logging
+            echo "[deploy] executando docker compose pull com retries e log"
+            LOGFILE="deploy-docker-pull.log"
+            rm -f "$LOGFILE"
             set +e
             attempts=0
             max_attempts=5
             until [ $attempts -ge $max_attempts ]
             do
               attempts=$((attempts+1))
-              echo "[deploy] tentativa $attempts de $max_attempts"
-              docker compose pull && break
+              echo "[deploy] tentativa $attempts de $max_attempts" | tee -a "$LOGFILE"
+              # tenta sem sudo; se falhar com permissão, tenta com sudo
+              if docker compose pull 2>&1 | tee -a "$LOGFILE"; then
+                echo "[deploy] docker compose pull succeeded on attempt $attempts" | tee -a "$LOGFILE"
+                break
+              else
+                echo "[deploy] pull falhou na tentativa $attempts; checando se é problema de permissão..." | tee -a "$LOGFILE"
+                # tenta com sudo (caso o usuário precise)
+                if sudo docker compose pull 2>&1 | tee -a "$LOGFILE"; then
+                  echo "[deploy] docker compose pull (com sudo) succeeded on attempt $attempts" | tee -a "$LOGFILE"
+                  break
+                fi
+              fi
               sleep $((attempts * 5))
             done
             if [ $attempts -ge $max_attempts ]; then
-              echo "Falha ao puxar imagens após $max_attempts tentativas"
+              echo "Falha ao puxar imagens após $max_attempts tentativas. Conteúdo do log ($LOGFILE):"
+              echo "----- BEGIN LOG -----"
+              sed -n '1,200p' "$LOGFILE" || true
+              echo "----- END LOG -----"
+              # Saída útil para Actions UI; também anexe o arquivo se quiser
               exit 1
             fi
             set -e
-
-            # --- 5) Up
+            
+            # --- 5) Up (com sudo fallback)
             echo "[deploy] subindo containers (docker compose up -d --remove-orphans)"
-            docker compose up -d --remove-orphans
-
-            echo "✅ Deploy concluído - $(date)"
+            if ! docker compose up -d --remove-orphans 2>&1 | tee -a "$LOGFILE"; then
+              echo "[deploy] tentativa com sudo..."
+              sudo docker compose up -d --remove-orphans 2>&1 | tee -a "$LOGFILE"
+            fi
+            
+            echo "[deploy] operações docker concluídas com sucesso"
