@@ -3,7 +3,6 @@ name: Deploy Backend Softwave
 on:
   push:
     branches: [ "release/sprint-final" ]
-    
   pull_request:
     branches: [ "release/sprint-final" ]
 
@@ -19,7 +18,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          
+
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
@@ -35,12 +34,11 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest
-          # Mude o nome da tag acima para cada repositório diferente!
 
-    deploy-private:
+  deploy-private:
     needs: build-and-push
     runs-on: ubuntu-latest
-    timeout-minutes: 60                # aumenta timeout do job inteiro
+    timeout-minutes: 60
     steps:
       - name: Deploy to Private EC2 via Bastion (single SSH)
         uses: appleboy/ssh-action@v1.7.0
@@ -48,29 +46,30 @@ jobs:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}      # se precisar de bastion, mantém
+          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
           proxy_username: ${{ secrets.EC2_USER }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.SSH_PORT || 22 }}
-          command_timeout: 3600000    # 1 hora em ms
+          port: ${{ secrets.SSH_PORT }}
+          command_timeout: 3600000
           script_stop: true
           script: |
             set -euo pipefail
             echo "⏱️ Iniciando deploy remoto - $(date)"
+
+            # fallback para SSH_PORT: se vazio, usa 22 (aplicado no host, não aqui)
             EC2_USER="${{ secrets.EC2_USER }}"
             WORKDIR="/home/${EC2_USER}/backend-compose"
             mkdir -p "$WORKDIR"
             cd "$WORKDIR"
 
             # --- 1) Baixar docker-compose.yaml direto do GitHub (raw)
-            # Substitua REPO_OWNER e REPO_NAME pelo seu usuário/organizacao e repo onde está o docker-compose.
+            # Substitua os valores abaixo ou ajuste para usar o mesmo repo automaticamente.
             REPO_OWNER="SEU_GITHUB_USERNAME_OU_ORG"
             REPO_NAME="NOME_DO_REPO_PRINCIPAL"
             BRANCH="release/sprint-final"
             RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/docker-compose.yaml"
 
             echo "[fetch] baixando docker-compose.yaml de: $RAW_URL"
-            # Se o repo for privado, use GITHUB_TOKEN (exemplo abaixo)
             if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
               curl -fSL -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$RAW_URL" -o docker-compose.yaml
             else
@@ -81,15 +80,13 @@ jobs:
             fi
 
             # --- 2) Escrever .env com secrets (idempotente)
-            cat > .env <<EOF
-DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-DB_USER=${{ secrets.DB_USER }}
-DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN || "" }}
-PROJECT_NAME=${{ secrets.PROJECT_NAME || "softwave" }}
-EOF
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+            echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
+            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
+            # se não existir, o valor será vazio (ok)
+            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
             chmod 600 .env
 
             # --- 3) Instalar Docker + docker compose (idempotente)
@@ -103,7 +100,6 @@ EOF
               elif command -v apt-get >/dev/null 2>&1; then
                 sudo apt-get update -y
                 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-                # instalação via repositório oficial Docker
                 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg
                 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
                 sudo apt-get update -y
@@ -118,7 +114,6 @@ EOF
               echo "[install] docker já instalado: $(docker --version)"
             fi
 
-            # Instalar docker compose plugin via docker compose (se necessário)
             if ! docker compose version >/dev/null 2>&1; then
               echo "[install] docker compose plugin não encontrado. Instalando plugin..."
               sudo mkdir -p /usr/local/lib/docker/cli-plugins
@@ -127,7 +122,7 @@ EOF
             fi
             echo "[install] docker compose: $(docker compose version)"
 
-            # --- 4) Pull com retry (evita falhas transitórias)
+            # --- 4) Pull com retry
             echo "[deploy] executando docker compose pull com retries"
             set +e
             attempts=0
