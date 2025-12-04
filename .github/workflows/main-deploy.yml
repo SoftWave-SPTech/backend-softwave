@@ -50,7 +50,7 @@ jobs:
           proxy_username: ${{ secrets.EC2_USER }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          command_timeout: 3600000
+          command_timeout: 60m
           script_stop: true
           script: |
             set -euo pipefail
