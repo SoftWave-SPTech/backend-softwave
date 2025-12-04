@@ -1,23 +1,23 @@
-name: Build & Deploy Backend Softwave
+name: Deploy Backend Softwave (to PUBLIC EC2)
 
 on:
   push:
-    branches: [ "release/sprint-final", "main" ]
+    branches: [ "release/sprint-final" ]
   pull_request:
-    branches: [ "release/sprint-final", "main" ]
-  repository_dispatch:
-    types: [ deploy ]
+    branches: [ "release/sprint-final" ]
 
 permissions:
   contents: read
+  id-token: write   # caso queira usar OIDC depois
+  # secrets are accessed implicitly
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.set-image.outputs.image }}
+      image_tag: ${{ steps.push_image.outputs.image }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -26,94 +26,167 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build JAR
-        run: mvn -B clean package -DskipTests
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
 
-      - name: Login to Docker Hub
+      - name: Login to Docker Hub (runner)
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & push Docker image
-        id: build
+      - name: Build and push Docker image
         uses: docker/build-push-action@v4
+        id: push_image
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest
 
-      - name: Set image output
-        id: set-image
-        run: echo "::set-output name=image::${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest"
-
-  deploy:
+  deploy-to-public:
     needs: build-and-push
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     steps:
-      - name: Checkout
+      - name: Checkout (to get docker-compose.yaml)
         uses: actions/checkout@v4
 
-      - name: Create .env on runner (temporary)
+      # create .env.deploy on the runner (secure, controlled permissions)
+      - name: Create .env.deploy
         run: |
           cat > .env.deploy <<EOF
           DB_USER=${{ secrets.DB_USER }}
           DB_PASSWORD=${{ secrets.DB_PASSWORD }}
           DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}
           AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}
           PROJECT_NAME=${{ secrets.PROJECT_NAME || 'softwave' }}
           EOF
-          chmod 644 .env.deploy
+          chmod 600 .env.deploy
 
-      - name: Copy .env to private via bastion (scp action)
+      - name: Copy docker-compose.yaml to public EC2 (via SCP)
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST_PRIVATE }}        # target (private IP)
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}              # chave usada para acessar o private host (raw PEM)
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}   # bastion (public IP)
-          proxy_username: ${{ secrets.EC2_USER }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}        # chave para a bastion (pode ser a mesma)
-          port: ${{ secrets.SSH_PORT || 22 }}
-          source: ".env.deploy"
-          target: "/home/${{ secrets.EC2_USER }}/app/.env"
-          strip_components: 0
-
-      - name: Run docker compose pull & up on private via bastion (ssh action)
-        uses: appleboy/ssh-action@v0.1.8
-        with:
-          host: ${{ secrets.EC2_HOST_PRIVATE }}
+          host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
-          proxy_username: ${{ secrets.EC2_USER }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          command_timeout: 1h
+          source: "docker-compose.yaml"
+          target: "/home/${{ secrets.EC2_USER }}/backend-compose/docker-compose.yaml"
+          strip_components: 0
+          overwrite: true
+
+      - name: Copy .env.deploy to public EC2 (via SCP)
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_PUBLIC }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: ".env.deploy"
+          target: "/home/${{ secrets.EC2_USER }}/backend-compose/.env"
+          strip_components: 0
+          overwrite: true
+
+      - name: Remote deploy on public EC2 (install/check docker, pull, up)
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST_PUBLIC }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          command_timeout: 3600            # seconds (1h)
           script_stop: true
           script: |
             set -euo pipefail
-            REMOTE_DIR="/home/${{ secrets.EC2_USER }}/app"
-            cd "$REMOTE_DIR" || { echo "Diretório $REMOTE_DIR não encontrado"; exit 1; }
+            EC2_USER="${{ secrets.EC2_USER }}"
+            WORKDIR="/home/${EC2_USER}/backend-compose"
+            mkdir -p "$WORKDIR"
+            chown "${EC2_USER}:${EC2_USER}" "$WORKDIR" || true
+            cd "$WORKDIR"
 
-            # Pull com retry
-            attempts=0; max_attempts=5
+            echo ">>> Deploy start $(date)"
+            echo "Listing folder:"
+            ls -la "$WORKDIR" || true
+            echo "--- showing first lines of docker-compose.yaml ---"
+            sed -n '1,80p' docker-compose.yaml || true
+
+            # secure .env permissions
+            if [ -f .env ]; then chmod 600 .env; fi
+
+            # INSTALL docker if missing (idempotent)
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "Docker not found. Installing..."
+              if command -v yum >/dev/null 2>&1; then
+                sudo yum update -y
+                sudo yum install -y docker
+                sudo systemctl enable --now docker
+              elif command -v apt-get >/dev/null 2>&1; then
+                export DEBIAN_FRONTEND=noninteractive
+                sudo apt-get update -y
+                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+                sudo apt-get update -y
+                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                sudo systemctl enable --now docker
+              else
+                echo "No supported package manager found. Abort."
+                exit 1
+              fi
+              sudo usermod -aG docker "${EC2_USER}" || true
+            else
+              echo "Docker already installed: $(docker --version)"
+            fi
+
+            # ensure docker compose plugin
+            if ! docker compose version >/dev/null 2>&1; then
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose || true
+            fi
+            echo "docker compose: $(docker compose version || true)"
+
+            # load .env variables if present
+            if [ -f .env ]; then
+              set -o allexport
+              . .env || true
+              set +o allexport
+            fi
+
+            # docker login (if secrets available)
+            if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
+              printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || {
+                echo "Warning: docker login failed; check DOCKERHUB credentials"; true
+              }
+            fi
+
+            # pull images with retries
+            attempts=0
+            max_attempts=5
             until [ $attempts -ge $max_attempts ]; do
               attempts=$((attempts+1))
-              echo "[private] tentativa $attempts: docker compose pull"
-              if docker compose pull; then
-                echo "[private] pull OK"
+              echo "[deploy] pull attempt $attempts/$max_attempts"
+              if docker compose pull 2>&1 | sed -n '1,200p'; then
+                echo "[deploy] pull ok"
                 break
               fi
               sleep $((attempts * 5))
             done
             if [ $attempts -ge $max_attempts ]; then
-              echo "❌ Falha ao puxar imagens após $max_attempts tentativas"
-              exit 2
+              echo "ERROR: failed to pull images after $max_attempts attempts"
+              exit 1
             fi
 
+            # bring up services
             docker compose up -d --remove-orphans
-            echo "[private] deploy concluído"
+
+            # show status
+            docker compose ps
+            echo ">>> Deploy finished $(date)"
+
+      - name: Cleanup .env.deploy
+        if: always()
+        run: rm -f .env.deploy || true
