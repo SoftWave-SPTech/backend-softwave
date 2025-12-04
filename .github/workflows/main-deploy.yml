@@ -59,7 +59,7 @@ jobs:
           script: |
             set -euo pipefail
             EC2_USER="${{ secrets.EC2_USER }}"
-            WORKDIR="/home/${EC2_USER}/backend-compose"
+            WORKDIR="/home/${EC2_USER}/app"  # <-- caminho correto
             cd "$WORKDIR"
 
             echo ">>> Deploy start $(date)"
