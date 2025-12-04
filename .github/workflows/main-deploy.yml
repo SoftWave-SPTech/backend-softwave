@@ -37,140 +37,116 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest
           # Mude o nome da tag acima para cada repositório diferente!
 
-  deploy-private:
+    deploy-private:
     needs: build-and-push
     runs-on: ubuntu-latest
+    timeout-minutes: 60                # aumenta timeout do job inteiro
     steps:
-      - name: Checkout para pegar o docker-compose (Apenas no repo principal)
-        uses: actions/checkout@v3
-        # ... (Passos anteriores de Build e Login no Docker Hub) ...
-
-      # [NOVO PASSO] 1. Copia o docker-compose.yaml para a EC2 Privada
-      - name: Copy docker-compose to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          # Destino (EC2 Privada via Bastion)
-          host: ${{ secrets.EC2_HOST_PUBLIC }} # O SCP conecta no bastion pra chegar na privada se configurar proxy
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          # Configuração do Proxy Jump (Bastion)
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
-          proxy_username: ${{ secrets.EC2_USER }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
-          # O que copiar e para onde
-          source: "docker-compose.yaml"
-          target: "/home/${{ secrets.EC2_USER }}"
-
-      # 2. Conecta via SSH e roda o Deploy
-      - name: Deploy to Private EC2 via Bastion
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Deploy to Private EC2 via Bastion (single SSH)
+        uses: appleboy/ssh-action@v1.7.0
         with:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
+          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}      # se precisar de bastion, mantém
           proxy_username: ${{ secrets.EC2_USER }}
           proxy_key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          command_timeout: 3600000    # 1 hora em ms
           script_stop: true
           script: |
-            # Ir para a pasta onde o arquivo foi copiado (Geralmente /home/ubuntu ou /home/ec2-user)
-            cd /home/${{ secrets.EC2_USER }}
+            set -euo pipefail
+            echo "⏱️ Iniciando deploy remoto - $(date)"
+            EC2_USER="${{ secrets.EC2_USER }}"
+            WORKDIR="/home/${EC2_USER}/backend-compose"
+            mkdir -p "$WORKDIR"
+            cd "$WORKDIR"
 
-            # 1. Configurar variáveis de ambiente
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
-            echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
+            # --- 1) Baixar docker-compose.yaml direto do GitHub (raw)
+            # Substitua REPO_OWNER e REPO_NAME pelo seu usuário/organizacao e repo onde está o docker-compose.
+            REPO_OWNER="SEU_GITHUB_USERNAME_OU_ORG"
+            REPO_NAME="NOME_DO_REPO_PRINCIPAL"
+            BRANCH="release/sprint-final"
+            RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/${BRANCH}/docker-compose.yaml"
 
-            # 2. Instalação Inteligente do Docker (Já vimos que funcionou no seu log)
-            if ! command -v docker &> /dev/null; then
-                if command -v yum &> /dev/null; then
-                    sudo yum update -y && sudo yum install docker -y && sudo service docker start
-                elif command -v apt-get &> /dev/null; then
-                    sudo apt-get update && sudo apt-get install docker.io -y
-                    sudo systemctl start docker && sudo systemctl enable docker
-                fi
-                sudo usermod -a -G docker ${{ secrets.EC2_USER }}
-            fi
-
-            # 3. Instalação do Docker Compose
-            if ! command -v docker-compose &> /dev/null; then
-                sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                sudo chmod +x /usr/local/bin/docker-compose
-            fi
-
-            # 4. Deploy
-            echo "🚀 Iniciando Deploy..."
-            
-            # Verificação final
-            if [ ! -f "docker-compose.yaml" ]; then
-                echo "❌ ERRO: O arquivo docker-compose.yaml AINDA não foi encontrado."
-                ls -la
+            echo "[fetch] baixando docker-compose.yaml de: $RAW_URL"
+            # Se o repo for privado, use GITHUB_TOKEN (exemplo abaixo)
+            if [ -n "${{ secrets.GITHUB_TOKEN }}" ]; then
+              curl -fSL -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$RAW_URL" -o docker-compose.yaml
+            else
+              curl -fSL "$RAW_URL" -o docker-compose.yaml || {
+                echo "⚠️ Não conseguiu baixar via raw. Verifique URL/branch/permissões."
                 exit 1
+              }
             fi
 
-            # Atualiza imagens e reinicia
-            docker-compose pull
-            docker-compose up -d --remove-orphans
+            # --- 2) Escrever .env com secrets (idempotente)
+            cat > .env <<EOF
+DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+DB_USER=${{ secrets.DB_USER }}
+DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN || "" }}
+PROJECT_NAME=${{ secrets.PROJECT_NAME || "softwave" }}
+EOF
+            chmod 600 .env
 
-      - name: Deploy to Private EC2 via Bastion
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST_PUBLIC }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          proxy_host: ${{ secrets.EC2_HOST_PUBLIC }}
-          proxy_username: ${{ secrets.EC2_USER }}
-          proxy_key: ${{ secrets.EC2_SSH_KEY }}
-          script_stop: true
-          command_timeout: 30m
-          # A linha 'host_fingerprint' foi removida pois causava erro
-          
-          script: |
-            # 1. Configurar variáveis de ambiente
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env
-            echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env
-            echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
-            # Adicione as outras variáveis se necessário (GEMINI, MAIL, ETC)
-
-            # 2. Instalação Inteligente do Docker (Ubuntu ou Amazon Linux)
-            if ! command -v docker &> /dev/null; then
-                echo "🐳 Docker não encontrado. Instalando..."
-                
-                # Verifica se é Amazon Linux (usa yum)
-                if command -v yum &> /dev/null; then
-                    sudo yum update -y
-                    sudo yum install docker -y
-                    sudo service docker start
-                # Verifica se é Ubuntu (usa apt-get)
-                elif command -v apt-get &> /dev/null; then
-                    sudo apt-get update
-                    sudo apt-get install docker.io -y
-                    sudo systemctl start docker
-                    sudo systemctl enable docker
-                fi
-                
-                # Adiciona permissão ao usuário
-                sudo usermod -a -G docker ${{ secrets.EC2_USER }}
+            # --- 3) Instalar Docker + docker compose (idempotente)
+            echo "[install] verificando docker..."
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "[install] docker nao encontrado. Detectando gerenciador de pacotes..."
+              if command -v yum >/dev/null 2>&1; then
+                sudo yum update -y
+                sudo yum install -y docker
+                sudo systemctl enable --now docker
+              elif command -v apt-get >/dev/null 2>&1; then
+                sudo apt-get update -y
+                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
+                # instalação via repositório oficial Docker
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg
+                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+                sudo apt-get update -y
+                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+                sudo systemctl enable --now docker
+              else
+                echo "⚠️ Gerenciador de pacotes não identificado. Abortando."
+                exit 1
+              fi
+              sudo usermod -aG docker "${EC2_USER}" || true
+            else
+              echo "[install] docker já instalado: $(docker --version)"
             fi
 
-            # 3. Instalação do Docker Compose (Versão Standalone)
-            if ! command -v docker-compose &> /dev/null; then
-                echo "🐙 Docker Compose não encontrado. Instalando..."
-                sudo curl -L "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-                sudo chmod +x /usr/local/bin/docker-compose
+            # Instalar docker compose plugin via docker compose (se necessário)
+            if ! docker compose version >/dev/null 2>&1; then
+              echo "[install] docker compose plugin não encontrado. Instalando plugin..."
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
             fi
+            echo "[install] docker compose: $(docker compose version)"
 
-            # 4. Deploy
-            echo "🚀 Iniciando Deploy..."
-            
-            # Se o arquivo docker-compose.yaml não existir (primeira execução ou repo satélite), avisa mas tenta seguir
-            if [ ! -f "docker-compose.yaml" ]; then
-                echo "⚠️  AVISO: docker-compose.yaml não encontrado na raiz. Se este for um repo satélite, certifique-se de ter rodado o backend principal antes."
+            # --- 4) Pull com retry (evita falhas transitórias)
+            echo "[deploy] executando docker compose pull com retries"
+            set +e
+            attempts=0
+            max_attempts=5
+            until [ $attempts -ge $max_attempts ]
+            do
+              attempts=$((attempts+1))
+              echo "[deploy] tentativa $attempts de $max_attempts"
+              docker compose pull && break
+              sleep $((attempts * 5))
+            done
+            if [ $attempts -ge $max_attempts ]; then
+              echo "❌ Falha ao puxar imagens após $max_attempts tentativas"
+              exit 1
             fi
-            
-            # Atualiza imagens e reinicia containers
-            docker-compose pull
-            docker-compose up -d --remove-orphans
+            set -e
+
+            # --- 5) Up
+            echo "[deploy] subindo containers (docker compose up -d --remove-orphans)"
+            docker compose up -d --remove-orphans
+
+            echo "✅ Deploy concluído - $(date)"
