@@ -47,129 +47,44 @@ jobs:
       - name: Checkout (to access docker-compose.yaml if needed)
         uses: actions/checkout@v4
 
-      - name: Remote deploy on PUBLIC EC2 (write .env, fetch compose, install/check docker, pull & up)
+      - name: Remote deploy on PUBLIC EC2 (update images and restart containers)
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          command_timeout: "60m"
+          command_timeout: "30m"
           script_stop: true
           script: |
             set -euo pipefail
             EC2_USER="${{ secrets.EC2_USER }}"
             WORKDIR="/home/${EC2_USER}/backend-compose"
-            mkdir -p "$WORKDIR"
-            chown "${EC2_USER}:${EC2_USER}" "$WORKDIR" || true
             cd "$WORKDIR"
 
             echo ">>> Deploy start $(date)"
             echo "[info] WORKDIR=$WORKDIR"
-            echo "[info] Downloading docker-compose.yaml from GitHub (raw)"
 
-            # BRANCH and repo - you can change BRANCH if needed
-            BRANCH="release/sprint-final"
-            RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${BRANCH}/docker-compose.yaml"
-
-            # download; if fails exit with helpful message
-            if ! curl -fSL "$RAW_URL" -o docker-compose.yaml; then
-              echo "❌ Failed to download docker-compose.yaml from $RAW_URL"
-              echo "Make sure the file exists and branch is correct and readable (public or use token)."
-              exit 1
-            fi
-
-            # write .env directly on remote (secure permissions)
-            cat > .env <<'EOF'
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
-            DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}
-            PROJECT_NAME=${{ secrets.PROJECT_NAME || 'softwave' }}
-            EOF
-            chmod 600 .env
-
-            echo "[info] .env written (600)."
-
-            # show small preview (avoid printing secrets)
-            echo "--- docker-compose.yaml head ---"
-            sed -n '1,80p' docker-compose.yaml || true
-            echo "--------------------------------"
-
-            # --------- Install Docker (idempotent) ----------
-            echo "[install] checking docker..."
-            if ! command -v docker >/dev/null 2>&1; then
-              echo "[install] docker not found. Installing..."
-              if command -v yum >/dev/null 2>&1; then
-                sudo yum update -y
-                sudo yum install -y docker
-                sudo systemctl enable --now docker
-              elif command -v apt-get >/dev/null 2>&1; then
-                export DEBIAN_FRONTEND=noninteractive
-                sudo apt-get update -y
-                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-                sudo apt-get update -y
-                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-                sudo systemctl enable --now docker
-              else
-                echo "No supported package manager found. Abort."
-                exit 1
-              fi
-              sudo usermod -aG docker "${EC2_USER}" || true
-            else
-              echo "[install] docker found: $(docker --version || true)"
-            fi
-
-            # ensure docker compose plugin exists
-            if ! docker compose version >/dev/null 2>&1; then
-              sudo mkdir -p /usr/local/lib/docker/cli-plugins
-              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
-              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose || true
-            fi
-            echo "[install] docker compose: $(docker compose version || true)"
-
-            # load .env into environment (safe for the duration of this shell)
+            # load .env if exists
             if [ -f .env ]; then
               set -o allexport
-              # shellcheck disable=SC1091
-              . .env || true
+              . .env
               set +o allexport
             fi
 
-            # docker login if credentials present (silent on failure)
+            # docker login if needed
             if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
-              printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || {
-                echo "Warning: docker login failed; continuing but pull of private images may fail."
-              }
+              printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || true
             fi
 
-            # pull images with retry to reduce transient network failures
-            attempts=0
-            max_attempts=5
-            until [ $attempts -ge $max_attempts ]; do
-              attempts=$((attempts+1))
-              echo "[deploy] pull attempt $attempts/$max_attempts"
-              if docker compose pull; then
-                echo "[deploy] pull OK"
-                break
-              fi
-              sleep $((attempts * 5))
-            done
-            if [ $attempts -ge $max_attempts ]; then
-              echo "❌ Failed to pull images after $max_attempts attempts"
-              exit 1
-            fi
+            # pull the latest image of your backend
+            docker compose pull backend-softwave || true
+            # if you tiver outros microserviços, puxe também:
+            # docker compose pull api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia
 
-            # start services
+            # restart containers
             docker compose up -d --remove-orphans
 
-            # print status
             echo "[deploy] docker compose ps:"
             docker compose ps || true
-
             echo ">>> Deploy finished $(date)"
