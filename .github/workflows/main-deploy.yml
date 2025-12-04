@@ -1,18 +1,24 @@
-name: Deploy Backend Softwave
+name: Build & Deploy Backend Softwave
 
 on:
   push:
-    branches: [ "release/sprint-final" ]
+    branches: [ "release/sprint-final", "main" ]
   pull_request:
-    branches: [ "release/sprint-final" ]
+    branches: [ "release/sprint-final", "main" ]
+  repository_dispatch:
+    types: [ deploy ]
+
+permissions:
+  contents: read
 
 jobs:
-
   build-and-push:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.set-image.outputs.image }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up JDK 21
         uses: actions/setup-java@v3
@@ -20,8 +26,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
+      - name: Build JAR
+        run: mvn -B clean package -DskipTests
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -29,130 +35,108 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build & push Docker image
+        id: build
         uses: docker/build-push-action@v4
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest
 
+      - name: Set image output
+        id: set-image
+        run: echo "::set-output name=image::${{ secrets.DOCKERHUB_USERNAME }}/backend-softwave:latest"
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
-      - name: Deploy to Private EC2 via Bastion (single SSH)
+      - name: Deploy create on private and restart compose (via bastion)
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.EC2_HOST_PUBLIC }}
+          host: ${{ secrets.EC2_HOST_PUBLIC }}      # bastion public IP
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          command_timeout: "1h"
+          key: ${{ secrets.EC2_SSH_KEY }}           # appleboy usará essa chave para conectar na bastion
+          port: ${{ secrets.SSH_PORT || 22 }}
+          proxy_host: ""                            # não usar proxy_host aqui: vamos operar na bastion e saltar manualmente
+          command_timeout: 1h
           script_stop: true
           script: |
             set -euo pipefail
-            echo "=== Iniciando deploy via bastion -> privada === $(date)"
+            echo ">>> Iniciando deploy (bastion) - $(date)"
 
-            EC2_USER="${{ secrets.EC2_USER }}"
-            EC2_PRIVATE_IP="${{ secrets.EC2_HOST_PRIVATE }}"
-            WORKDIR="/home/${EC2_USER}/backend-compose"
-            mkdir -p "$WORKDIR"
-            cd "$WORKDIR"
+            # --- vars
+            BASTION_USER="${{ secrets.EC2_USER }}"
+            PRIVATE_IP="${{ secrets.EC2_HOST_PRIVATE }}"
+            REMOTE_DIR="/home/${BASTION_USER}/app"   # pasta alvo na instância privada (ajuste se precisar)
 
-            # 1) baixar docker-compose.yaml (do mesmo repo e branch)
-            BRANCH="release/sprint-final"
-            RAW_URL="https://raw.githubusercontent.com/${{ github.repository }}/${BRANCH}/docker-compose.yaml"
-            echo "[bastion] baixando docker-compose.yaml: $RAW_URL"
-            curl -fSL -o docker-compose.yaml "$RAW_URL" || { echo "Falha ao baixar docker-compose.yaml"; exit 1; }
-
-            # 2) escrever chave temporária de forma segura (sem espaços extras)
+            # --- 1) preparar arquivo de chave temporária NA BASTION (para conectar na privada)
             KEY_FILE="/tmp/deploy_key_$$"
+            # TODO: printf garante preservação de quebras de linha sem adicionar espaços extras
             printf '%s\n' "${{ secrets.EC2_SSH_KEY }}" > "$KEY_FILE"
             chmod 600 "$KEY_FILE"
 
-            # 3) criar pasta remota e copiar arquivos
-            REMOTE_WORKDIR="/home/${EC2_USER}/backend-compose"
-            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${EC2_USER}@${EC2_PRIVATE_IP}" "mkdir -p '$REMOTE_WORKDIR' && chown ${EC2_USER}:${EC2_USER} '$REMOTE_WORKDIR'"
+            # --- 2) criar .env temporário NA BASTION (idempotente, sem expor em logs)
+            ENV_TMP="/tmp/.env_deploy_$$"
+            cat > "$ENV_TMP" <<EOF
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}
+            PROJECT_NAME=${{ secrets.PROJECT_NAME || 'softwave' }}
+            EOF
+            chmod 600 "$ENV_TMP"
 
-            scp -i "$KEY_FILE" -o StrictHostKeyChecking=no docker-compose.yaml "${EC2_USER}@${EC2_PRIVATE_IP}:$REMOTE_WORKDIR/docker-compose.yaml"
+            # --- 3) testar conectividade para a privada (porta 22) a partir da bastion
+            echo "[bastion] testando conexão SSH para privada..."
+            if ! ssh -i "$KEY_FILE" -o BatchMode=yes -o ConnectTimeout=10 -o StrictHostKeyChecking=no "${BASTION_USER}@${PRIVATE_IP}" 'echo ok' >/dev/null 2>&1; then
+              echo "❌ Não foi possível conectar na privada a partir da bastion. Verifique SG/NACL/rota/NAT e autorizações de chave."
+              rm -f "$ENV_TMP"
+              shred -u "$KEY_FILE" 2>/dev/null || rm -f "$KEY_FILE"
+              exit 2
+            fi
 
-            # 4) gerar .env local (sem espaços extras) e copiar
-            printf '%s\n' "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
-                          "DB_USER=${{ secrets.DB_USER }}" \
-                          "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" \
-                          "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" \
-                          "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
-                          "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" > .env
-            chmod 600 .env
-            scp -i "$KEY_FILE" -o StrictHostKeyChecking=no .env "${EC2_USER}@${EC2_PRIVATE_IP}:$REMOTE_WORKDIR/.env"
+            # --- 4) garantir pasta na privada e copiar .env
+            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${BASTION_USER}@${PRIVATE_IP}" "mkdir -p ${REMOTE_DIR} && chown ${BASTION_USER}:${BASTION_USER} ${REMOTE_DIR}"
 
-            # 5) Executa deploy na privada (instala docker se necessário; usa sudo)
-            echo "[bastion] executando deploy remoto na privada"
-            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${EC2_USER}@${EC2_PRIVATE_IP}" bash -s <<'REMOTE_SCRIPT'
+            scp -i "$KEY_FILE" -o StrictHostKeyChecking=no "$ENV_TMP" "${BASTION_USER}@${PRIVATE_IP}:${REMOTE_DIR}/.env"
+
+            # --- 5) executar docker compose pull + up na privada (com retries)
+            ssh -i "$KEY_FILE" -o StrictHostKeyChecking=no "${BASTION_USER}@${PRIVATE_IP}" bash -s <<'REMOTE'
             set -euo pipefail
-            echo "=== Deploy na privada (START) === $(date)"
-            WORKDIR="/home/${USER}/backend-compose"
-            cd "$WORKDIR" || { echo "Diretório $WORKDIR não encontrado"; exit 1; }
+            WORKDIR="${REMOTE_DIR}"
+            cd "$WORKDIR" || { echo "Diretório $WORKDIR não existe"; exit 1; }
 
-            # instala docker (idempotente)
-            if ! command -v docker >/dev/null 2>&1; then
-              echo "[private] docker não encontrado, instalando..."
-              if command -v apt-get >/dev/null 2>&1; then
-                export DEBIAN_FRONTEND=noninteractive
-                sudo apt-get update -y
-                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg
-                echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-                sudo apt-get update -y
-                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-                sudo systemctl enable --now docker
-              elif command -v yum >/dev/null 2>&1; then
-                sudo yum update -y
-                sudo yum install -y docker
-                sudo systemctl enable --now docker
-              else
-                echo "[private] gerenciador de pacotes não identificado"; exit 1
-              fi
-              sudo usermod -aG docker "${USER}" || true
-            fi
-
-            # garante plugin docker compose
-            if ! docker compose version >/dev/null 2>&1; then
-              sudo mkdir -p /usr/local/lib/docker/cli-plugins
-              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
-              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose || true
-            fi
-
-            # carregar variáveis do .env em runtime (se existir)
-            if [ -f .env ]; then
-              # exporta linhas KEY=VALUE do .env
-              set -o allexport
-              # shellcheck disable=SC1091
-              . .env
-              set +o allexport
-            fi
-
-            # docker login se variáveis existirem
-            if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
-              echo "${DOCKERHUB_TOKEN}" | sudo docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || { echo "[private] docker login falhou"; exit 1; }
-            fi
-
-            # pull + up (retries)
+            # opcional: garantir Docker instalado (assuma instalado se você já preparou)
+            # pull com retry
             attempts=0
             max_attempts=5
             until [ $attempts -ge $max_attempts ]; do
               attempts=$((attempts+1))
               echo "[private] tentativa $attempts: docker compose pull"
-              if sudo docker compose pull; then break; fi
+              if docker compose pull; then
+                echo "[private] pull OK"
+                break
+              fi
               sleep $((attempts * 5))
             done
+            if [ $attempts -ge $max_attempts ]; then
+              echo "❌ Falha ao puxar imagens após $max_attempts tentativas"
+              exit 3
+            fi
+            
+            # up
+            docker compose up -d --remove-orphans
+            
+            # limpa chaves locais (no host remoto)
+            echo "[private] deploy concluído"
+            REMOTE
 
-            sudo docker compose up -d --remove-orphans
-            echo "=== Deploy na privada (END) === $(date)"
-            REMOTE_SCRIPT
-
-            # cleanup no bastion
+            # --- 6) cleanup local (bastion)
+            rm -f "$ENV_TMP"
             shred -u "$KEY_FILE" 2>/dev/null || rm -f "$KEY_FILE"
-            rm -f .env
 
-            echo "=== Deploy finalizado com sucesso === $(date)"
+            echo ">>> Deploy finalizado - $(date)"
