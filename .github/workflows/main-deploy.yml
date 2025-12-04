@@ -87,38 +87,73 @@ jobs:
             echo "AWS_SESSION_TOKEN=${{ secrets.AWS_SESSION_TOKEN }}" >> .env
             chmod 600 .env
 
-            # --- 3) Instalar Docker + docker compose (idempotente)
-            echo "[install] verificando docker..."
+            # ---------------------------
+            # --- INSERT: robust install/check block
+            # ---------------------------
+            echo "[install] inicio do bloco de install/check - $(date)"
+            LOG_INSTALL="install.log"
+            rm -f "$LOG_INSTALL"
+            set +e
+
+            # noninteractive for apt
+            export DEBIAN_FRONTEND=noninteractive
+
+            # detect package manager and install docker if missing
             if ! command -v docker >/dev/null 2>&1; then
-              echo "[install] docker nao encontrado. Detectando gerenciador de pacotes..."
+              echo "[install] docker não encontrado. Instalando..." | tee -a "$LOG_INSTALL"
               if command -v yum >/dev/null 2>&1; then
-                sudo yum update -y
-                sudo yum install -y docker
-                sudo systemctl enable --now docker
+                sudo yum update -y 2>&1 | tee -a "$LOG_INSTALL"
+                sudo yum install -y docker 2>&1 | tee -a "$LOG_INSTALL"
+                sudo systemctl enable --now docker 2>&1 | tee -a "$LOG_INSTALL"
               elif command -v apt-get >/dev/null 2>&1; then
-                sudo apt-get update -y
-                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
-                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg
+                sudo apt-get update -y 2>&1 | tee -a "$LOG_INSTALL"
+                sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release 2>&1 | tee -a "$LOG_INSTALL"
+                curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /usr/share/keyrings/docker-archive-keyring.gpg 2>&1 | tee -a "$LOG_INSTALL"
                 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
-                sudo apt-get update -y
-                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-                sudo systemctl enable --now docker
+                sudo apt-get update -y 2>&1 | tee -a "$LOG_INSTALL"
+                sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin 2>&1 | tee -a "$LOG_INSTALL"
+                sudo systemctl enable --now docker 2>&1 | tee -a "$LOG_INSTALL"
               else
-                echo "Gerenciador de pacotes não identificado. Abortando."
-                exit 1
+                echo "[install] gerenciador de pacotes não identificado" | tee -a "$LOG_INSTALL"
               fi
-              sudo usermod -aG docker "${EC2_USER}" || true
+
+              # adicionar usuario ao grupo docker (pode exigir reconexão)
+              sudo usermod -aG docker "${EC2_USER}" 2>&1 | tee -a "$LOG_INSTALL" || true
             else
-              echo "[install] docker já instalado: $(docker --version)"
+              echo "[install] docker já instalado: $(docker --version)" | tee -a "$LOG_INSTALL"
             fi
 
+            # garantir plugin docker compose
             if ! docker compose version >/dev/null 2>&1; then
-              echo "[install] docker compose plugin não encontrado. Instalando plugin..."
-              sudo mkdir -p /usr/local/lib/docker/cli-plugins
-              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
-              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+              echo "[install] instalando docker compose plugin" | tee -a "$LOG_INSTALL"
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins 2>&1 | tee -a "$LOG_INSTALL"
+              sudo curl -fSL "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose 2>&1 | tee -a "$LOG_INSTALL"
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose 2>&1 | tee -a "$LOG_INSTALL"
             fi
-            echo "[install] docker compose: $(docker compose version)"
+
+            # esperar docker daemon subir
+            echo "[install] aguardando docker daemon..." | tee -a "$LOG_INSTALL"
+            tries=0
+            until sudo systemctl is-active --quiet docker || [ $tries -ge 12 ]; do
+              tries=$((tries+1))
+              echo "[install] aguardando docker... tentativa $tries" | tee -a "$LOG_INSTALL"
+              sleep 5
+            done
+            if ! sudo systemctl is-active --quiet docker; then
+              echo "❌ Docker daemon não está ativo (veja $LOG_INSTALL)" | tee -a "$LOG_INSTALL"
+              sudo journalctl -u docker -n 200 --no-pager | tee -a "$LOG_INSTALL"
+              # não sair: vamos tentar comandos com sudo que podem funcionar
+            fi
+
+            # checar versões (tenta sem sudo, depois com sudo)
+            docker --version 2>&1 | tee -a "$LOG_INSTALL" || sudo docker --version 2>&1 | tee -a "$LOG_INSTALL"
+            docker compose version 2>&1 | tee -a "$LOG_INSTALL" || sudo docker compose version 2>&1 | tee -a "$LOG_INSTALL"
+
+            set -e
+            echo "[install] bloco de install/check finalizado - $(date)" | tee -a "$LOG_INSTALL"
+            # ---------------------------
+            # --- END INSERT
+            # ---------------------------
 
             # --- 3.5) Docker login (necessário antes de pull para imagens privadas)
             echo "[auth] realizando docker login (se estiverem definidos os secrets)"
