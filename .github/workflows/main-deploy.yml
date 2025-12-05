@@ -42,77 +42,63 @@ jobs:
   deploy-to-public:
     needs: build-and-push
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 90
     steps:
-      - name: Checkout
+      - name: Checkout (to access docker-compose.yaml if needed)
         uses: actions/checkout@v4
 
-      - name: Remote deploy on PUBLIC EC2
+      - name: Remote deploy on PUBLIC EC2 (update .env, images and restart containers)
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          command_timeout: "90m"
+          command_timeout: "30m"
           script_stop: true
           script: |
             set -euo pipefail
             EC2_USER="${{ secrets.EC2_USER }}"
             WORKDIR="/home/${EC2_USER}/app"
-            echo ">>> Deploy start $(date)"
-
-            # 1️⃣ Docker setup
-            if ! command -v docker &> /dev/null; then
-              echo "[setup] Docker não encontrado. Instalando..."
-              sudo apt update -y
-              sudo apt install -y ca-certificates curl gnupg lsb-release
-              sudo mkdir -p /etc/apt/keyrings
-              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-              sudo apt update
-              sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-              sudo usermod -aG docker $EC2_USER
-              sudo systemctl enable --now docker
-            else
-              echo "[setup] Docker já instalado"
-            fi
-
-            mkdir -p "$WORKDIR"
             cd "$WORKDIR"
-
-            # 2️⃣ Atualizar variáveis no .env
+      
+            echo ">>> Deploy start $(date)"
+            echo "[info] WORKDIR=$WORKDIR"
+      
+            # Atualizar variáveis no .env com as secrets do GitHub
             update_env() {
               VAR_NAME=$1
               VAR_VALUE=$2
-              if grep -q "^${VAR_NAME}=" .env 2>/dev/null; then
+              if grep -q "^${VAR_NAME}=" .env; then
+                # substitui linha existente
                 sed -i "s|^${VAR_NAME}=.*|${VAR_NAME}=${VAR_VALUE}|g" .env
               else
+                # adiciona se não existir
                 echo "${VAR_NAME}=${VAR_VALUE}" >> .env
               fi
             }
-
+      
+            # Atualizar variáveis
             update_env "DOCKERHUB_USERNAME" "${{ secrets.DOCKERHUB_USERNAME }}"
             update_env "DOCKERHUB_TOKEN" "${{ secrets.DOCKERHUB_TOKEN }}"
             update_env "DB_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             update_env "DB_USER" "${{ secrets.DB_USER }}"
-
-            set -a
-            [ -f .env ] && . .env
-            set +a
-
-            # 3️⃣ Docker login
+      
+            # carrega .env para o shell
+             export $(grep -v '^#' .env | xargs)
+      
+            # docker login
             if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
-              echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+              printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || true
             fi
-
-            # 4️⃣ Pull imagens backend e microserviços
-            docker compose pull backend-softwave api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia
-
-            # 5️⃣ Up containers com remoção de orfãos
+      
+            # puxar imagens atualizadas
+            docker compose pull backend-softwave || true
+            docker compose pull api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia || true
+      
+            # reiniciar containers
             docker compose up -d --remove-orphans
-
+      
             echo "[deploy] docker compose ps:"
-            docker compose ps
-
+            docker compose ps || true
             echo ">>> Deploy finished $(date)"
