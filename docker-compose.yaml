@@ -15,7 +15,7 @@ services:
   # ==========================================
 
   mysql-db:
-    image: mysql:8.0
+    build: mysql:8.0
     container_name: mysql-db
     restart: always
     environment:
@@ -36,7 +36,7 @@ services:
       retries: 10
 
   redis:
-    image: redis:7-alpine
+    build: redis:7-alpine
     container_name: redis
     command:
       [
@@ -60,7 +60,7 @@ services:
       retries: 5
 
   redisinsight:
-    image: redis/redisinsight:latest
+    build: redis/redisinsight:latest
     container_name: redisinsight
     ports:
       - "5540:5540"
@@ -73,7 +73,7 @@ services:
     restart: always
 
   rabbitmq:
-    image: rabbitmq:3-management
+    build: rabbitmq:3-management
     container_name: rabbitmq
     restart: always
     environment:
