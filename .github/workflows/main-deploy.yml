@@ -41,13 +41,13 @@ jobs:
 
   deploy-to-public:
     needs: build-and-push
-    runs-on: ubuntu-latest    # <<< obrigatório
+    runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Remote deploy on PUBLIC EC2 (setup, update .env, images, infra, restart containers)
+      - name: Remote deploy on PUBLIC EC2
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.EC2_HOST_PUBLIC }}
@@ -61,38 +61,27 @@ jobs:
             EC2_USER="${{ secrets.EC2_USER }}"
             WORKDIR="/home/${EC2_USER}/app"
             echo ">>> Deploy start $(date)"
-            echo "[info] WORKDIR=$WORKDIR"
 
-            # ==========================================
-            # 1️⃣ Configuração inicial da EC2
-            # ==========================================
-            echo "[setup] Verificando se Docker está instalado..."
+            # 1️⃣ Docker setup
             if ! command -v docker &> /dev/null; then
               echo "[setup] Docker não encontrado. Instalando..."
               sudo apt update -y
-              sudo apt upgrade -y
               sudo apt install -y ca-certificates curl gnupg lsb-release
               sudo mkdir -p /etc/apt/keyrings
               curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-              echo \
-                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
-                https://download.docker.com/linux/ubuntu \
-                $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
               sudo apt update
               sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-              sudo usermod -aG docker $USER
-              newgrp docker
+              sudo usermod -aG docker $EC2_USER
+              sudo systemctl enable --now docker
             else
               echo "[setup] Docker já instalado"
             fi
 
-            echo "[setup] Criando diretório app se não existir..."
             mkdir -p "$WORKDIR"
             cd "$WORKDIR"
 
-            # ==========================================
             # 2️⃣ Atualizar variáveis no .env
-            # ==========================================
             update_env() {
               VAR_NAME=$1
               VAR_VALUE=$2
@@ -108,38 +97,22 @@ jobs:
             update_env "DB_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             update_env "DB_USER" "${{ secrets.DB_USER }}"
 
-            # carrega .env para o shell
             set -a
             [ -f .env ] && . .env
             set +a
 
-            # ==========================================
             # 3️⃣ Docker login
-            # ==========================================
             if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
-              printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || true
+              echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
             fi
 
-            # ==========================================
-            # 4️⃣ Infraestrutura básica (MySQL, Redis, RabbitMQ)
-            # ==========================================
-            echo "[infra] Verificando containers de infraestrutura..."
-            for container in mysql-db redis rabbitmq; do
-              if ! docker ps -a --format '{{.Names}}' | grep -q "^${container}$"; then
-                echo "[infra] Container ${container} não encontrado. Será criado via docker run"
-              fi
-            done
+            # 4️⃣ Pull imagens backend e microserviços
+            docker compose pull backend-softwave api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia
 
-            # ==========================================
-            # 5️⃣ Puxar imagens atualizadas do backend e microserviços
-            # ==========================================
-            docker compose pull backend-softwave api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia || true
-
-            # ==========================================
-            # 6️⃣ Reiniciar containers do docker-compose
-            # ==========================================
+            # 5️⃣ Up containers com remoção de orfãos
             docker compose up -d --remove-orphans
+
             echo "[deploy] docker compose ps:"
-            docker compose ps || true
+            docker compose ps
 
             echo ">>> Deploy finished $(date)"
