@@ -85,9 +85,7 @@ jobs:
             update_env "DB_USER" "${{ secrets.DB_USER }}"
       
             # carrega .env para o shell
-            set -o allexport
-            . .env
-            set +o allexport
+             export $(grep -v '^#' .env | xargs)
       
             # docker login
             if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
