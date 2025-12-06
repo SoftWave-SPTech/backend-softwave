@@ -17,6 +17,11 @@ public class FinanceiroResponseDTO {
     private String statusFinanceiro;
     private String clienteNome;
     private String processoNumero;
+    private String clienteNomeFantasia;
+    private Integer clienteId;
+    private Integer processoId;
+
+
 
     // NOVO: honorário de sucumbência
     private Double honorarioSucumbencia;
@@ -56,16 +61,21 @@ public class FinanceiroResponseDTO {
         dto.setStatusFinanceiro(entity.getStatusFinanceiro() != null ? entity.getStatusFinanceiro().name() : null);
 
         // Cliente nome
-        if(entity.getCliente() != null) {
-            if(entity.getCliente() instanceof UsuarioFisico) {
-                dto.setClienteNome(((UsuarioFisico) entity.getCliente()).getNome());
-            } else if(entity.getCliente() instanceof UsuarioJuridico) {
-                dto.setClienteNome(((UsuarioJuridico) entity.getCliente()).getRazaoSocial());
+        if (entity.getCliente() != null)
+        {
+            dto.setClienteId(entity.getCliente().getId());
+            if (entity.getCliente() instanceof UsuarioFisico fisico) {
+                dto.setClienteNome(fisico.getNome());
+                dto.setClienteNomeFantasia(null); // PF não tem fantasia
+            } else if (entity.getCliente() instanceof UsuarioJuridico juridico) {
+                dto.setClienteNome(juridico.getRazaoSocial());      // mantém como já era
+                dto.setClienteNomeFantasia(juridico.getNomeFantasia()); // novo campo
             }
         }
 
         // Processo
         if(entity.getProcesso() != null) {
+            dto.setProcessoId(entity.getProcesso().getId());
             dto.setProcessoNumero(entity.getProcesso().getNumeroProcesso());
         }
 
@@ -110,6 +120,31 @@ public class FinanceiroResponseDTO {
     }
 
     // GETTERS E SETTERS
+    public Integer getClienteId() {
+        return clienteId;
+    }
+
+    public void setClienteId(Integer clienteId) {
+        this.clienteId = clienteId;
+    }
+
+    public Integer getProcessoId() {
+        return processoId;
+    }
+
+    public void setProcessoId(Integer processoId) {
+        this.processoId = processoId;
+    }
+
+    public String getClienteNomeFantasia()
+    {
+        return clienteNomeFantasia;
+    }
+
+    public void setClienteNomeFantasia(String clienteNomeFantasia)
+    {
+        this.clienteNomeFantasia = clienteNomeFantasia;
+    }
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
