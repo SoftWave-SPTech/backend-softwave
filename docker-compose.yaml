@@ -1,148 +1,96 @@
 version: '3.8'
 
-networks:
-  softwave-network:
-    driver: bridge
-
-volumes:
-  db_data:
-
 services:
-  mysql-db:
+  db:
     image: mysql:8.0
-    container_name: mysql-db
+    container_name: mysql_db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: softwave_db
       MYSQL_USER: softwave
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: softwave123
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - softwave-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
+
+  app:
+    image: eclipse-temurin:21-jdk
+    container_name: backend_softwave
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/softwave_db
+      SPRING_DATASOURCE_USERNAME: softwave
+      SPRING_DATASOURCE_PASSWORD: softwave123
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target:/app
+    working_dir: /app
+    command: ["java", "-jar", "BackendSoftWave.jar"]
+    networks:
+      - redis-net
+    restart: always
 
   redis:
     image: redis:7-alpine
     container_name: redis
-    command: ["redis-server", "--maxmemory", "512mb", "--maxmemory-policy", "allkeys-lfu", "--save", "60", "1", "--loglevel", "warning"]
+    command:
+      [
+        "redis-server",
+        "--maxmemory", "512mb",
+        "--maxmemory-policy", "allkeys-lfu",
+        "--save", "60", "1",
+        "--loglevel", "warning"
+      ]
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - softwave-network
+      - redis-net
     restart: always
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+    networks:
+      - redis-net
+    volumes:
+      - redisinsight_data:/data
+    restart: always
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:latest
     container_name: rabbitmq
-    restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: myuser
-      RABBITMQ_DEFAULT_PASS: secret
+      - RABBITMQ_DEFAULT_PASS=secret
+      - RABBITMQ_DEFAULT_USER=myuser
     ports:
       - "5672:5672"
-      - "15672:15672"
-    networks:
-      - softwave-network
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 30s
-      timeout: 30s
-      retries: 5
-
-  # ==========================================
-  # NÍVEL 2: BACKEND PRINCIPAL
-  # ==========================================
-
-  backend-softwave:
-    image: ${DOCKERHUB_USERNAME}/backend-softwave:latest
-    container_name: backend-softwave
     restart: always
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/softwave_db
-      SPRING_DATASOURCE_USERNAME: softwave
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
-      SPRING_RABBITMQ_HOST: rabbitmq
-      SPRING_RABBITMQ_PORT: 5672
-      SPRING_RABBITMQ_USERNAME: myuser
-      SPRING_RABBITMQ_PASSWORD: secret
-    depends_on:
-      mysql-db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    networks:
-      - softwave-network
-    healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health || exit 1"
-      interval: 20s
-      retries: 5
-      start_period: 40s
 
-  # ==========================================
-  # NÍVEL 3: MICROSSERVIÇOS SATÉLITES
-  # ==========================================
+networks:
+  redis-net:
+    driver: bridge
 
-  api-auth-mail:
-    image: ${DOCKERHUB_USERNAME}/api-auth-mail:latest
-    container_name: api-auth-mail
-    ports:
-      - "8083:8080"
-    depends_on:
-      backend-softwave:
-        condition: service_healthy
-    networks:
-      - softwave-network
-
-  api-bucket-s3:
-    image: ${DOCKERHUB_USERNAME}/api-bucket-s3:latest
-    container_name: api-bucket-s3
-    ports:
-      - "8081:8080"
-    depends_on:
-      backend-softwave:
-        condition: service_healthy
-    networks:
-      - softwave-network
-
-  api-consultas-softwave:
-    image: ${DOCKERHUB_USERNAME}/api-consultas-softwave:latest
-    container_name: api-consultas-softwave
-    ports:
-      - "8084:8080"
-    depends_on:
-      backend-softwave:
-        condition: service_healthy
-    networks:
-      - softwave-network
-
-  api-gemini-ia:
-    image: ${DOCKERHUB_USERNAME}/api-gemini-ia:latest
-    container_name: api-gemini-ia
-    ports:
-      - "8082:8080"
-    depends_on:
-      backend-softwave:
-        condition: service_healthy
-    networks:
-      - softwave-network
+volumes:
+  db_data:
+  redis_data:
+  redisinsight_data:
