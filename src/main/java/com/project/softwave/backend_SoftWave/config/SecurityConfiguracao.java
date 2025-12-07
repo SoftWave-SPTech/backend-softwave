@@ -119,7 +119,7 @@ public class SecurityConfiguracao {
         configuracao.setAllowCredentials(true);
         
         // Lê origens permitidas de variável de ambiente ou usa valores padrão para desenvolvimento
-        String allowedOriginsEnv = System.getenv("CORS_ALLOWED_ORIGINS");
+        String allowedOriginsEnv = null;
         if (allowedOriginsEnv != null && !allowedOriginsEnv.isEmpty()) {
             // Suporta múltiplas origens separadas por vírgula
             List<String> origins = Arrays.asList(allowedOriginsEnv.split(","));
@@ -129,7 +129,8 @@ public class SecurityConfiguracao {
             configuracao.setAllowedOrigins(List.of(
                 "http://localhost:5173",
                 "http://localhost:3000",
-                "http://localhost:8080"
+                "http://localhost:8080",
+                "http://52.3.112.88:80"
             ));
         }
         
