@@ -130,7 +130,7 @@ public class SecurityConfiguracao {
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "http://localhost:8080",
-                "http://52.3.112.88:80".
+                "http://52.3.112.88:80",
                 "http://52.3.112.88",
                 "http://52.3.112.88:8080"
             ));
