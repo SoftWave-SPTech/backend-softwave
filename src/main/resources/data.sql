@@ -6,17 +6,17 @@ INSERT INTO `softwave`.`usuario`
 VALUES
     (1,'advogado_fisico', 0, 'Pinheiros', '05422-000', 'São Paulo', 'Rua dos Pinheiros', '123',
      'leticiasantos08032005@gmail.com', 'Senha@1234', '11911112222',
-     '98765432100', 'Leticia Fonseca', '7654321', 123456, 1,
+     '98765432100', 'Leticia Fonseca', '765432198', 123456, 1,
      'apy2ocT', NULL, NULL, NULL, NULL,0),
 
     (2,'usuario_fisico', 0, 'Bela Vista', '01310-200', 'São Paulo', 'Avenida Paulista', '200',
      'maria.souza@email.com', 'Senha@1234', '11922223333',
-     '46009286875', 'Maria Souza', '11523344', NULL, 0,
+     '46009286875', 'Maria Souza', '115233449', NULL, 0,
      'lz88fJQT', NULL, NULL, NULL, NULL,0),
 
     (3,'advogado_juridico', 0, 'Bela Vista', '01310-200', 'São Paulo', 'Rua Haddock Lobo', '150',
      'felipe@laurianoleao.com', 'Senha@1234', '11999998888',
-     NULL, 'Felipe Lauriano Rocha Marqueze', NULL, 509556, 3,
+     NULL, 'Felipe Lauriano Rocha Marqueze', NULL, 509556, 2,
      'bz88fCQT', '57404168000180', 'Lauriano & Leão Sociedade de Advogados', 'Lauriano & Leão Sociedade de Advogados', 'Felipe Lauriano Rocha Marqueze',0),
 
     (4,'usuario_juridico', 0, 'Aricanduva', '03471-047', 'São Paulo', 'Rua Rodolfo Julian', '11',
@@ -36,32 +36,32 @@ VALUES
 
     (7,'usuario_fisico', 0, 'Santana', '02012-020', 'São Paulo', 'Rua Voluntários da Pátria', '321',
      'joao.pereira@email.com', 'Senha@1234', '11987654321',
-     '12345678910', 'João Pereira', '44556677', NULL, 0,
+     '12345678910', 'João Pereira', '445566779', NULL, 0,
      'Rt21pKLM', NULL, NULL, NULL, NULL,0),
 
     (8,'usuario_fisico', 0, 'Centro', '20040-010', 'Rio de Janeiro', 'Rua do Ouvidor', '45',
      'ana.costa@email.com', 'Senha@1234', '21999887766',
-     '10987654321', 'Ana Costa', '88997766', NULL, 0,
+     '10987654321', 'Ana Costa', '889977661', NULL, 0,
      'Wq77nDHF', NULL, NULL, NULL, NULL,0),
 
     (9,'usuario_fisico', 0, 'Boa Viagem', '51020-020', 'Recife', 'Avenida Conselheiro Aguiar', '101',
      'marcos.silva@email.com', 'Senha@1234', '81988776655',
-     '32165498700', 'Marcos Silva', '22334455', NULL, 0,
+     '32165498700', 'Marcos Silva', '223344559', NULL, 0,
      'Jk55vTRE', NULL, NULL, NULL, NULL,0),
 
     (10,'advogado_fisico', 0, 'Lapa', '05075-010', 'São Paulo', 'Rua Guaicurus', '77',
      'carla.advogada@email.com', 'Senha@1234', '11911223344',
-     '98732165400', 'Carla Menezes', '88667788', 785412, 1,
+     '98732165400', 'Carla Menezes', '886677889', 785412, 1,
      'Gh83pZQT', NULL, NULL, NULL, NULL,0),
 
     (11,'advogado_fisico', 0, 'Barra', '22631-000', 'Rio de Janeiro', 'Avenida das Américas', '1500',
      'ricardo.advogado@email.com', 'Senha@1234', '21933445566',
-     '65498732100', 'Ricardo Oliveira', '11224455', 963258, 1,
+     '65498732100', 'Ricardo Oliveira', '112244559', 963258, 1,
      'Bn67xWEP', NULL, NULL, NULL, NULL,0),
 
     (12,'advogado_fisico', 0, 'Savassi', '30140-110', 'Belo Horizonte', 'Rua Antônio de Albuquerque', '88',
      'fernanda.adv@email.com', 'Senha@1234', '31988776655',
-     '74185296300', 'Fernanda Rocha', '66778899', 741852, 1,
+     '74185296300', 'Fernanda Rocha', '667788991', 741852, 1,
      'Vc11mXLO', NULL, NULL, NULL, NULL,0);
 
 

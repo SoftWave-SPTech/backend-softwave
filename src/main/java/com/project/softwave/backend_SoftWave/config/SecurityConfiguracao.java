@@ -114,29 +114,9 @@ public class SecurityConfiguracao {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuracao = new CorsConfiguration();
-        
-        // Permite credenciais (cookies, headers de autenticação)
+        configuracao.applyPermitDefaultValues();
         configuracao.setAllowCredentials(true);
-        
-        // Lê origens permitidas de variável de ambiente ou usa valores padrão para desenvolvimento
-        String allowedOriginsEnv = null;
-        if (allowedOriginsEnv != null && !allowedOriginsEnv.isEmpty()) {
-            // Suporta múltiplas origens separadas por vírgula
-            List<String> origins = Arrays.asList(allowedOriginsEnv.split(","));
-            configuracao.setAllowedOrigins(origins);
-        } else {
-            // Valores padrão para desenvolvimento local
-            configuracao.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "http://localhost:8080",
-                "http://52.3.112.88:80",
-                "http://52.3.112.88",
-                "http://52.3.112.88:8080"
-            ));
-        }
-        
-        // Métodos HTTP permitidos
+        configuracao.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:3000"));// URL do frontend
         configuracao.setAllowedMethods(
                 Arrays.asList(
                         HttpMethod.GET.name(),
@@ -147,27 +127,8 @@ public class SecurityConfiguracao {
                         HttpMethod.OPTIONS.name(),
                         HttpMethod.HEAD.name(),
                         HttpMethod.TRACE.name()));
-        
-        // Headers permitidos
-        configuracao.setAllowedHeaders(Arrays.asList(
-                "Authorization",
-                "Content-Type",
-                "X-Requested-With",
-                "Accept",
-                "Origin",
-                "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"
-        ));
-        
-        // Headers expostos para o frontend
-        configuracao.setExposedHeaders(Arrays.asList(
-                HttpHeaders.CONTENT_DISPOSITION,
-                "Authorization",
-                "Content-Type"
-        ));
-        
-        // Tempo de cache para preflight requests
-        configuracao.setMaxAge(3600L);
+
+        configuracao.setExposedHeaders(List.of(HttpHeaders.CONTENT_DISPOSITION));
 
         UrlBasedCorsConfigurationSource origem = new UrlBasedCorsConfigurationSource();
         origem.registerCorsConfiguration("/**", configuracao);
