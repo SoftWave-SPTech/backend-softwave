@@ -44,6 +44,12 @@ public class ProcessoConsumer {
                     processo = optionalProcesso.get();
                 }
 
+                if(response.getNormalizadoValorAcao() == null) {
+                    response.setNormalizadoValorAcao(0.0);
+
+                } else {
+                    processo.setNormalizadoValorAcao(response.getNormalizadoValorAcao());
+                }
                 processo.setNumeroProcesso(response.getNumeroProcesso());
                 processo.setClasse(response.getClasse());
                 processo.setAssunto(response.getAssunto());
@@ -55,12 +61,12 @@ public class ProcessoConsumer {
                 processo.setControle(response.getControle());
                 processo.setArea(response.getArea());
                 processo.setValorAcao(response.getValorAcao());
-                processo.setNormalizadoValorAcao(response.getNormalizadoValorAcao());
                 processo.setAutor(response.getAutor());
                 processo.setExecutado(response.getExecutado());
                 processo.setRequerente(response.getRequerente());
                 processo.setRequerido(response.getRequerido());
                 processo.setIndiciado(response.getIndiciado());
+
 
                 // Salvar processo primeiro
                 Processo processoSalvo = processoRepository.save(processo);
