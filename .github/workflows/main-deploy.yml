@@ -83,6 +83,10 @@ jobs:
             update_env "DOCKERHUB_TOKEN" "${{ secrets.DOCKERHUB_TOKEN }}"
             update_env "DB_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             update_env "DB_USER" "${{ secrets.DB_USER }}"
+            update_env "AWS_ACCESS_KEY_ID" "${{ secrets.AWS_ACCESS_KEY_ID }}"
+            update_env "AWS_SECRET_ACCESS_KEY" "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            # token opcional (para credenciais temporárias)
+            update_env "AWS_SESSION_TOKEN" "${{ secrets.AWS_SESSION_TOKEN || '' }}"
       
             # carrega .env para o shell
              export $(grep -v '^#' .env | xargs)
