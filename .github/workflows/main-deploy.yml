@@ -47,15 +47,25 @@ jobs:
       - name: Checkout (to access docker-compose.yaml if needed)
         uses: actions/checkout@v4
 
-      - name: Remote deploy on PUBLIC EC2
+      - name: Remote deploy on PUBLIC EC2 (update .env, images and restart containers)
         uses: appleboy/ssh-action@v0.1.8
         with:
-          host: ${{ secrets.EC2_PUBLIC_IP }}
-          username: ubuntu
+          host: ${{ secrets.EC2_HOST_PUBLIC }}
+          username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          command_timeout: "30m"
+          script_stop: true
           script: |
-            cd /home/ubuntu/app
+            set -euo pipefail
+            EC2_USER="${{ secrets.EC2_USER }}"
+            WORKDIR="/home/${EC2_USER}/app"
+            cd "$WORKDIR"
       
+            echo ">>> Deploy start $(date)"
+            echo "[info] WORKDIR=$WORKDIR"
+      
+            # Atualizar variáveis no .env com as secrets do GitHub
             update_env() {
               VAR_NAME=$1
               VAR_VALUE=$2
@@ -73,13 +83,11 @@ jobs:
             update_env "DOCKERHUB_TOKEN" "${{ secrets.DOCKERHUB_TOKEN }}"
             update_env "DB_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             update_env "DB_USER" "${{ secrets.DB_USER }}"
-            
             # Variáveis AWS para o api-bucket-s3 (somente estas três conforme solicitado)
             update_env "AWS_ACCESS_KEY_ID" "${{ secrets.AWS_ACCESS_KEY_ID }}"
             update_env "AWS_SECRET_ACCESS_KEY" "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
             # token opcional (se você usar credenciais temporárias)
-            update_env "AWS_SESSION_TOKEN" "${{ secrets.AWS_SESSION_TOKEN || '' }}"
-
+            update_env "AWS_SESSION_TOKEN" "${{ secrets.AWS_SESSION_TOKEN}}"
       
             # carrega .env para o shell
              export $(grep -v '^#' .env | xargs)
