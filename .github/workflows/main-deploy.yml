@@ -60,67 +60,77 @@ jobs:
             #!/bin/bash
             set -euo pipefail
             set -x
-
+            
             trap 'rc=$?; echo "!!! ERROR at line $LINENO (exit $rc)"; exit $rc' ERR
-
+            
             EC2_USER="${{ secrets.EC2_USER }}"
             WORKDIR="/home/${EC2_USER}/app"
-
+            
             echo ">>> Deploy start $(date)"
             echo "[info] WORKDIR=$WORKDIR"
-
-            # entra no diretório (falha se não existir)
+            
             cd "$WORKDIR" || { echo "WORKDIR not found: $WORKDIR"; exit 2; }
-
-            # Função segura para atualizar .env (faz escape de barras e &)
+            
+            # Função segura para atualizar .env (evita que grep invalide o script)
             update_env() {
               local VAR_NAME="$1"
               local VAR_VALUE="$2"
-              # substituir possíveis quebras de linha por espaços (evita sed quebrar)
+              # normalizar valor (remove quebras de linha, escapa / e &)
               VAR_VALUE=$(printf '%s' "$VAR_VALUE" | tr '\n' ' ' | sed -e 's/[\/&]/\\&/g')
-              if grep -q "^${VAR_NAME}=" .env 2>/dev/null; then
-                sed -i "s|^${VAR_NAME}=.*|${VAR_NAME}=${VAR_VALUE}|g" .env
-                echo "[env] updated ${VAR_NAME}"
+            
+              # se .env existir, faz checagem segura; senão cria
+              if [ -f .env ]; then
+                # desativa errexit temporariamente para checar grep
+                set +e
+                grep -q "^${VAR_NAME}=" .env >/dev/null 2>&1
+                local GREP_RC=$?
+                set -e
+                if [ ${GREP_RC} -eq 0 ]; then
+                  sed -i "s|^${VAR_NAME}=.*|${VAR_NAME}=${VAR_VALUE}|g" .env
+                  echo "[env] updated ${VAR_NAME}"
+                else
+                  echo "${VAR_NAME}=${VAR_VALUE}" >> .env
+                  echo "[env] added ${VAR_NAME}"
+                fi
               else
                 echo "${VAR_NAME}=${VAR_VALUE}" >> .env
-                echo "[env] added ${VAR_NAME}"
+                echo "[env] added ${VAR_NAME} (file created)"
               fi
             }
-
-            # garante existência do .env
+            
+            # garante existência e permissões do .env
             if [ ! -f .env ]; then
               echo ".env not found — creating empty .env"
               touch .env
               chmod 600 .env
             fi
-
+            
             # ---------- Atualizar variáveis (vêm do GitHub Secrets) ----------
             update_env "DOCKERHUB_USERNAME" "${{ secrets.DOCKERHUB_USERNAME }}"
             update_env "DOCKERHUB_TOKEN" "${{ secrets.DOCKERHUB_TOKEN }}"
             update_env "DB_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             update_env "DB_USER" "${{ secrets.DB_USER }}"
-
-            # AWS credenciais (opcional: use IAM Role em produção)
+            
+            # AWS credenciais (opcional: prefira IAM Role em produção)
             update_env "AWS_ACCESS_KEY_ID" "${{ secrets.AWS_ACCESS_KEY_ID }}"
             update_env "AWS_SECRET_ACCESS_KEY" "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
             update_env "AWS_SESSION_TOKEN" "${{ secrets.AWS_SESSION_TOKEN || '' }}"
-            update_env "AWS_REGION" "${{ secrets.AWS_REGION }}"
-            update_env "AWS_S3_BUCKET" "${{ secrets.AWS_S3_BUCKET }}"
-
+            update_env "AWS_REGION" "${{ secrets.AWS_REGION || 'us-east-1' }}"
+            update_env "AWS_S3_BUCKET" "${{ secrets.AWS_S3_BUCKET || 'softwave-arquivos-prod' }}"
+            
             # Variáveis Spring/DB esperadas pelos containers
             update_env "SPRING_DATASOURCE_URL" "jdbc:mysql://mysql-db:3306/softwave_db"
             update_env "SPRING_DATASOURCE_USERNAME" "softwave"
             update_env "SPRING_DATASOURCE_PASSWORD" "${{ secrets.DB_PASSWORD }}"
-
-            # Segurança: não mostre valores sensíveis completos no log.
+            
+            # Redact sensitive values from printed view
             echo ">>> .env keys present (sensitive values redacted):"
-            grep -vE '^(AWS_SECRET_ACCESS_KEY|AWS_ACCESS_KEY_ID|SPRING_DATASOURCE_PASSWORD|DB_PASSWORD|DOCKERHUB_TOKEN)=' .env || true
+            # mostramos apenas as chaves, sem valores
+            awk -F= '{print $1}' .env | sed -e 's/^/ - /' || true
             echo ">>> (secret values were not printed)"
-
+            
             # ---------- Carregar .env para o ambiente de forma robusta ----------
-            # lê linha a linha, pula comentários e exporta
             while IFS= read -r line || [ -n "$line" ]; do
-              # remove CR
               line="${line%%$'\r'}"
               [ -z "$line" ] && continue
               case "$line" in
@@ -128,53 +138,48 @@ jobs:
               esac
               key="${line%%=*}"
               val="${line#*=}"
-              # remove aspas
               val="${val%\"}"
               val="${val#\"}"
               export "$key=$val"
             done < .env
-
+            
             echo "Loaded ENV (names only):"
             echo " - DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME:+set}"
             echo " - DB_USER=${DB_USER:+set}"
             echo " - AWS_REGION=${AWS_REGION:-<not-set>}"
             echo " - AWS_S3_BUCKET=${AWS_S3_BUCKET:-<not-set>}"
             echo " - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:+set}"
-
-            # fallback: se 'docker compose' não existir, tentar 'docker-compose'
+            
+            # fallback docker compose / docker-compose
             if ! command -v docker >/dev/null 2>&1; then
               echo "docker not found on remote host"
               exit 3
             fi
-            if ! docker compose version >/dev/null 2>&1; then
-              if command -v docker-compose >/dev/null 2>&1; then
-                echo "Using docker-compose (fallback)"
-                alias docker-compose='docker-compose'
-                DOCKER_COMPOSE_CMD="docker-compose"
-              else
-                echo "Neither 'docker compose' nor 'docker-compose' available on remote host"
-                exit 4
-              fi
-            else
+            if docker compose version >/dev/null 2>&1; then
               DOCKER_COMPOSE_CMD="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              DOCKER_COMPOSE_CMD="docker-compose"
+            else
+              echo "Neither 'docker compose' nor 'docker-compose' available on remote host"
+              exit 4
             fi
-
+            
             # docker login (usando token)
             if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
               printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || echo "[warn] docker login failed (continuing)"
             fi
-
-            # Puxar imagens atualizadas (por serviço)
+            
+            # pull images
             echo ">>> ${DOCKER_COMPOSE_CMD} pull backend-softwave"
             ${DOCKER_COMPOSE_CMD} pull backend-softwave || echo "[warn] pull backend-softwave failed (continuing)"
-
+            
             echo ">>> ${DOCKER_COMPOSE_CMD} pull other services"
             ${DOCKER_COMPOSE_CMD} pull api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia || echo "[warn] some service pulls failed (continuing)"
-
-            # Reiniciar containers
+            
+            # up
             echo ">>> ${DOCKER_COMPOSE_CMD} up -d --remove-orphans"
             ${DOCKER_COMPOSE_CMD} up -d --remove-orphans || { echo "[error] docker compose up failed"; ${DOCKER_COMPOSE_CMD} ps || true; exit 5; }
-
+            
             echo "[deploy] ${DOCKER_COMPOSE_CMD} ps:"
             ${DOCKER_COMPOSE_CMD} ps || true
             echo ">>> Deploy finished $(date)"
