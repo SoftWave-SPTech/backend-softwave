@@ -71,21 +71,19 @@ jobs:
             
             cd "$WORKDIR" || { echo "WORKDIR not found: $WORKDIR"; exit 2; }
             
-            # Função segura para atualizar .env (evita que grep invalide o script)
+            # Função segura para atualizar .env (não permite que grep cause exit)
             update_env() {
               local VAR_NAME="$1"
               local VAR_VALUE="$2"
               # normalizar valor (remove quebras de linha, escapa / e &)
               VAR_VALUE=$(printf '%s' "$VAR_VALUE" | tr '\n' ' ' | sed -e 's/[\/&]/\\&/g')
             
-              # se .env existir, faz checagem segura; senão cria
+              # se .env existir, faz checagem segura; senão cria adicionando direto
               if [ -f .env ]; then
-                # desativa errexit temporariamente para checar grep
-                set +e
-                grep -q "^${VAR_NAME}=" .env >/dev/null 2>&1
-                local GREP_RC=$?
-                set -e
-                if [ ${GREP_RC} -eq 0 ]; then
+                # execute grep, mas garanta que o comando nunca retorne erro fatal
+                grep -q "^${VAR_NAME}=" .env >/dev/null 2>&1 || GREP_RC=$? || true
+                # if grep found (exit 0) GREP_RC will be empty, so test using $?
+                if grep -q "^${VAR_NAME}=" .env >/dev/null 2>&1; then
                   sed -i "s|^${VAR_NAME}=.*|${VAR_NAME}=${VAR_VALUE}|g" .env
                   echo "[env] updated ${VAR_NAME}"
                 else
@@ -123,9 +121,8 @@ jobs:
             update_env "SPRING_DATASOURCE_USERNAME" "softwave"
             update_env "SPRING_DATASOURCE_PASSWORD" "${{ secrets.DB_PASSWORD }}"
             
-            # Redact sensitive values from printed view
+            # Mostra apenas chaves do .env (redact)
             echo ">>> .env keys present (sensitive values redacted):"
-            # mostramos apenas as chaves, sem valores
             awk -F= '{print $1}' .env | sed -e 's/^/ - /' || true
             echo ">>> (secret values were not printed)"
             
@@ -164,19 +161,19 @@ jobs:
               exit 4
             fi
             
-            # docker login (usando token)
+            # docker login (usando token) - não falha a ação se login der errado
             if [ -n "${DOCKERHUB_USERNAME:-}" ] && [ -n "${DOCKERHUB_TOKEN:-}" ]; then
               printf '%s' "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin || echo "[warn] docker login failed (continuing)"
             fi
             
-            # pull images
+            # pull images (cada pull não deve abortar a execução)
             echo ">>> ${DOCKER_COMPOSE_CMD} pull backend-softwave"
             ${DOCKER_COMPOSE_CMD} pull backend-softwave || echo "[warn] pull backend-softwave failed (continuing)"
             
             echo ">>> ${DOCKER_COMPOSE_CMD} pull other services"
             ${DOCKER_COMPOSE_CMD} pull api-auth-mail api-bucket-s3 api-consultas-softwave api-gemini-ia || echo "[warn] some service pulls failed (continuing)"
             
-            # up
+            # up (se falhar, então exit com código para indicar falha)
             echo ">>> ${DOCKER_COMPOSE_CMD} up -d --remove-orphans"
             ${DOCKER_COMPOSE_CMD} up -d --remove-orphans || { echo "[error] docker compose up failed"; ${DOCKER_COMPOSE_CMD} ps || true; exit 5; }
             
