@@ -73,7 +73,7 @@ public class ProcessoController {
 
             // Configura o RestTemplate
             RestTemplate restTemplate = new RestTemplate();
-            String url = "http://localhost:8084/api/processos/consulta-numero";
+            String url = "http://api-consultas-softwave:8084/api/processos/consulta-numero";
 
             // Faz o POST enviando apenas o número do processo
             ResponseEntity<String> response = restTemplate.postForEntity(url, requestBody, String.class);
